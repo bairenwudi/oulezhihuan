@@ -1,79 +1,60 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Login from '../page/Login.vue'
-import NotFound from '../page/404.vue'
-import Home from '../page/Home.vue'
-import Main from '../page/Main.vue'
-import Table from '../page/nav1/Table.vue'
-import Form from '../page/nav1/Form.vue'
-import user from '../page/nav1/user.vue'
-import Page4 from '../page/nav2/Page4.vue'
-import Page5 from '../page/nav2/Page5.vue'
-import Page6 from '../page/nav3/Page6.vue'
-import echarts from '../page/charts/echarts.vue'
+import Vue from 'vue';
+import iView from 'iview';
+import Util from '../libs/util';
+import VueRouter from 'vue-router';
+import Cookies from 'js-cookie';
+import {routers, otherRouter, appRouter} from './router';
 
-Vue.use(Router)
+Vue.use(VueRouter);
 
-export default new Router({
-  routes: [
-    {
-        path: '/login',
-        component: Login,
-        name: '',
-        hidden: true
-    },
-    {
-        path: '/404',
-        component: NotFound,
-        name: '',
-        hidden: true
-    },
-    //{ path: '/main', component: Main },
-    {
-        path: '/',
-        component: Home,
-        name: '导航一',
-        iconCls: 'el-icon-message',//图标样式class
-        children: [
-            { path: '/main', component: Main, name: '主页', hidden: false },
-            { path: '/table', component: Table, name: 'Table' },
-            { path: '/form', component: Form, name: 'Form' },
-            { path: '/user', component: user, name: '列表' },
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '导航二',
-        iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/page4', component: Page4, name: '页面4' },
-            { path: '/page5', component: Page5, name: '页面5' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '',
-        iconCls: 'fa fa-address-card',
-        leaf: true,//只有一个节点
-        children: [
-            { path: '/page6', component: Page6, name: '导航三' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: 'Charts',
-        iconCls: 'fa fa-bar-chart',
-        children: [
-            { path: '/echarts', component: echarts, name: 'echarts' }
-        ]
-    },
-    {
-        path: '*',
-        hidden: true,
-        redirect: { path: '/404' }
+// 路由配置
+const RouterConfig = {
+    // mode: 'history',
+    routes: routers
+};
+
+export const router = new VueRouter(RouterConfig);
+
+router.beforeEach((to, from, next) => {
+    iView.LoadingBar.start();
+    Util.title(to.meta.title);
+    if (Cookies.get('locking') === '1' && to.name !== 'locking') { // 判断当前是否是锁定状态
+        next({
+            replace: true,
+            name: 'locking'
+        });
+    } else if (Cookies.get('locking') === '0' && to.name === 'locking') {
+        next(false);
+    } else {
+        if (!Cookies.get('user') && to.name !== 'login') { // 判断是否已经登录且前往的页面不是登录页
+            next({
+                name: 'login'
+            });
+        } else if (Cookies.get('user') && to.name === 'login') { // 判断是否已经登录且前往的是登录页
+            Util.title();
+            next({
+                name: 'home_index'
+            });
+        } else {
+            const curRouterObj = Util.getRouterObjByName([otherRouter, ...appRouter], to.name);
+            if (curRouterObj && curRouterObj.access !== undefined) { // 需要判断权限的路由
+                if (curRouterObj.access === parseInt(Cookies.get('access'))) {
+                    Util.toDefaultPage([otherRouter, ...appRouter], to.name, router, next); // 如果在地址栏输入的是一级菜单则默认打开其第一个二级菜单的页面
+                } else {
+                    next({
+                        replace: true,
+                        name: 'error-403'
+                    });
+                }
+            } else { // 没有配置权限的路由, 直接通过
+                Util.toDefaultPage([...routers], to.name, router, next);
+            }
+        }
     }
-  ]
-})
+});
+
+router.afterEach((to) => {
+    Util.openNewPage(router.app, to.name, to.params, to.query);
+    iView.LoadingBar.finish();
+    window.scrollTo(0, 0);
+});
