@@ -232,7 +232,7 @@ export default {
     },
     computed: {
         avatorPath () {
-            return 'https://img2.woyaogexing.com/2018/10/21/c51fe45206f24611b010f82645b0fd4a!400x400.jpeg';
+            return localStorage.avatorImgPath;;
         }
     },
     methods: {

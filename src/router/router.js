@@ -90,6 +90,22 @@ export const appRouter = [
             }
         ]
     },
+    {
+        path: '/form',
+        icon: 'social-buffer',
+        name: 'form',
+        title: '表单',
+        component: Main,
+        children: [
+            {
+                path: 'formModel',
+                icon: 'compose',
+                name: 'formModel',
+                title: '表单',
+                component: resolve => { require(['@/views/form/form.vue'], resolve); }
+            }
+        ]
+    }
 ];
 
 // 所有上面定义的路由都要写在下面的routers里
