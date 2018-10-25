@@ -111,6 +111,7 @@
                 return this.$store.state.app.lang;
             },
             menuTheme () {
+                console.log(this.$store.state.app.menuTheme);
                 return this.$store.state.app.menuTheme;
             }
         },

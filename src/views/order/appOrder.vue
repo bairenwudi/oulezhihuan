@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './table.less';
+    @import './appOrder.less';
 </style>
 
 <template>
@@ -13,9 +13,12 @@
                 <Input type="text" v-model="formInline.cus_nick_name" placeholder="电话"></Input>
             </FormItem>
 
+            <FormItem prop="cus_nick_name" label="昵称" :label-width="50">
+                <Input type="text" v-model="formInline.cus_nick_name" placeholder="电话"></Input>
+            </FormItem>
+
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
-                <Button type="primary" @click.stop="resetTotal">改变</Button>
             </FormItem>
 
             <FormItem>
@@ -48,10 +51,10 @@
 import TableM from "../../common/table/table.vue";
 import {
     userManagementList
-} from '../../api/lp-live/api.js'
+} from '../../api/lp-order/api.js'
 
 export default {
-  name: "tableModel",
+  name: "appOrderModel",
 
   components: {
     TableM
@@ -106,7 +109,7 @@ export default {
             {
                 title: "操作",
                 key: "action",
-                width: 150,
+                width: 350,
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
@@ -135,6 +138,9 @@ export default {
                             type: "error",
                             size: "small"
                         },
+                        style: {
+                            marginRight: "5px"
+                        },
                         on: {
                             click: () => {
                                 this.delClick(params);
@@ -142,6 +148,21 @@ export default {
                         }
                         },
                         "删除"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "error",
+                            size: "small"
+                        },
+                        on: {
+                            click: () => {
+                                this.goToInfo(params);
+                            }
+                        }
+                        },
+                        "详情"
                     )
                     ]);
                 }
@@ -174,6 +195,14 @@ export default {
   },
 
   methods: {
+    // 进入详情
+    goToInfo(params) {
+        this.$router.push({
+            path: '/argu/infoModel',
+            data: params 
+        })
+    },
+
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;

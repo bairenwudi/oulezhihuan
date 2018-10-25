@@ -105,7 +105,46 @@ export const appRouter = [
                 component: resolve => { require(['@/views/form/form.vue'], resolve); }
             }
         ]
-    }
+    },
+    
+    {
+        path: '/order',
+        icon: 'social-buffer',
+        name: 'order',
+        title: '订单管理',
+        component: Main,
+        children: [
+            {
+                path: 'appOrderModel',
+                icon: 'compose',
+                name: 'appOrderModel',
+                title: 'app订单',
+                component: resolve => { require(['@/views/order/appOrder.vue'], resolve); }
+            }
+        ]
+    },
+
+    {
+        path: '/argu',
+        name: 'argu',
+        meta: {
+            hideInMenu: true
+        },
+        component: Main,
+        children: [
+            {
+                path: 'infoModel',
+                name: 'infoModel',
+                meta: {
+                    icon: 'md-flower',
+                    title: '我是info',
+                    notCache: true,
+                    beforeCloseName: 'before_close_normal'
+                },
+                component: resolve => { require(['@/views/order/info.vue'], resolve); }
+            }
+        ]
+    },
 ];
 
 // 所有上面定义的路由都要写在下面的routers里
