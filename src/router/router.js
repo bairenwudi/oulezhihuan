@@ -121,7 +121,29 @@ export const appRouter = [
                 name: 'appOrderModel',
                 title: 'app订单',
                 component: resolve => { require(['@/views/order/appOrder.vue'], resolve); }
+            },
+            {
+                path: 'batchReservationModel',
+                icon: 'compose',
+                name: 'batchReservationModel',
+                title: '批量预定',
+                component: resolve => { require(['@/views/order/batchReservation.vue'], resolve); }
+            },
+            {
+                path: 'refundListModel',
+                icon: 'compose',
+                name: 'refundListModel',
+                title: '退款单',
+                component: resolve => { require(['@/views/order/refundList.vue'], resolve); }
+            },
+            {
+                path: 'checkoutListModel',
+                icon: 'compose',
+                name: 'checkoutListModel',
+                title: '退房单',
+                component: resolve => { require(['@/views/order/checkoutList.vue'], resolve); }
             }
+            
         ]
     }
 ];

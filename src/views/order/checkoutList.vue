@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './appOrder.less';
+    @import './checkoutList.less';
 </style>
 
 <template>
@@ -17,20 +17,20 @@
                 <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人手机"></Input>
             </FormItem>
 
-            <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
+            <FormItem prop="ord_status" label="订单状态" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in payStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="room_name" label="房型名称" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
             <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
              <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
-            </FormItem>
-
-            <FormItem prop="ord_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
@@ -39,11 +39,7 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房型" :label-width="50">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
+            
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
@@ -83,23 +79,13 @@ import {
 } from '../../api/lp-order/api.js'
 
 export default {
-  name: "appOrderModel",
+  name: "checkoutListModel",
 
   components: {
     TableM
   }, 
   data() {
     return {
-        payStatus:[
-                    {
-                        value: '已支付',
-                        label: '已支付'
-                    },
-                    {
-                        value: '未支付',
-                        label: '未支付'
-                    },                  
-                ],
         orderStatus: [
                     {
                         value: '申请退房',
@@ -148,8 +134,15 @@ export default {
         columns: [    // 表头信息
             {
                 title: "订单号",
-                width: 120,
                 key: "ord_id",
+            },
+
+            {
+                title: "退房编号",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.third_code ? row.third_code : `暂无${index}`)
+                }
             },
 
             {
@@ -195,10 +188,10 @@ export default {
             },
 
             {
-                title: "下单日期",
+                title: "预定天数",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_time ? row.ord_time : `暂无${index}`)
+                    }, row.ord_days ? row.ord_days : `暂无${index}`)
                 }
             },
 
@@ -219,10 +212,18 @@ export default {
             },
 
             {
-                title: "支付状态",
+                title: "申请退房日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_payment_status ? row.ord_payment_status : `暂无${index}`)
+                    }, row.refund_time ? row.refund_time : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "剩余入住天数",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.days ? row.days : `暂无${index}`)
                 }
             },
 
@@ -239,6 +240,30 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.ord_status ? row.ord_status : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退房手续费",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退房滞纳金",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.refunds ? row.refunds : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退房金额",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
                 }
             },
 
@@ -266,30 +291,30 @@ export default {
                     //     },
                     //     "编辑"
                     // ),
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "error",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.delClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "删除"
-                    // ),
                     h(
                         "Button",
                         {
                         props: {
                             type: "primary",
-                            size: "medium"
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.delClick(params);
+                            }
+                        }
+                        },
+                        "同意"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
                         },
                         on: {
                             click: () => {

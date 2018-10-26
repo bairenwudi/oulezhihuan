@@ -1,48 +1,47 @@
 <style scope lang="less">
-    @import './appOrder.less';
+    @import './batchReservation.less';
 </style>
 
 <template>
     <div class="formView">
-        <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入订单号"></Input>
-            </FormItem>
+        <Modal title="View Image" v-model="visible">
+            <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+        </Modal>
 
-            <FormItem prop="ord_customer" label="预订人" :label-width="50">
+        <Form ref="formInline" :model="formInline" inline>
+
+            <FormItem prop="reserve_persion_name" label="预订人" :label-width="50">
                 <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
             </FormItem>
 
-            <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
+            <FormItem prop="reserve_persion_phone" label="预订人手机" :label-width="75">
                 <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人手机"></Input>
             </FormItem>
 
-            <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in payStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
-            </FormItem>
-
-            <FormItem prop="ord_status" label="订单状态" :label-width="60">
+             <FormItem prop="order_status" label="订单状态" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
                  <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="org_name" label="机构标题" :label-width="60">
+             <FormItem prop="reserve_destination" label="目的地" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+             <FormItem prop="org_name" label="预定机构" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
                  <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房型" :label-width="50">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
+            <FormItem prop="begin_time" label="入离时间" :label-width="60">              
+             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+            </FormItem>
+
+             <FormItem>
+                <Button type="primary" @click="addClick">新增</Button>
             </FormItem>
 
             <FormItem>
@@ -57,9 +56,58 @@
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-    
+        <!-- 新增提示框 -->
+        <Modal v-model="addModal"
+                title="Common Modal dialog box title"
+                :mask-closable="false"
+                @on-ok="ModalConfirm('formValidate')"
+                @on-cancel="ModalCancel('formValidate')"
+            >
+            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+                <FormItem label="Name" prop="name">
+                    <Input v-model="formValidate.name" placeholder="Enter your name"></Input>
+                </FormItem>
+
+                <FormItem label="City" prop="city">
+                    <Select v-model="formValidate.city" placeholder="Select your city">
+                        <Option value="beijing">New York</Option>
+                        <Option value="shanghai">London</Option>
+                        <Option value="shenzhen">Sydney</Option>
+                    </Select>
+                </FormItem>
+
+                <FormItem label="Date" prop="Date">
+                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+                </FormItem>
+
+                <FormItem label="Gender" prop="gender">
+                    <RadioGroup v-model="formValidate.gender">
+                        <Radio label="male">Male</Radio>
+                        <Radio label="female">Female</Radio>
+                    </RadioGroup>
+                </FormItem>
+
+                <FormItem label="Hobby" prop="interest">
+                    <CheckboxGroup v-model="formValidate.interest">
+                        <Checkbox label="Eat"></Checkbox>
+                        <Checkbox label="Sleep"></Checkbox>
+                        <Checkbox label="Run"></Checkbox>
+                        <Checkbox label="Movie"></Checkbox>
+                    </CheckboxGroup>
+                </FormItem>
+
+                <FormItem label="Desc" prop="desc">
+                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
+                </FormItem>
+            </Form>
+                <div slot="footer" align="center">
+                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
+                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                </div>
+        </Modal>
+
     <!-- 删除提示框 -->
-    <!-- <Modal v-model="delDilaog" width="360">
+    <Modal v-model="delDilaog" width="360">
         <p slot="header" style="color:#f60;text-align:center">
             <Icon type="ios-information-circle"></Icon>
             <span>提示</span>
@@ -70,7 +118,7 @@
         <div slot="footer">
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
         </div>
-    </Modal> -->
+    </Modal>
     
     </div>
 </template>
@@ -83,13 +131,35 @@ import {
 } from '../../api/lp-order/api.js'
 
 export default {
-  name: "appOrderModel",
+  name: "batchReservationModel",
 
   components: {
     TableM
   }, 
   data() {
+    var DateValdate = (rule, value, callback) => {
+            if (value[0] === '') {
+                return callback(new Error('请填写完整'));
+            } else {
+                callback();
+            }
+        };
+
     return {
+        addModal: false,
+
+        visible: false,
+
+        formValidate: {     // 定义新增表单的对象
+                name: '',
+                city: '',
+                gender: '',
+                interest: [],
+                Date: [],
+                time: '',
+                desc: ''
+            },
+        
         payStatus:[
                     {
                         value: '已支付',
@@ -100,6 +170,37 @@ export default {
                         label: '未支付'
                     },                  
                 ],
+                ruleValidate: {     // 定义表单的校验规则
+                name: [
+                    { required: true, message: 'The name cannot be empty', trigger: 'blur' }
+                ],
+
+                city: [
+                    { required: true, message: 'Please select the city', trigger: 'change' }
+                ],
+
+                gender: [
+                    { required: true, message: 'Please select gender', trigger: 'change' }
+                ],
+
+                interest: [
+                    { required: true, type: 'array', min: 1, message: 'Choose at least one hobby', trigger: 'change' },
+                    { type: 'array', max: 2, message: 'Choose two hobbies at best', trigger: 'change' }
+                ],
+
+                Date: [
+                    { validator: DateValdate, trigger: 'change' }
+                ],
+
+                time: [
+                    { required: true, type: 'string', message: 'Please select time', trigger: 'change' }
+                ],
+
+                desc: [
+                    { required: true, message: 'Please enter a personal introduction', trigger: 'blur' },
+                    { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }
+                ]
+            },
         orderStatus: [
                     {
                         value: '申请退房',
@@ -149,14 +250,14 @@ export default {
             {
                 title: "订单号",
                 width: 120,
-                key: "ord_id",
+                key: "reserve_id",
             },
 
             {
                 title: "预订人",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_customer ? row.ord_customer : `暂无${index}`)
+                    }, row.reserve_person_name ? row.reserve_person_name : `暂无${index}`)
                 }
             },
 
@@ -166,12 +267,12 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.ord_phone_number ? row.ord_phone_number : `暂无${index}`)     
+                    row.reserve_persion_phone ? row.reserve_persion_phone : `暂无${index}`)     
                 }
             },
 
             {
-                title: "机构标题",
+                title: "预定机构",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.org_name ? row.org_name : `暂无${index}`)
@@ -179,26 +280,18 @@ export default {
             },
 
             {
-                title: "房间名称",
+                title: "目的地名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
                 }
             },
 
             {
-                title: "房间数量",
+                title: "申请日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "下单日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_time ? row.ord_time : `暂无${index}`)
+                    }, row.apply_date ? row.apply_date : `暂无${index}`)
                 }
             },
 
@@ -206,7 +299,7 @@ export default {
                 title: "入住日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_in_time ? row.check_in_time : `暂无${index}`)
+                    }, row.begin_time ? row.begin_time : `暂无${index}`)
                 }
             },
 
@@ -214,15 +307,7 @@ export default {
                 title: "离开日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_out_time ? row.check_out_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "支付状态",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_payment_status ? row.ord_payment_status : `暂无${index}`)
+                    }, row.end_time ? row.end_time : `暂无${index}`)
                 }
             },
 
@@ -244,52 +329,53 @@ export default {
 
             {
                 title: "操作",
+                width: 200,
                 key: "action",
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "primary",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.editClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "编辑"
-                    // ),
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "error",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.delClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "删除"
-                    // ),
                     h(
                         "Button",
                         {
                         props: {
                             type: "primary",
-                            size: "medium"
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.editClick(params);
+                            }
+                        }
+                        },
+                        "编辑"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.delClick(params);
+                            }
+                        }
+                        },
+                        "删除"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
                         },
                         on: {
                             click: () => {
@@ -343,6 +429,33 @@ export default {
         this.total = 1;
     },
 
+    // 执行新增的事件
+    addClick() {
+            this.addModal = true;
+        },
+
+    // 点击确定按钮
+        ModalConfirm(name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.$Message.success('Success!');
+                        this.Modal = false;
+                        this.loading = false;
+                    }, 1000)
+                } else {
+                    this.$Message.error('Fail!');
+                }
+            })
+        },
+
+        // 点击框取消按钮
+        ModalCancel(name) {
+            this.$Message.info("Clicked ok");
+            this.$refs[name].resetFields();
+        },
+
     // 执行table编辑的事件
     editClick(params) {
         console.log(params);
@@ -363,6 +476,11 @@ export default {
             console.log('我滚了');
         }, 1000)
     },
+
+    // 获取时间
+        getFormatterTime(val) {
+            console.log(val);
+        },
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
