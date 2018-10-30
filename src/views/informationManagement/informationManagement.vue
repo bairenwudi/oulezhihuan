@@ -1,33 +1,14 @@
 <style scope lang="less">
-    @import './table.less';
+    @import './informationManagement.less';
 </style>
 
 <template>
     <div class="formView">
-        <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="cus_account" label="账号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="姓名"></Input>
-            </FormItem>
-
-            <FormItem prop="cus_nick_name" label="昵称" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="电话"></Input>
-            </FormItem>
-
-            <FormItem>
-                <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
-                <Button type="primary" @click.stop="resetTotal">改变</Button>
-            </FormItem>
-
-            <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem>
-        </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
     
     <!-- 删除提示框 -->
-    <Modal v-model="delDilaog" width="360">
+    <!-- <Modal v-model="delDilaog" width="360">
         <p slot="header" style="color:#f60;text-align:center">
             <Icon type="ios-information-circle"></Icon>
             <span>提示</span>
@@ -38,7 +19,7 @@
         <div slot="footer">
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
         </div>
-    </Modal>
+    </Modal> -->
     
     </div>
 </template>
@@ -48,17 +29,55 @@
 import TableM from "../../common/table/table.vue";
 import {
     userManagementList
-} from '../../api/lp-order/api.js'
+} from '../../api/lp-information/api.js'
 
 export default {
-  name: "tableModel",
+  name: "refundListModel",
 
   components: {
     TableM
-  },
-
+  }, 
   data() {
     return {
+        orderStatus: [
+                    {
+                        value: '申请退房',
+                        label: '申请退房'
+                    },
+                    {
+                        value: '退房中',
+                        label: '退房中'
+                    },
+                    {
+                        value: '退房完成',
+                        label: '退房完成'
+                    },                  
+                ],
+        institutionTitle:[
+                    {
+                        value: '退房完成',
+                        label: '退房完成'
+                    },
+                ],
+        roomType: [
+                    {
+                        value: 'New York',
+                        label: 'New York'
+                    },
+                    {
+                        value: 'London',
+                        label: 'London'
+                    },
+                    {
+                        value: 'Sydney',
+                        label: 'Sydney'
+                    },
+                    {
+                        value: 'Ottawa',
+                        label: 'Ottawa'
+                    },                   
+                ],
+                model8:'',
         delDilaog: false,   // 控制删除弹出框
         
         delLoading: false,   // 控制删除按钮loading
@@ -67,85 +86,18 @@ export default {
 
         columns: [    // 表头信息
             {
-                title: "账号",
-                key: "cus_account",
+                title: "短信类型",
+                key: "ord_id",
             },
 
             {
-                title: "昵称",
+                title: "短信内容",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_cus_nick_name ? row.cus_cus_nick_name : `暂无${index}`)
+                    }, row.third_code ? row.third_code : `暂无${index}`)
                 }
             },
 
-            {
-                title: "来源",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.p_system ? row.p_system : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "版本",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.p_version ? row.p_version : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "机型",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.p_type ? row.p_type : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "操作",
-                key: "action",
-                width: 150,
-                align: "center",
-                render: (h, params) => {
-                    return h("div", [
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.editClick(params);
-                            }
-                        }
-                        },
-                        "编辑"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "error",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "删除"
-                    )
-                    ]);
-                }
-            }
         ],
 
         userData: [],   // 内容数据
@@ -174,6 +126,14 @@ export default {
   },
 
   methods: {
+    // 进入详情
+    goToInfo(params) {
+        this.$router.push({
+            path: '/infoModel',
+            data: params 
+        })
+    },
+
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;
@@ -240,10 +200,14 @@ export default {
         let { data } = await userManagementList(params);
         this.total = data[0].count;
         console.log(this.total)
-        data.shift(0);
         this.userData = data;
         this.loading = false;
-        console.log(data);
+        // try {
+            
+        // } catch {
+
+        // };
+        
     }
   },
   mounted() {

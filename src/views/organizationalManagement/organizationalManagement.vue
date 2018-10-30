@@ -1,33 +1,58 @@
 <style scope lang="less">
-    @import './table.less';
+    @import './organizationalManagement.less';
 </style>
 
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="cus_account" label="账号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="姓名"></Input>
+
+            <FormItem prop="org_name" label="机构标题" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
             </FormItem>
 
-            <FormItem prop="cus_nick_name" label="昵称" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="电话"></Input>
+            <FormItem prop="province_name" label="省份" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in provinceTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
             </FormItem>
+
+            <FormItem prop="city_name" label="城市" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in cityTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="org_status" label="状态" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in statusTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="adm_user_type" label="标签" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in typeTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
-                <Button type="primary" @click.stop="resetTotal">改变</Button>
             </FormItem>
 
-            <FormItem>
+            <!-- <FormItem>
                 <i-switch v-model="loading"></i-switch>
                 &nbsp;&nbsp;切换loading
-            </FormItem>
+            </FormItem> -->
+
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
     
     <!-- 删除提示框 -->
-    <Modal v-model="delDilaog" width="360">
+    <!-- <Modal v-model="delDilaog" width="360">
         <p slot="header" style="color:#f60;text-align:center">
             <Icon type="ios-information-circle"></Icon>
             <span>提示</span>
@@ -38,7 +63,7 @@
         <div slot="footer">
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
         </div>
-    </Modal>
+    </Modal> -->
     
     </div>
 </template>
@@ -48,17 +73,55 @@
 import TableM from "../../common/table/table.vue";
 import {
     userManagementList
-} from '../../api/lp-order/api.js'
+} from '../../api/lp-organizational/api.js'
 
 export default {
-  name: "tableModel",
+  name: "organizationalManagementModel",
 
   components: {
     TableM
-  },
-
+  }, 
   data() {
     return {
+        orderStatus: [
+                    {
+                        value: '申请退房',
+                        label: '申请退房'
+                    },
+                    {
+                        value: '退房中',
+                        label: '退房中'
+                    },
+                    {
+                        value: '退房完成',
+                        label: '退房完成'
+                    },                  
+                ],
+        institutionTitle:[
+                    {
+                        value: '退房完成',
+                        label: '退房完成'
+                    },
+                ],
+        roomType: [
+                    {
+                        value: 'New York',
+                        label: 'New York'
+                    },
+                    {
+                        value: 'London',
+                        label: 'London'
+                    },
+                    {
+                        value: 'Sydney',
+                        label: 'Sydney'
+                    },
+                    {
+                        value: 'Ottawa',
+                        label: 'Ottawa'
+                    },                   
+                ],
+                model8:'',
         delDilaog: false,   // 控制删除弹出框
         
         delLoading: false,   // 控制删除按钮loading
@@ -67,46 +130,62 @@ export default {
 
         columns: [    // 表头信息
             {
-                title: "账号",
-                key: "cus_account",
+                title: "机构标题",
+                key: "org_name",
             },
 
             {
-                title: "昵称",
+                title: "省份",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_cus_nick_name ? row.cus_cus_nick_name : `暂无${index}`)
+                    }, row.province_name ? row.province_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "来源",
+                title: "城市",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_system ? row.p_system : `暂无${index}`)
+                    }, row.city_name ? row.city_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "版本",
+                title: "手机号码",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_version ? row.p_version : `暂无${index}`)
+                    }, 
+                    row.adm_phonenum ? row.adm_phonenum : `暂无${index}`)     
                 }
             },
 
             {
-                title: "机型",
+                title: "上线时间",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_type ? row.p_type : `暂无${index}`)
+                    }, row.org_login_time ? row.org_login_time : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "状态",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.org_status ? row.org_status : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "标签",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.adm_user_type ? row.adm_user_type : `暂无${index}`)
                 }
             },
 
             {
                 title: "操作",
                 key: "action",
-                width: 150,
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
@@ -122,7 +201,8 @@ export default {
                         },
                         on: {
                             click: () => {
-                                this.editClick(params);
+                                // this.editClick(params);
+                                this.goToInfo(params);
                             }
                         }
                         },
@@ -132,17 +212,35 @@ export default {
                         "Button",
                         {
                         props: {
-                            type: "error",
+                            type: "primary",
                             size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
                         },
                         on: {
                             click: () => {
-                                this.delClick(params);
+                                this.onlineClick(params);
                             }
                         }
                         },
-                        "删除"
-                    )
+                        "上线"
+                    ),
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.goToInfo(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "详情"
+                    // )
                     ]);
                 }
             }
@@ -174,6 +272,14 @@ export default {
   },
 
   methods: {
+    // 进入编辑详情
+    goToEditInfo(params) {
+        this.$router.push({
+            path: '/infoModel',
+            data: params 
+        })
+    },
+
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;

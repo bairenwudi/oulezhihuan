@@ -1,43 +1,38 @@
 <style scope lang="less">
-    @import './batchReservation.less';
+    @import './systemUserManagement.less';
 </style>
 
 <template>
     <div class="formView">
-        <Modal title="View Image" v-model="visible">
-            <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
-        </Modal>
 
         <Form ref="formInline" :model="formInline" inline>
 
-            <FormItem prop="reserve_persion_name" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
+            <FormItem prop="adm_account" label="用户名" :label-width="50">
+                <Input type="text" v-model="formInline.adm_account" placeholder="请输入用户名"></Input>
             </FormItem>
 
-            <FormItem prop="reserve_persion_phone" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+            <FormItem prop="adm_clerk" label="业务员编号" :label-width="75">
+                <Input type="text" v-model="formInline.adm_clerk" placeholder="请输入业务员编号"></Input>
             </FormItem>
 
-             <FormItem prop="order_status" label="订单状态" :label-width="60">
+             <FormItem prop="adm_phonenum" label="手机号码" :label-width="60">
+                <Input type="text" v-model="formInline.adm_phonenum" placeholder="请输入手机号码"></Input>
+            </FormItem>
+
+            <FormItem label="登录时间" prop="Date" :label-width="60">
+                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
+            </FormItem>
+
+             <FormItem prop="department_name" label="所属机构" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in department_name" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
-             <FormItem prop="reserve_destination" label="目的地" :label-width="60">
+             <FormItem prop="adm_account_status" label="状态" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in destination" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in Status" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
-            </FormItem>
-
-             <FormItem prop="org_name" label="预定机构" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="begin_time" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择" style="width: 300px"></DatePicker>
             </FormItem>
 
              <FormItem>
@@ -58,143 +53,103 @@
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
-                title="新增"
+                title="新增系统用户"
                 :mask-closable="false"
                 @on-ok="ModalConfirm('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="formValidate.cus_nick_name" placeholder="请输入预订人"></Input>
+                <FormItem label="用户名" prop="adm_account">
+                    <Input v-model="formValidate.adm_account" placeholder="请输入用户名"></Input>
                 </FormItem>
 
-                <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
-                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+                <FormItem label="密码" prop="adm_passwd">
+                    <Input v-model="formValidate.adm_passwd" placeholder="请输入密码"></Input>
                 </FormItem>
 
-                <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入预订机构"></Input>
+                <FormItem label="姓名" prop="adm_real_name">
+                    <Input v-model="formValidate.adm_real_name" placeholder="请输入预订机构"></Input>
                 </FormItem>
 
-                <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入机构手机"></Input>
+                <FormItem label="手机号码" prop="adm_phonenum">
+                    <Input v-model="formValidate.adm_phonenum" placeholder="请输入机构手机"></Input>
                 </FormItem>
 
-                <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="formValidate.reserve_destination" placeholder="请选择">
+                <FormItem label="验证码" prop="code">
+                    <Input v-model="formValidate.code" placeholder="请输入验证码"></Input>
+                </FormItem>
+
+                <FormItem label="角色" prop="adm_role_ids">
+                    <Button icon="ios-search" v-model="formValidate.adm_role_ids" class="role" @click="roleConfirm('formValidate')" :loading="loading">请选择角色</Button>
+                </FormItem>
+
+                <FormItem label="标签" prop="adm_user_type">
+                    <Select v-model="formValidate.adm_user_type" placeholder="请选择">
                         <Option value="beijing">New York</Option>
                         <Option value="shanghai">London</Option>
                         <Option value="shenzhen">Sydney</Option>
                     </Select>
                 </FormItem>
 
-                <FormItem label="入离时间" prop="Date">
-                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+                <FormItem label="支付宝账号" prop="adm_alipay" :labei-width="80">
+                    <Input v-model="formValidate.adm_alipay" placeholder="请输入支付宝账号"></Input>
                 </FormItem>
 
-                <!-- <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem> -->
-
-                
-
-                <FormItem label="入住天数" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
-                        <Checkbox label="大床"></Checkbox>
-                        <Checkbox label="标准间"></Checkbox>
-                        <Checkbox label="单人间"></Checkbox>
-                    </CheckboxGroup>
-                </FormItem>
-
-                <FormItem label="订单金额" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="备注" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
-                </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">保存</Button>
+                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
 
      <!--  编辑提示框 -->
         <Modal v-model="editModal"
-                title="编辑"
+                title="编辑系统用户"
                 :mask-closable="false"
                 @on-ok="ModalConfirm('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="formValidate.cus_nick_name"　size:default placeholder="请输入预订人"></Input>
+              <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+                <FormItem label="用户名" prop="adm_account">
+                    <Input v-model="formValidate.adm_account" placeholder="请输入用户名"></Input>
                 </FormItem>
 
-                <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
-                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+                <FormItem label="密码" prop="adm_passwd">
+                    <Input v-model="formValidate.adm_passwd" placeholder="请输入密码"></Input>
                 </FormItem>
 
-                <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入预订机构"></Input>
+                <FormItem label="姓名" prop="adm_real_name">
+                    <Input v-model="formValidate.adm_real_name" placeholder="请输入预订机构"></Input>
                 </FormItem>
 
-                <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入机构手机"></Input>
+                <FormItem label="手机号码" prop="adm_phonenum">
+                    <Input v-model="formValidate.adm_phonenum" placeholder="请输入机构手机"></Input>
                 </FormItem>
 
-                <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="formValidate.reserve_destination" placeholder="请选择">
+                <FormItem label="验证码" prop="code">
+                    <Input v-model="formValidate.code" placeholder="请输入验证码"></Input>
+                </FormItem>
+
+                <FormItem label="角色" prop="adm_role_ids">
+                    <Input v-model="formValidate.adm_role_ids" placeholder="请输入角色"></Input>
+                </FormItem>
+
+                <FormItem label="标签" prop="adm_user_type">
+                    <Select v-model="formValidate.adm_user_type" placeholder="请选择">
                         <Option value="beijing">New York</Option>
                         <Option value="shanghai">London</Option>
                         <Option value="shenzhen">Sydney</Option>
                     </Select>
                 </FormItem>
 
-                <FormItem label="入离时间" prop="Date">
-                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
+                <FormItem label="支付宝账号" prop="adm_alipay" :labei-width="100">
+                    <Input v-model="formValidate.adm_alipay" placeholder="请输入支付宝账号"></Input>
                 </FormItem>
 
-                <!-- <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem> -->
-
-                
-
-                <FormItem label="入住天数" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
-                        <Checkbox label="大床"></Checkbox>
-                        <Checkbox label="标准间"></Checkbox>
-                        <Checkbox label="单人间"></Checkbox>
-                    </CheckboxGroup>
-                </FormItem>
-
-                <FormItem label="订单金额" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="备注" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
-                </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">保存</Button>
+                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
 
@@ -254,7 +209,7 @@ export default {
                 desc: '',
                 cus_nick_name:'',
                 reserve_persion_phone:'',
-                org_name:'',
+                department_name:'',
                 reserve_destination:'', 
                 getFormatterTime:'',
             },
@@ -305,7 +260,7 @@ export default {
                     { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }
                 ]
             },
-        orderStatus: [
+        org_name: [
                     {
                         value: '申请退房',
                         label: '申请退房'
@@ -319,35 +274,11 @@ export default {
                         label: '退房完成'
                     },                  
                 ],
-        destination:[
+        Status:[
                     {
                         value: '北京',
                         label: '北京'
                     }
-                ],
-        institutionTitle:[
-                    {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },
-                ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
-                    },
-                    {
-                        value: 'London',
-                        label: 'London'
-                    },
-                    {
-                        value: 'Sydney',
-                        label: 'Sydney'
-                    },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
                 ],
                 model8:'',
         delDilaog: false,   // 控制删除弹出框
@@ -358,82 +289,88 @@ export default {
 
         columns: [    // 表头信息
             {
-                title: "订单号",
-                width: 120,
+                title: "序号",
                 key: "reserve_id",
             },
 
             {
-                title: "预订人",
+                title: "用户名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_person_name ? row.reserve_person_name : `暂无${index}`)
+                    }, row.adm_account ? row.adm_account : `暂无${index}`)
                 }
             },
 
             {
-                title: "预订人手机",
-                width: 100,
+                title: "手机号码",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.reserve_persion_phone ? row.reserve_persion_phone : `暂无${index}`)     
+                    row.adm_phonenum ? row.adm_phonenum : `暂无${index}`)     
                 }
             },
 
             {
-                title: "预定机构",
+                title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.org_name ? row.org_name : `暂无${index}`)
+                    }, row.adm_real_name ? row.adm_real_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "目的地名称",
+                title: "角色",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.adm_role_name ? row.adm_role_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "申请日期",
+                title: "所属机构",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.apply_date ? row.apply_date : `暂无${index}`)
+                    }, row.department_name ? row.department_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "入住日期",
+                title: "业务员编号",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.begin_time ? row.begin_time : `暂无${index}`)
+                    }, row.adm_clerk ? row.adm_clerk : `暂无${index}`)
                 }
             },
 
             {
-                title: "离开日期",
+                title: "支付宝",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.end_time ? row.end_time : `暂无${index}`)
+                    }, row.adm_alipay ? row.adm_alipay : `暂无${index}`)
                 }
             },
 
             {
-                title: "订单金额",
+                title: "最近登录时间",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
+                    }, row.adm_last_login ? row.adm_last_login : `暂无${index}`)
                 }
             },
 
             {
-                title: "订单状态",
+                title: "标签",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                    }, row.adm_user_type ? row.adm_user_type : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "状态",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.adm_account_status ? row.adm_account_status : `暂无${index}`)
                 }
             },
 
@@ -462,39 +399,39 @@ export default {
                         },
                         "编辑"
                     ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "删除"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.goToInfo(params);
-                            }
-                        }
-                        },
-                        "详情"
-                    )
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     style: {
+                    //         marginRight: "5px"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.delClick(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "删除"
+                    // ),
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.goToInfo(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "详情"
+                    // )
                     ]);
                 }
             }
@@ -562,8 +499,9 @@ export default {
 
         // 点击框取消按钮
         ModalCancel(name) {
-            this.$Message.info("Clicked ok");
-            this.$refs[name].resetFields();
+            // this.$Message.info("Clicked ok");
+            // this.$refs[name].resetFields();
+            this.addModal = false;
         },
 
     // 执行table编辑的事件

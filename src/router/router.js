@@ -107,7 +107,30 @@ export const appRouter = [
             }
         ]
     },
-    
+   
+    {
+        path: '/organizationalManagement',
+        icon: 'social-buffer',
+        name: 'organizationalManagement',
+        title: '机构管理',
+        component: Main,
+        children: [
+            {
+                path: 'organizationalManagementModel',
+                icon: 'compose',
+                name: 'organizationalManagementModel',
+                title: '机构管理',
+                component: resolve => { require(['@/views/organizationalManagement/organizationalManagement.vue'], resolve); }
+            },
+            {
+                path: 'baseInformationModel',
+                icon: 'compose',
+                name: 'baseInformationModel',
+                title: '机构设置',
+                component: resolve => { require(['@/views/organizationalManagement/baseInformation.vue'], resolve); }
+            }
+        ]
+    },
     {
         path: '/order',
         icon: 'social-buffer',
@@ -144,6 +167,45 @@ export const appRouter = [
                 component: resolve => { require(['@/views/order/checkoutList.vue'], resolve); }
             }
             
+        ]
+    },
+    {
+        path: '/informationManagement',
+        icon: 'social-buffer',
+        name: 'informationManagement',
+        title: '信息管理',
+        component: Main,
+        children: [
+            {
+                path: 'informationManagementModel',
+                icon: 'compose',
+                name: 'informationManagementModel',
+                title: '信息管理',
+                component: resolve => { require(['@/views/informationManagement/informationManagement.vue'], resolve); }
+            }
+        ]
+    },
+    {
+        path: '/authorityManagement',
+        icon: 'social-buffer',
+        name: 'authorityManagement',
+        title: '权限管理',
+        component: Main,
+        children: [
+            {
+                path: 'authorityManagementModel',
+                icon: 'compose',
+                name: 'authorityManagementModel',
+                title: '权限管理',
+                component: resolve => { require(['@/views/authorityManagement/authorityManagement.vue'], resolve); }
+            },
+            {
+                path: 'systemUserManagementModel',
+                icon: 'compose',
+                name: 'systemUserManagementModel',
+                title: '系统用户管理',
+                component: resolve => { require(['@/views/authorityManagement/systemUserManagement.vue'], resolve); }
+            }
         ]
     }
 ];
