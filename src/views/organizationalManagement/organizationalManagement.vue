@@ -72,7 +72,7 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    userManagementList
+    organizationalManagementList
 } from '../../api/lp-organizational/api.js'
 
 export default {
@@ -83,7 +83,28 @@ export default {
   }, 
   data() {
     return {
-        orderStatus: [
+       
+            institutionTitle:[
+                        {
+                            value: '海南',
+                            label: '海南'
+                        },
+                    ],
+    
+            provinceTitle:[
+                        {
+                            value: '北京',
+                            label: '北京'
+                        },
+                    ],
+            cityTitle:[
+                        {
+                            value: '北京',
+                            label: '北京'
+                        },
+                    ],
+            
+            statusTitle: [
                     {
                         value: '申请退房',
                         label: '申请退房'
@@ -97,29 +118,20 @@ export default {
                         label: '退房完成'
                     },                  
                 ],
-        institutionTitle:[
+            typeTitle: [
                     {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },
-                ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
+                        value: '1',
+                        label: '基地'
                     },
                     {
-                        value: 'London',
-                        label: 'London'
+                        value: '2',
+                        label: '个人'
                     },
                     {
-                        value: 'Sydney',
-                        label: 'Sydney'
+                        value: '3',
+                        label: '旅行社'
                     },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
+                                    
                 ],
                 model8:'',
         delDilaog: false,   // 控制删除弹出框
@@ -252,7 +264,12 @@ export default {
 
         formInline: {   // 定义表单对象
             cus_account: '',
-            cus_nick_name: ''
+            cus_nick_name: '',
+            org_status:'',
+            adm_user_type:'',
+            adm_city_code:'',
+            adm_province_code:'',
+            org_name:''
         },
 
         ruleInline: {   // 定义规则对象
@@ -343,7 +360,7 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await userManagementList(params);
+        let { data } = await organizationalManagementList(params);
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);

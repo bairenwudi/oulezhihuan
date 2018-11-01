@@ -4,88 +4,108 @@
 
 <template>
       <Tabs type="card">
+          <!-- 基地信息 -->
         <TabPane label="基地信息">
-             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                
-                <FormItem label="机构标题" prop="org_name">
-                  <Col span="12">  
-                    <Select v-model="formValidate.org_name" placeholder="请选择" style="width:150px">
-                        <Option value="乐满地">乐满地</Option>
-                        <Option value="黄山">黄山</Option>
-                        <Option value="山东">山东</Option>
-                    </Select>
-                  </Col>
-                </FormItem>
+             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80" >
+                <Row>
+                    <Col span="6">
+                        <FormItem label="机构标题" prop="org_name" inline>
+                         
+                            <Select v-model="formValidate.org_name" placeholder="请选择" style="width:150px">
+                                <Option value="乐满地">乐满地</Option>
+                                <Option value="黄山">黄山</Option>
+                                <Option value="山东">山东</Option>
+                            </Select>
+                        
+                        </FormItem>
+                    </Col>
+                    <Col span="6">
+                        <FormItem label="省份" prop="province_name">
+                        
+                            <Select v-model="formValidate.province_name" placeholder="请选择" style="width:150px">
+                                <Option value="乐满地">乐满地</Option>
+                                <Option value="黄山">黄山</Option>
+                                <Option value="山东">山东</Option>
+                            </Select>
+                        
+                        </FormItem>
+                    </Col>
+                    <Col span="6">
+                        <FormItem label="城市" prop="city_name">
+                            <Select v-model="formValidate.city_name" placeholder="请选择" style="width:150px">
+                                <Option value="乐满地">乐满地</Option>
+                                <Option value="黄山">黄山</Option>
+                                <Option value="山东">山东</Option>
+                            </Select>
+                        </FormItem>
+                    </Col>  
+                    <Col span="4">  
+                        <FormItem label="标签" prop="adm_user_type">
+                            <Input v-model="formValidate.adm_user_type" placeholder="" disabled style="width:150px"></Input>
+                        </FormItem>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12"> 
+                        <FormItem label="机构地址" prop="org_addr">
+                            <Input v-model="formValidate.org_addr" placeholder="请输入机构地址" style="width:240px"></Input>
+                        </FormItem>
+                    </Col>
+                    <Col span="10">
+                        <FormItem label="手机号码" prop="adm_phonenum">
+                            <Input v-model="formValidate.adm_phonenum" placeholder="" disabled style="width:150px"></Input>
+                        </FormItem>
+                    </Col>
+                </Row>        
+                        <FormItem label="机构介绍" prop="org_introduction">
+                            <Card shadow>
+                                <textarea class='tinymce-textarea' id="tinymceEditer"></textarea>
+                            </Card>
+                            <Spin fix v-if="spinShow">
+                                <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
+                                <div>加载组件中...</div>
+                            </Spin>                
+                        </FormItem>
 
-                <FormItem label="省份" prop="province_name">
-                  <col span="12">
-                    <Select v-model="formValidate.province_name" placeholder="请选择" style="width:150px">
-                        <Option value="乐满地">乐满地</Option>
-                        <Option value="黄山">黄山</Option>
-                        <Option value="山东">山东</Option>
-                    </Select>
-                    </col>
-                </FormItem>
+                        <FormItem label="机构设施" prop="org_facilities">
+                            <div class="institutionalFacilities">
+                                <img src="" width="50" height="50">
+                                <img src="" width="50" height="50">
+                                <img src="" width="50" height="50">
+                                <img src="" width="50" height="50">
+                            </div>
+                        </FormItem>
 
-                <FormItem label="城市" prop="city_name">
-                    <Select v-model="formValidate.city_name" placeholder="请选择" style="width:150px">
-                        <Option value="乐满地">乐满地</Option>
-                        <Option value="黄山">黄山</Option>
-                        <Option value="山东">山东</Option>
-                    </Select>
-                </FormItem>
-                   
-                <FormItem label="标签" prop="adm_user_type">
-                    <Input v-model="formValidate.adm_user_type" placeholder="" disabled style="width:150px"></Input>
-                </FormItem>
+                        <FormItem label="其他设施" prop="org_other_facilities">
+                            <Input v-model="formValidate.org_other_facilities" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入其他设施"></Input>
+                        </FormItem>
 
-                <FormItem label="机构地址" prop="org_addr">
-                    <Input v-model="formValidate.org_addr" placeholder="请输入机构地址" style="width:240px"></Input>
-                </FormItem>
+                        <FormItem label="机构特色" prop="room_type_sort">
+                            <Card shadow>
+                                <textarea class='tinymce-textarea' id="tinymceEditer"></textarea>
+                            </Card>
+                            <Spin fix v-if="spinShow">
+                                <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
+                                <div>加载组件中...</div>
+                            </Spin>                
+                        </FormItem>
+                        
+                        <FormItem label="机构封面" prop="org_cover">
+                            
+                        </FormItem>
 
-                <FormItem label="手机号码" prop="adm_phonenum">
-                    <Input v-model="formValidate.adm_phonenum" placeholder="" disabled style="width:150px"></Input>
-                </FormItem>
-                
-                <FormItem label="Date">
-                    <Row>
-                        <Col span="11">
-                            <FormItem prop="date">
-                                <DatePicker type="date" placeholder="Select date" v-model="formValidate.date"></DatePicker>
-                            </FormItem>
-                        </Col>
-                        <Col span="2" style="text-align: center">-</Col>
-                        <Col span="11">
-                            <FormItem prop="time">
-                                <TimePicker type="time" placeholder="Select time" v-model="formValidate.time"></TimePicker>
-                            </FormItem>
-                        </Col>
-                    </Row>
-                </FormItem>
-                <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem>
-                <FormItem label="Hobby" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
-                        <Checkbox label="Eat"></Checkbox>
-                        <Checkbox label="Sleep"></Checkbox>
-                        <Checkbox label="Run"></Checkbox>
-                        <Checkbox label="Movie"></Checkbox>
-                    </CheckboxGroup>
-                </FormItem>
-                <FormItem label="Desc" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
-                </FormItem>
-                <FormItem>
-                    <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
-                    <Button @click="handleReset('formValidate')" style="margin-left: 8px">取消</Button>
-                </FormItem>
+                        <FormItem label="机构图片" prop="org_pic_name">
+                        
+                        </FormItem>
+
+                        <FormItem>
+                            <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
+                            <Button @click="handleReset('formValidate')" style="margin-left: 8px">取消</Button>
+                        </FormItem>
              </Form>
          
         </TabPane>
+        <!-- 房间管理 -->
         <TabPane label="房间类型">
           <div class="formView">
 
@@ -102,7 +122,7 @@
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-     <!-- 新增提示框 -->
+     <!-- 房间管理新增提示框 -->
         <Modal v-model="addModal"
                 title="添加房型"
                 :mask-closable="false"
@@ -133,7 +153,7 @@
                 </div>
         </Modal>
 
-    <!--  编辑提示框 -->
+    <!--  房间管理编辑提示框 -->
         <Modal v-model="editModal"
                 title="编辑房型"
                 :mask-closable="false"
@@ -156,6 +176,8 @@
                 <FormItem label="排序" prop="room_type_sort">
                     <Input v-model="formValidate.room_type_sort" placeholder="请输入排序"></Input>
                 </FormItem>
+
+                
 
             </Form>
                 <div slot="footer" align="center">
@@ -182,7 +204,9 @@
         </TabPane>
         <TabPane label="区域管理">标签三的内容</TabPane>
         <TabPane label="价格设置">标签二的内容</TabPane>
-        <TabPane label="默认价格">标签三的内容</TabPane>
+        <TabPane label="默认价格">
+            <TableM :columns="columns1" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        </TabPane>
       </Tabs>
  
   
@@ -198,7 +222,10 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    roomtypeList
+    roomtypeList, //机构设置-房间类型列表
+    roomtypeAdd, //机构设置-房间类型添加
+    roomtypeEdit, //机构设置-房间类型编辑
+    roomtypeDel, //机构设置-房间类型删除
 } from '../../api/lp-organizational/api.js'
 
 export default {
@@ -209,6 +236,8 @@ export default {
   }, 
   data() {
     return {
+        spinShow: true,
+
         addModal: false,
 
         editModal:false,
@@ -294,7 +323,7 @@ export default {
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 房间类型表头信息
             {
                 title: "房型分类",
                 render: (h, {row, index}) => {
@@ -367,6 +396,61 @@ export default {
             }
         ],
 
+        columns1: [    // 默认价格表头信息
+            {
+                title: "房型名称",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                }
+            },
+  
+            {
+                title: "B端价格（元/天）",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.room_name ? row.room_name : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "B端价格（元/天）",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "操作",
+                key: "action",
+                align: "center",
+                render: (h, params) => {
+                    return h("div", [
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.editClick(params);
+                                // this.goToInfo(params);
+                            }
+                        }
+                        },
+                        "编辑"
+                    ),
+                    ]);
+                }
+            }
+        ],
+
         userData: [],   // 内容数据
 
         total: 0,   // 总页数
@@ -393,6 +477,45 @@ export default {
   },
 
   methods: {
+    
+    init () {
+            this.$nextTick(() => {
+                let vm = this;
+                let height = document.body.offsetHeight - 300;
+                tinymce.init({
+                    selector: '#tinymceEditer',
+                    branding: false,
+                    elementpath: false,
+                    height: height,
+                    language: 'zh_CN.GB2312',
+                    menubar: 'edit insert view format table tools',
+                    plugins: [
+                        'advlist autolink lists link image charmap print preview hr anchor pagebreak imagetools',
+                        'searchreplace visualblocks visualchars code fullpage',
+                        'insertdatetime media nonbreaking save table contextmenu directionality',
+                        'emoticons paste textcolor colorpicker textpattern imagetools codesample'
+                    ],
+                    toolbar1: ' newnote print preview | undo redo | insert | styleselect | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image emoticons media codesample',
+                    autosave_interval: '20s',
+                    image_advtab: true,
+                    table_default_styles: {
+                        width: '100%',
+                        borderCollapse: 'collapse'
+                    },
+                    setup: function (editor) {
+                        editor.on('init', function (e) {
+                            vm.spinShow = false;
+                            if (localStorage.editorContent) {
+                                tinymce.get('tinymceEditer').setContent(localStorage.editorContent);
+                            }
+                        });
+                        editor.on('keydown', function (e) {
+                            localStorage.editorContent = tinymce.get('tinymceEditer').getContent();
+                        });
+                    }
+                });
+            });
+        },
 
     handleSubmit (name) {
                 this.$refs[name].validate((valid) => {
@@ -506,18 +629,27 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await roomtypeList(params);
-        this.total = data[0].count;
-        console.log(this.total)
-        data.shift(0);
-        this.userData = data;
-        this.loading = false;
-        console.log(data);
+        try {
+            let { data } = await roomtypeList(params);
+            this.total = data[0].count;
+            console.log(this.total)
+            data.shift(0);
+            this.userData = data;
+            this.loading = false;
+        } catch(err) {
+            console.log(err);
+            this.loading = false;
+        }
+        
     }
   },
   mounted() {
     this.getUser();
-  }
+    this.init();
+  },
+  destroyed () {
+        tinymce.get('tinymceEditer').destroy();
+    }
 };
 </script>
 

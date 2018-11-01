@@ -79,7 +79,8 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    userManagementList
+    appOrderList, //App订单列表
+    apOrderSearch, //App订单模糊查询
 } from '../../api/lp-order/api.js'
 
 export default {
@@ -401,7 +402,8 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await userManagementList(params);
+        let { data } = await appOrderList(params);
+        console.log(data)
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);

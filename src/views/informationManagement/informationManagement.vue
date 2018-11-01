@@ -7,20 +7,6 @@
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
     
-    <!-- 删除提示框 -->
-    <!-- <Modal v-model="delDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>您确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
-        </div>
-    </Modal> -->
-    
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './batchReservation.less';
+    @import './batchReservationOrder.less';
 </style>
 
 <template>
@@ -219,11 +219,12 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    userManagementList
+    batchReservationOrderList, //批量预定订单列表
+    batchReservationOrderSearch //批量预定订单模糊查询
 } from '../../api/lp-order/api.js'
 
 export default {
-  name: "batchReservationModel",
+  name: "batchReservationOrderModel",
 
   components: {
     TableM
@@ -617,7 +618,8 @@ export default {
         };
         this.getUser(filter);
     },
-
+     
+    //批量预定订单列表 
     // 为了解决异步问题
     async getUser(filter) {
         let params = {
@@ -630,7 +632,8 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await userManagementList(params);
+        let { data } = await batchReservationOrderList(params);
+        console.log(data)
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);

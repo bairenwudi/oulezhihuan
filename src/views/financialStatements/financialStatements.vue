@@ -1,37 +1,10 @@
 <style scope lang="less">
-    @import './checkoutList.less';
+    @import './financialStatements.less';
 </style>
 
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入订单号"></Input>
-            </FormItem>
-
-            <FormItem prop="ord_customer" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
-            </FormItem>
-
-            <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人手机"></Input>
-            </FormItem>
-
-            <FormItem prop="ord_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="room_name" label="房型名称" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
-            </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
@@ -39,7 +12,9 @@
                </Select>
             </FormItem>
 
-            
+            <FormItem prop="check_in_time" label="入离时间" :label-width="60">              
+             <DatePicker type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
+            </FormItem>
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
@@ -53,21 +28,7 @@
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-    
-    <!-- 删除提示框 -->
-    <!-- <Modal v-model="delDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>您确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
-        </div>
-    </Modal> -->
-    
+
     </div>
 </template>
 
@@ -75,88 +36,36 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    checkoutList, //退房单列表
-    checkoutListSearch //退房单模糊查询
-} from '../../api/lp-order/api.js'
+    financialStatementsList, //财务报表列表
+    financialStatementsSearch, //财务报表模糊查询
+} from '../../api/lp-financialStatements/api.js'
 
 export default {
-  name: "checkoutListModel",
+  name: "financialStatementsModel",
 
   components: {
     TableM
   }, 
   data() {
     return {
-        orderStatus: [
-                    {
-                        value: '申请退房',
-                        label: '申请退房'
-                    },
-                    {
-                        value: '退房中',
-                        label: '退房中'
-                    },
-                    {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },                  
-                ],
         institutionTitle:[
                     {
                         value: '退房完成',
                         label: '退房完成'
                     },
                 ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
-                    },
-                    {
-                        value: 'London',
-                        label: 'London'
-                    },
-                    {
-                        value: 'Sydney',
-                        label: 'Sydney'
-                    },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
-                ],
                 model8:'',
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 财务报表表头信息
             {
                 title: "订单号",
                 key: "ord_id",
             },
 
             {
-                title: "退房编号",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.third_code ? row.third_code : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "预订人",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_customer ? row.ord_customer : `暂无${index}`)
-                }
-            },
-
-            {
                 title: "预订人手机",
-                width: 100,
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
@@ -189,14 +98,6 @@ export default {
             },
 
             {
-                title: "预定天数",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_days ? row.ord_days : `暂无${index}`)
-                }
-            },
-
-            {
                 title: "入住日期",
                 render: (h, {row, index}) => {
                     return h('span', {
@@ -209,22 +110,6 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.check_out_time ? row.check_out_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "申请退房日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refund_time ? row.refund_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "剩余入住天数",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.days ? row.days : `暂无${index}`)
                 }
             },
 
@@ -245,26 +130,18 @@ export default {
             },
 
             {
-                title: "退房手续费",
+                title: "扣点",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                    }, row.point_deduction ? row.point_deduction : `暂无${index}`)
                 }
             },
 
             {
-                title: "退房滞纳金",
+                title: "机构结算",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refunds ? row.refunds : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "退房金额",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
+                    }, row.org_balance ? row.org_balance : `暂无${index}`)
                 }
             },
 
@@ -274,42 +151,6 @@ export default {
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "primary",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.editClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "编辑"
-                    // ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "同意"
-                    ),
                     h(
                         "Button",
                         {
@@ -335,8 +176,7 @@ export default {
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+            org_name: '', //机构标题
         },
 
         ruleInline: {   // 定义规则对象
@@ -427,7 +267,8 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await checkoutList(params);
+        let { data } = await financialStatementsList(params);
+        console.log(data)
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);
