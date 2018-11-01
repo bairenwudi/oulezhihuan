@@ -10,11 +10,11 @@
             </FormItem>
 
             <FormItem prop="ord_customer" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
+                <Input type="text" v-model="formInline.ord_customer" placeholder="请输入预订人"></Input>
             </FormItem>
 
             <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人手机"></Input>
+                <Input type="text" v-model="formInline.ord_phone_number" placeholder="请输入预订人手机"></Input>
             </FormItem>
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
@@ -53,20 +53,6 @@
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-    
-    <!-- 删除提示框 -->
-    <!-- <Modal v-model="delDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>您确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
-        </div>
-    </Modal> -->
     
     </div>
 </template>
@@ -266,24 +252,6 @@ export default {
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "primary",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.editClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "编辑"
-                    // ),
                     h(
                         "Button",
                         {
@@ -327,8 +295,12 @@ export default {
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+            ord_id: '', 
+            ord_customer: '',
+            ord_phone_number: '', 
+            ord_status: '', 
+            org_name: '', 
+            room_name: ''
         },
 
         ruleInline: {   // 定义规则对象

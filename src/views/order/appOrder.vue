@@ -6,15 +6,15 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
             <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入订单号"></Input>
+                <Input type="text" v-model="formInline.ord_id" placeholder="请输入订单号"></Input>
             </FormItem>
 
             <FormItem prop="ord_customer" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
+                <Input type="text" v-model="formInline.ord_customer" placeholder="请输入预订人"></Input>
             </FormItem>
 
             <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人手机"></Input>
+                <Input type="text" v-model="formInline.ord_phone_number" placeholder="请输入预订人手机"></Input>
             </FormItem>
 
             <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
@@ -24,7 +24,7 @@
             </FormItem>
 
             <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+             <DatePicker type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
@@ -58,20 +58,6 @@
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
     
-    <!-- 删除提示框 -->
-    <!-- <Modal v-model="delDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>您确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
-        </div>
-    </Modal> -->
-    
     </div>
 </template>
 
@@ -80,7 +66,7 @@
 import TableM from "../../common/table/table.vue";
 import {
     appOrderList, //App订单列表
-    apOrderSearch, //App订单模糊查询
+    appOrderSearch, //App订单模糊查询
 } from '../../api/lp-order/api.js'
 
 export default {
@@ -140,13 +126,10 @@ export default {
                     },                   
                 ],
                 model8:'',
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // App订单表头信息
             {
                 title: "订单号",
                 width: 120,
@@ -249,42 +232,6 @@ export default {
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "primary",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.editClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "编辑"
-                    // ),
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "error",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.delClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "删除"
-                    // ),
                     h(
                         "Button",
                         {
@@ -310,8 +257,13 @@ export default {
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+            ord_id: '', 
+            ord_customer: '',
+            ord_phone_number: '', 
+            ord_payment_status: '', 
+            ord_status: '', 
+            org_name: '', 
+            room_name: ''
         },
 
         ruleInline: {   // 定义规则对象
@@ -342,27 +294,6 @@ export default {
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;
-    },
-
-    // 执行table编辑的事件
-    editClick(params) {
-        console.log(params);
-    },
-
-    // 执行删除的事件
-    delClick(params) {
-        console.log(params);
-        this.delDilaog = true;
-    },
-
-    // 删除确定按钮
-    delConfrmClick() {
-        this.delLoading = true;
-        setTimeout(() => {
-            this.delDilaog = false;
-            this.$Message.success('成功');
-            console.log('我滚了');
-        }, 1000)
     },
 
     // 改变分页触发的事件

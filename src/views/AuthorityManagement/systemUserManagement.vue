@@ -174,11 +174,15 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    userManagementList
-} from '../../api/lp-order/api.js'
+    systemUserManagementList, //系统用户列表
+    systemUserManagementSearch, //系统用户模糊查询
+    systemUserManagementAdd, //系统用户添加
+    systemUserManagementAddRole,//系统用户添加-角色
+    systemUserManagementRoleList,//系统用户添加-角色列表
+} from '../../api/lp-AuthorityManagement/api.js'
 
 export default {
-  name: "batchReservationModel",
+  name: "systemUserManagementModel",
 
   components: {
     TableM
@@ -287,7 +291,7 @@ export default {
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 系统用户管理表头信息
             {
                 title: "序号",
                 key: "reserve_id",
@@ -568,7 +572,7 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await userManagementList(params);
+        let { data } = await systemUserManagementList(params);
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);

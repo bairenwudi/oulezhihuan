@@ -18,7 +18,7 @@ const appOrderList = params => {
 };
 
 //App订单模糊查询
-const apOrderSearch = params => {
+const appOrderSearch = params => {
     return axios.post(`${baseUrl.base3}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
 };
 
@@ -54,7 +54,7 @@ const checkoutListSearch = params => {
 
 export {
     appOrderList, //App订单列表
-    apOrderSearch, //App订单模糊查询
+    appOrderSearch, //App订单模糊查询
     batchReservationOrderList, //批量预定订单列表
     batchReservationOrderSearch, //批量预定订单模糊查询
     refundList, //退款单列表

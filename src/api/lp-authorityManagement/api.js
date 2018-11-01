@@ -12,25 +12,32 @@ const baseObj = {
     base6: baseUrl.base6
 };
 
-// 房间类型查询
-const roomtypeList = params => {
-    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?startPos=${params.startPos}&pageSize=10`, params);
+//系统用户列表
+const systemUserManagementList = params => {
+    return axios.post(`${baseUrl.base2}/Admin_userController/userList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
-// 用户管理查询
-const userManagementSearch = params => {
-    return axios.post(`${baseUrl.base2}/CustomerController/selectCustomer?startPos=${params.startPos}&pageSize=10`, params);
+//系统用户模糊查询
+const systemUserManagementSearch = params => {
+    return axios.post(`${baseUrl.base2}/Admin_userController/userList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
+//系统用户添加
+const systemUserManagementAdd = params => {
+    return axios.post(`${baseUrl.base2}/Admin_userController/save`, params);
+}
 
-//分组新增接口
-const groupAdd = params => {
-    return axios.post(`${baseUrl.base2}/Live_anchorgroupController/save`, params);
+//系统用户添加-添加角色
+const systemUserManagementAddRole = params => {
+    return axios.post(`${baseUrl.base2}/User_mapping_roleController/save`, params);
 }
 
 
 export {
-    roomtypeList  //房间类型查询
+    systemUserManagementList, //系统用户列表
+    systemUserManagementSearch, //系统用户模糊查询
+    systemUserManagementAdd, //系统用户添加
+    systemUserManagementAddRole,//系统用户添加-角色
 };
 
 // 组件中获取base地址
