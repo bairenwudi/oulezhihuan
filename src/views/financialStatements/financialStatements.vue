@@ -1,45 +1,34 @@
 <style scope lang="less">
-    @import './table.less';
+    @import './financialStatements.less';
 </style>
 
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="cus_account" label="账号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="姓名"></Input>
+
+            <FormItem prop="org_name" label="机构标题" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
             </FormItem>
 
-            <FormItem prop="cus_nick_name" label="昵称" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="电话"></Input>
+            <FormItem prop="check_in_time" label="入离时间" :label-width="60">              
+             <DatePicker type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
-                <Button type="primary" @click.stop="resetTotal">改变</Button>
             </FormItem>
 
-            <FormItem>
+            <!-- <FormItem>
                 <i-switch v-model="loading"></i-switch>
                 &nbsp;&nbsp;切换loading
-            </FormItem>
+            </FormItem> -->
+
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-    
-    <!-- 删除提示框 -->
-    <Modal v-model="delDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>您确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
-        </div>
-    </Modal>
-    
+
     </div>
 </template>
 
@@ -47,66 +36,118 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    userManagementList
-} from '../../api/lp-order/api.js'
+    financialStatementsList, //财务报表列表
+    financialStatementsSearch, //财务报表模糊查询
+} from '../../api/lp-financialStatements/api.js'
 
 export default {
-  name: "tableModel",
+  name: "financialStatementsModel",
 
   components: {
     TableM
-  },
-
+  }, 
   data() {
     return {
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
+        institutionTitle:[
+                    {
+                        value: '退房完成',
+                        label: '退房完成'
+                    },
+                ],
+                model8:'',
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 财务报表表头信息
             {
-                title: "账号",
-                key: "cus_account",
+                title: "订单号",
+                key: "ord_id",
             },
 
             {
-                title: "昵称",
+                title: "预订人手机",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_cus_nick_name ? row.cus_cus_nick_name : `暂无${index}`)
+                    }, 
+                    row.ord_phone_number ? row.ord_phone_number : `暂无${index}`)     
                 }
             },
 
             {
-                title: "来源",
+                title: "机构标题",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_system ? row.p_system : `暂无${index}`)
+                    }, row.org_name ? row.org_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "版本",
+                title: "房间名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_version ? row.p_version : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "机型",
+                title: "房间数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_type ? row.p_type : `暂无${index}`)
+                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "入住日期",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.check_in_time ? row.check_in_time : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "离开日期",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.check_out_time ? row.check_out_time : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "订单金额",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "订单状态",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "扣点",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.point_deduction ? row.point_deduction : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "机构结算",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.org_balance ? row.org_balance : `暂无${index}`)
                 }
             },
 
             {
                 title: "操作",
                 key: "action",
-                width: 150,
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
@@ -117,31 +158,13 @@ export default {
                             type: "primary",
                             size: "small"
                         },
-                        style: {
-                            marginRight: "5px"
-                        },
                         on: {
                             click: () => {
-                                this.editClick(params);
+                                this.goToInfo(params);
                             }
                         }
                         },
-                        "编辑"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "error",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "删除"
+                        "详情"
                     )
                     ]);
                 }
@@ -153,8 +176,7 @@ export default {
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+            org_name: '', //机构标题
         },
 
         ruleInline: {   // 定义规则对象
@@ -174,6 +196,14 @@ export default {
   },
 
   methods: {
+    // 进入详情
+    goToInfo(params) {
+        this.$router.push({
+            path: '/infoModel',
+            data: params 
+        })
+    },
+
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;
@@ -237,7 +267,8 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await userManagementList(params);
+        let { data } = await financialStatementsList(params);
+        console.log(data)
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);

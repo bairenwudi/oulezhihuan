@@ -1,12 +1,12 @@
 <style scope lang="less">
-    @import './appOrder.less';
+    @import './refundList.less';
 </style>
 
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
             <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.ord_id" placeholder="请输入订单号"></Input>
+                <Input type="text" v-model="formInline.cus_account" placeholder="请输入订单号"></Input>
             </FormItem>
 
             <FormItem prop="ord_customer" label="预订人" :label-width="50">
@@ -17,20 +17,20 @@
                 <Input type="text" v-model="formInline.ord_phone_number" placeholder="请输入预订人手机"></Input>
             </FormItem>
 
-            <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in payStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
-            </FormItem>
-
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
                  <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
+            </FormItem>
+
+            <FormItem prop="room_name" label="房型名称" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
+             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
@@ -39,11 +39,7 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房型" :label-width="50">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
+            
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
@@ -65,28 +61,18 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    appOrderList, //App订单列表
-    appOrderSearch, //App订单模糊查询
+    refundList, //退款单列表
+    refundListSearch //退款单模糊查询
 } from '../../api/lp-order/api.js'
 
 export default {
-  name: "appOrderModel",
+  name: "refundListModel",
 
   components: {
     TableM
   }, 
   data() {
     return {
-        payStatus:[
-                    {
-                        value: '已支付',
-                        label: '已支付'
-                    },
-                    {
-                        value: '未支付',
-                        label: '未支付'
-                    },                  
-                ],
         orderStatus: [
                     {
                         value: '申请退房',
@@ -126,14 +112,24 @@ export default {
                     },                   
                 ],
                 model8:'',
+        delDilaog: false,   // 控制删除弹出框
+        
+        delLoading: false,   // 控制删除按钮loading
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // App订单表头信息
+        columns: [    // 表头信息
             {
                 title: "订单号",
-                width: 120,
                 key: "ord_id",
+            },
+
+            {
+                title: "退款编号",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.third_code ? row.third_code : `暂无${index}`)
+                }
             },
 
             {
@@ -179,10 +175,10 @@ export default {
             },
 
             {
-                title: "下单日期",
+                title: "预定天数",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_time ? row.ord_time : `暂无${index}`)
+                    }, row.ord_days ? row.ord_days : `暂无${index}`)
                 }
             },
 
@@ -203,10 +199,10 @@ export default {
             },
 
             {
-                title: "支付状态",
+                title: "申请退款日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_payment_status ? row.ord_payment_status : `暂无${index}`)
+                    }, row.refund_time ? row.refund_time : `暂无${index}`)
                 }
             },
 
@@ -227,6 +223,30 @@ export default {
             },
 
             {
+                title: "退款手续费",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退款滞纳金",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.refunds ? row.refunds : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退款金额",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
+                }
+            },
+
+            {
                 title: "操作",
                 key: "action",
                 align: "center",
@@ -237,7 +257,25 @@ export default {
                         {
                         props: {
                             type: "primary",
-                            size: "medium"
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.delClick(params);
+                            }
+                        }
+                        },
+                        "同意"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
                         },
                         on: {
                             click: () => {
@@ -260,7 +298,6 @@ export default {
             ord_id: '', 
             ord_customer: '',
             ord_phone_number: '', 
-            ord_payment_status: '', 
             ord_status: '', 
             org_name: '', 
             room_name: ''
@@ -294,6 +331,27 @@ export default {
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;
+    },
+
+    // 执行table编辑的事件
+    editClick(params) {
+        console.log(params);
+    },
+
+    // 执行删除的事件
+    delClick(params) {
+        console.log(params);
+        this.delDilaog = true;
+    },
+
+    // 删除确定按钮
+    delConfrmClick() {
+        this.delLoading = true;
+        setTimeout(() => {
+            this.delDilaog = false;
+            this.$Message.success('成功');
+            console.log('我滚了');
+        }, 1000)
     },
 
     // 改变分页触发的事件
@@ -333,7 +391,7 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await appOrderList(params);
+        let { data } = await refundList(params);
         console.log(data)
         this.total = data[0].count;
         console.log(this.total)
