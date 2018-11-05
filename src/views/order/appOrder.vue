@@ -63,7 +63,7 @@ export default {
   data() {
     return {
         delDilaog: false,   // 控制删除弹出框
-        
+
         delLoading: false,   // 控制删除按钮loading
 
         currentPageIndex: 1,    // 当前页
@@ -153,7 +153,7 @@ export default {
                         "Button",
                         {
                         props: {
-                            type: "error",
+                            type: "info",
                             size: "small"
                         },
                         on: {
@@ -198,7 +198,7 @@ export default {
     // 进入详情
     goToInfo(params) {
         this.$router.push({
-            path: '/argu/infoModel',
+            path: '/infoModel',
             data: params 
         })
     },

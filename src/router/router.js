@@ -52,6 +52,7 @@ export const otherRouter = {
     children: [
         { path: 'home', title: {i18n: 'home'}, name: 'home_index', component: resolve => { require(['@/views/home/home.vue'], resolve); } },
         { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: resolve => { require(['@/views/own-space/own-space.vue'], resolve); } },
+        { path: 'infoModel', title: '详情信息', name: 'infoModel', component: resolve => { require(['@/views/order/info.vue'], resolve); } },
     ]
 };
 
@@ -122,29 +123,7 @@ export const appRouter = [
                 component: resolve => { require(['@/views/order/appOrder.vue'], resolve); }
             }
         ]
-    },
-
-    {
-        path: '/argu',
-        name: 'argu',
-        meta: {
-            hideInMenu: true
-        },
-        component: Main,
-        children: [
-            {
-                path: 'infoModel',
-                name: 'infoModel',
-                meta: {
-                    icon: 'md-flower',
-                    title: '我是info',
-                    notCache: true,
-                    beforeCloseName: 'before_close_normal'
-                },
-                component: resolve => { require(['@/views/order/info.vue'], resolve); }
-            }
-        ]
-    },
+    }
 ];
 
 // 所有上面定义的路由都要写在下面的routers里
