@@ -192,6 +192,7 @@ export const appRouter = [
             }
         ]
     },
+    
     {
         path: '/RoomtypeNums',
         icon: 'stats-bars',
