@@ -2,6 +2,7 @@
 <style scope lang="less">
     @import './checkoutList.less';
 </style>
+<!--退房单 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
@@ -30,7 +31,7 @@
             </FormItem>
 
             <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+             <DatePicker type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
@@ -378,7 +379,7 @@ export default {
         let { data } = await checkoutList(params);
         this.total = data[0].count;
         console.log(this.total)
-        data.shift(0);
+        // data.shift(0);
         this.userData = data;
         this.loading = false;
         console.log(data);

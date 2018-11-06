@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './bannerManagement.less';
 </style>
-
+ <!-- banner管理 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>

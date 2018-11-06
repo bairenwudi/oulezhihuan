@@ -6,16 +6,21 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
             <FormItem prop="cus_account" label="账号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入账号"></Input>
+                <Input type="text" clearable v-model="formInline.cus_account" placeholder="请输入账号"></Input>
             </FormItem>
 
             <FormItem prop="cus_nick_name" label="昵称" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入昵称"></Input>
+                <Input type="text" clearable v-model="formInline.cus_nick_name" placeholder="请输入昵称"></Input>
             </FormItem>
 
             <FormItem prop="p_system" label="来源" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in systemStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option 
+                 v-for="item in systemStatus" 
+                 :value="item.value" 
+                 :key="item.value">
+                 {{ item.label }}
+                 </Option>
                </Select>
             </FormItem>
 
@@ -58,8 +63,8 @@ export default {
                         label: 'ios'
                     },
                     {
-                        value: '安卓',
-                        label: '安卓'
+                        value: 'android',
+                        label: 'android'
                     },                  
                 ],
                 model8:'',
@@ -120,7 +125,7 @@ export default {
                 title: "上次登录",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_last_login_date ? row.cus_last_login_date : `暂无${index}`)
+                    }, row.cus_last_login_date_live ? row.cus_last_login_date_live : `暂无${index}`)
                 }
             },
 

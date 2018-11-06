@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './batchReservationOrder.less';
 </style>
-
+<!--批量预定订单 -->
 <template>
     <div class="formView">
         <Modal title="View Image" v-model="visible">
@@ -636,7 +636,7 @@ export default {
         console.log(data)
         this.total = data[0].count;
         console.log(this.total)
-        data.shift(0);
+        // data.shift(0);
         this.userData = data;
         this.loading = false;
         console.log(data);

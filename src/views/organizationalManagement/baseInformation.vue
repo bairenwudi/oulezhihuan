@@ -325,6 +325,12 @@ export default {
 
         columns: [    // 房间类型表头信息
             {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+            },
+
+            {
                 title: "房型分类",
                 render: (h, {row, index}) => {
                     return h('span', {
