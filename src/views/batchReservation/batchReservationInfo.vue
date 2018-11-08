@@ -1,61 +1,36 @@
 <style scope lang="less">
-    @import './batchReservationOrder.less';
+    @import './batchReservation.less';
 </style>
-<!--批量预定订单 -->
+<!--批量预定 -->
 <template>
     <div class="formView">
-        <Modal title="View Image" v-model="visible">
-            <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
-        </Modal>
-
-        <Form ref="formInline" :model="formInline" inline>
-
-            <FormItem prop="reserve_persion_name" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
-            </FormItem>
-
-            <FormItem prop="reserve_persion_phone" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
-            </FormItem>
-
-             <FormItem prop="order_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-             <FormItem prop="reserve_destination" label="目的地" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in destination" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-             <FormItem prop="org_name" label="预定机构" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="begin_time" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择" style="width: 300px"></DatePicker>
-            </FormItem>
-
-             <FormItem>
-                <Button type="primary" @click="addClick">新增</Button>
+         <h2>
+            入住人信息
+        </h2>
+        <Form ref="formInline" :model="formInline" inline class="ClickButton">
+            <FormItem>
+                <Button type="primary" @click="addClick">新增入住人</Button>
             </FormItem>
 
             <FormItem>
-                <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
+                <Button icon='' type="primary" @click="delClick">删除</Button>
+            </FormItem>
+
+            <FormItem>
+                <Button type="primary" @click="downloadClick">下载</Button>
+            </FormItem>
+
+            <FormItem>
+                <Button type="primary" @click="uploadClick">导入Excel</Button>
             </FormItem>
 
             <!-- <FormItem>
                 <i-switch v-model="loading"></i-switch>
                 &nbsp;&nbsp;切换loading
             </FormItem> -->
-
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM :columns="columns" class="Table" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
                 title="新增"
@@ -63,66 +38,26 @@
                 @on-ok="ModalConfirm('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
-                <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="formValidate.cus_nick_name" placeholder="请输入预订人"></Input>
+            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="90">
+                <FormItem label="姓名" prop="cus_nick_name">
+                    <Input v-model="formValidate.cus_nick_name" placeholder="请输入姓名"></Input>
                 </FormItem>
 
-                <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
-                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+                <FormItem label="身份证号码" prop="reserve_persion_phone">
+                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入身份证号码"></Input>
                 </FormItem>
 
-                <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入预订机构"></Input>
+                <FormItem label="证件类型" prop="reserve_persion_phone">
+                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入证件类型" disabled></Input>
                 </FormItem>
 
-                <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入机构手机"></Input>
+                <FormItem label="联系电话" prop="org_name">
+                    <Input v-model="formValidate.org_name" placeholder="请输入联系电话"></Input>
                 </FormItem>
 
-                <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="formValidate.reserve_destination" placeholder="请选择">
-                        <Option value="beijing">New York</Option>
-                        <Option value="shanghai">London</Option>
-                        <Option value="shenzhen">Sydney</Option>
-                    </Select>
-                </FormItem>
-
-                <FormItem label="入离时间" prop="Date">
-                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
-                </FormItem>
-
-                <!-- <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem> -->
-
-                
-
-                <FormItem label="入住天数" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
-                        <Checkbox label="大床"></Checkbox>
-                        <Checkbox label="标准间"></Checkbox>
-                        <Checkbox label="单人间"></Checkbox>
-                    </CheckboxGroup>
-                </FormItem>
-
-                <FormItem label="订单金额" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="备注" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
-                </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
+                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
         </Modal>
@@ -134,66 +69,26 @@
                 @on-ok="ModalConfirm('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
-                <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="formValidate.cus_nick_name"　size:default placeholder="请输入预订人"></Input>
+            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="90">
+                <FormItem label="姓名" prop="cus_nick_name">
+                    <Input v-model="formValidate.cus_nick_name" placeholder="请输入姓名"></Input>
                 </FormItem>
 
-                <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
-                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+                <FormItem label="身份证号码" prop="reserve_persion_phone">
+                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入身份证号码"></Input>
                 </FormItem>
 
-                <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入预订机构"></Input>
+                <FormItem label="证件类型" prop="reserve_persion_phone">
+                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入证件类型" disabled></Input>
                 </FormItem>
 
-                <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入机构手机"></Input>
+                <FormItem label="联系电话" prop="org_name">
+                    <Input v-model="formValidate.org_name" placeholder="请输入联系电话"></Input>
                 </FormItem>
 
-                <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="formValidate.reserve_destination" placeholder="请选择">
-                        <Option value="beijing">New York</Option>
-                        <Option value="shanghai">London</Option>
-                        <Option value="shenzhen">Sydney</Option>
-                    </Select>
-                </FormItem>
-
-                <FormItem label="入离时间" prop="Date">
-                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
-                </FormItem>
-
-                <!-- <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem> -->
-
-                
-
-                <FormItem label="入住天数" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
-                        <Checkbox label="大床"></Checkbox>
-                        <Checkbox label="标准间"></Checkbox>
-                        <Checkbox label="单人间"></Checkbox>
-                    </CheckboxGroup>
-                </FormItem>
-
-                <FormItem label="订单金额" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
-                </FormItem>
-
-                <FormItem label="备注" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
-                </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
+                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
         </Modal>
@@ -219,12 +114,11 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    batchReservationOrderList, //批量预定订单列表
-    batchReservationOrderSearch //批量预定订单模糊查询
-} from '../../api/lp-order/api.js'
+    batchReservationList, //批量预定列表
+} from '../../api/lp-batchReservation/api.js'
 
 export default {
-  name: "batchReservationOrderModel",
+  name: "batchReservationModel",
 
   components: {
     TableM
@@ -357,15 +251,15 @@ export default {
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 批量预定表头信息
             {
-                title: "订单号",
-                width: 120,
-                key: "reserve_id",
+                type: 'selection',
+                width: 60,
+                align: 'center'
             },
 
             {
-                title: "预订人",
+                title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.reserve_person_name ? row.reserve_person_name : `暂无${index}`)
@@ -373,7 +267,7 @@ export default {
             },
 
             {
-                title: "预订人手机",
+                title: "证件类型",
                 width: 100,
                 render: (h, {row, index}) => {
                     return h('span', {
@@ -383,7 +277,7 @@ export default {
             },
 
             {
-                title: "预定机构",
+                title: "身份证号码",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.org_name ? row.org_name : `暂无${index}`)
@@ -391,50 +285,10 @@ export default {
             },
 
             {
-                title: "目的地名称",
+                title: "联系电话",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "申请日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.apply_date ? row.apply_date : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "入住日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.begin_time ? row.begin_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "离开日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.end_time ? row.end_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "订单金额",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "订单状态",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
                 }
             },
 
@@ -445,8 +299,7 @@ export default {
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
-                   
-                   h(
+                    h(
                         "Button",
                         {
                         props: {
@@ -464,39 +317,39 @@ export default {
                         },
                         "编辑"
                     ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "删除"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.goToInfo(params);
-                            }
-                        }
-                        },
-                        "详情"
-                    )
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     style: {
+                    //         marginRight: "5px"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.delClick(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "删除"
+                    // ),
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.goToInfo(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "详情"
+                    // )
                     ]);
                 }
             }
@@ -590,6 +443,18 @@ export default {
         }, 1000)
     },
 
+   // 执行上传的事件
+    uploadClick() {
+            
+        },
+
+    // 执行下载的事件
+    downloadClick() {
+            
+        },
+
+   
+
     // 获取时间
         getFormatterTime(val) {
             console.log(val);
@@ -620,7 +485,7 @@ export default {
         this.getUser(filter);
     },
      
-    //批量预定订单列表 
+    //批量预定列表 
     // 为了解决异步问题
     async getUser(filter) {
         let params = {
@@ -633,9 +498,9 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await batchReservationOrderList(params);
+        let { data } = await batchReservationList(params);
         console.log(data)
-        this.total = data[0].count;
+        this.total = data[0];
         console.log(this.total)
         // data.shift(0);
         this.userData = data;
