@@ -12,7 +12,7 @@
                 :open-names="openedSubmenuArr"
                 :menu-list="menuList">
                 <div slot="top" class="logo-con">
-                    <img v-show="!shrink"  src="../images/logo.jpg" key="max-logo" />
+                    <span class="FshrinkDesc" v-show="!shrink">置换后台管理系统</span>
                     <img v-show="shrink" src="../images/logo-min.jpg" key="min-logo" />
                 </div>
             </shrinkable-menu>
@@ -102,7 +102,7 @@
                 return this.$store.state.app.currentPath; // 当前面包屑数组
             },
             avatorPath () {
-                return localStorage.avatorImgPath;
+                return this.$store.state.avatorPath;
             },
             cachePage () {
                 return this.$store.state.app.cachePage;
