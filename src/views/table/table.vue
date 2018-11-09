@@ -239,11 +239,9 @@ export default {
         this.loading = true;
         let { data } = await userManagementList(params);
         this.total = data[0].count;
-        console.log(this.total)
         data.shift(0);
         this.userData = data;
         this.loading = false;
-        console.log(data);
     }
   },
   mounted() {

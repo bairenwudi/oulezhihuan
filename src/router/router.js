@@ -145,6 +145,37 @@ export const appRouter = [
             }
             
         ]
+    },
+    {
+        path: '/system',
+        icon: 'social-buffer',
+        name: 'system',
+        title: '系统管理',
+        component: Main,
+        children: [
+            {
+                path: 'hotCity',
+                icon: 'compose',
+                name: 'hotCity',
+                title: '热门城市管理',
+                component: resolve => { require(['@/views/system/hotCity.vue'], resolve); }
+            },
+            {
+                path: 'bannerMana',
+                icon: 'compose',
+                name: 'bannerMana',
+                title: 'banner管理',
+                component: resolve => { require(['@/views/system/bannerMana.vue'], resolve); }
+            },
+            {
+                path: 'facilities',
+                icon: 'compose',
+                name: 'facilities',
+                title: '配套设施管理',
+                component: resolve => { require(['@/views/system/facilities.vue'], resolve); }
+            }
+            
+        ]
     }
 ];
 
@@ -156,5 +187,8 @@ export const routers = [
     ...appRouter,
     page500,
     page403,
-    page404
+    page404,
+    hotCity,
+    bannerMana,
+    facilities
 ];
