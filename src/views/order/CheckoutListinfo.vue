@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './AppOrderinfo.less';
+    @import './CheckoutListinfo.less';
 </style>
 
 <template>
@@ -72,9 +72,34 @@
                     <dt>大床房</dt>
                 </div>
 
+                <div class="TD-view">
+                    <dd>申请退款日期：</dd>
+                    <dt>8080.80.80 80:80</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退房金额：</dd>
+                    <dt>8080.88元</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退房手续费：</dd>
+                    <dt>8080.88元</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退房滞纳金：</dd>
+                    <dt>8080.88元</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退房原因：</dd>
+                    <dt>又是上不去了</dt>
+                </div>
+
             </Card>
         </Row>
-        <h2>订单明细</h2><br>
+        <h2>订单明细</h2>
           <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
         <h2>预订人信息</h2>
           <Row>
@@ -91,7 +116,7 @@
 
             </Card>
         </Row>
-        <h2>入住人信息</h2><br>
+        <h2>入住人信息</h2>
           <TableM :columns="columns1" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
 
     </div>
@@ -100,7 +125,7 @@
 <script>
 import TableM from '@/common/table/table.vue'
 export default {
-  name: "AppOrderinfo",
+  name: "CheckoutListinfoModel",
   components: {
       TableM
   },
@@ -127,6 +152,30 @@ export default {
 
             {
                 title: "价格",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退房手续费",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退房滞纳金",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "退房金额",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)

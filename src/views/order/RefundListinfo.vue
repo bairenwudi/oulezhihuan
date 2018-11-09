@@ -72,6 +72,31 @@
                     <dt>大床房</dt>
                 </div>
 
+                <div class="TD-view">
+                    <dd>申请退款日期：</dd>
+                    <dt>8080.80.80 80:80</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退款金额：</dd>
+                    <dt>8080.88元</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退款手续费：</dd>
+                    <dt>8080.88元</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退款滞纳金：</dd>
+                    <dt>8080.88元</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>退款原因：</dd>
+                    <dt>又是上不去了</dt>
+                </div>
+
             </Card>
         </Row>
         <h2>订单明细</h2>

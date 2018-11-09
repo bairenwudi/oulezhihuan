@@ -329,7 +329,7 @@ export default {
     // 进入详情
     goToInfo(params) {
         this.$router.push({
-            path: '/infoModel',
+            path: '/CheckoutListinfoModel',
             data: params 
         })
     },
