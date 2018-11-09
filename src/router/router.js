@@ -52,7 +52,9 @@ export const otherRouter = {
     children: [
         { path: 'home', title: {i18n: 'home'}, name: 'home_index', component: resolve => { require(['@/views/home/home.vue'], resolve); } },
         { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: resolve => { require(['@/views/own-space/own-space.vue'], resolve); } },
-        { path: 'infoModel', title: '详情信息', name: 'infoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/info.vue'], resolve); } },
+        { path: 'AppOrderinfoModel', title: 'App详情信息', name: 'AppOrderinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/AppOrderinfo.vue'], resolve); } },
+        { path: 'RefundListinfoModel', title: '退款单详情信息', name: 'RefundListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/RefundListinfo.vue'], resolve); } },
+        { path: 'batchReservationModel', title: '入住人信息', name: 'batchReservationModel', meta: { notCache: true }, component: resolve => { require(['@/views/batchReservation/batchReservationInfo.vue'], resolve); } },
     ]
 };
 
@@ -142,6 +144,23 @@ export const appRouter = [
         ]
     },
 
+    {
+        path: '/batchReservation',
+        icon: 'ios-pause-outline',
+        name: 'batchReservation',
+        title: '批量预定',
+        component: Main,
+        children: [
+            {
+                path: 'batchReservationModel',
+                name: 'batchReservationModel',
+                title: '批量预定',
+                component: resolve => { require(['@/views/batchReservation/batchReservation.vue'], resolve); }
+            }
+        ]
+    },
+
+    
     {
         path: '/order',
         icon: 'drag',

@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './organizationalManagement.less';
 </style>
-
+ <!-- 机构管理 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
@@ -140,7 +140,13 @@ export default {
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 机构管理表头信息
+            {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+            },
+
             {
                 title: "机构标题",
                 key: "org_name",

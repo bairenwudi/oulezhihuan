@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './appOrder.less';
 </style>
-
+ <!-- App订单 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
@@ -286,7 +286,7 @@ export default {
     // 进入详情
     goToInfo(params) {
         this.$router.push({
-            path: '/infoModel',
+            path: '/AppOrderinfoModel',
             data: params 
         })
     },

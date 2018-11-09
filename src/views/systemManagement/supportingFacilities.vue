@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './supportingFacilities.less';
 </style>
-
+ <!-- 配套设施管理 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
@@ -126,7 +126,13 @@ export default {
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 配套设施表头信息
+            {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+            },
+
             {
                 title: "设施名称",
                 render: (h, {row, index}) => {
