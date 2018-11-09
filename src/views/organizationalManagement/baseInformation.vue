@@ -334,7 +334,7 @@ export default {
                 title: "房型分类",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.room_type ? row.room_type : `暂无${index}`)
                 }
             },
   
@@ -407,7 +407,7 @@ export default {
                 title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无${index}`)
                 }
             },
   
@@ -415,7 +415,7 @@ export default {
                 title: "B端价格（元/天）",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.default_priceB ? row.default_priceB : `暂无${index}`)
                 }
             },
 
@@ -423,7 +423,7 @@ export default {
                 title: "B端价格（元/天）",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.default_priceC ? row.default_priceC : `暂无${index}`)
                 }
             },
 
@@ -601,10 +601,10 @@ export default {
     // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
-        this.currentPage = pageIndex;
+        // this.currentPage = pageIndex;
         for (let i in this.formInline) {
             if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline);  
+                this.getUser(this.formInline, pageIndex);  
                 return false;
             }
         };
@@ -624,10 +624,10 @@ export default {
     },
 
     // 为了解决异步问题
-    async getUser(filter) {
+    async getUser(filter, pageIndex = 1) {
         let params = {
             pageSize: 10,
-            startPos: filter ? 1 : this.currentPage
+            startPos: filter ? pageIndex : this.currentPage
         };
 
         if (filter) {
@@ -637,6 +637,7 @@ export default {
         this.loading = true;
         try {
             let { data } = await roomtypeList(params);
+            console.log(data)
             this.total = data[0].count;
             console.log(this.total)
             data.shift(0);

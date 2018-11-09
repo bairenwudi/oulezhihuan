@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './supportingFacilities.less';
 </style>
-
+<!-- 评价设置 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
@@ -118,10 +118,10 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    supportingFacilitiesList, //配套设施管理列表
-    supportingFacilitiesAdd,//配套设施管理添加
-    supportingFacilitiesEdit,//配套设施管理编辑
-    supportingFacilitiesDel,//配套设施管理删除
+    supportingFacilitiesList, //评价设置列表
+    supportingFacilitiesAdd,//评价设置添加
+    supportingFacilitiesEdit,//评价设置编辑
+    supportingFacilitiesDel,//评价设置删除
 } from '../../api/lp-systemManagement/api.js'
 
 export default {

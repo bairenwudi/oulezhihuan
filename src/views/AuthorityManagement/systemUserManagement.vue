@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './systemUserManagement.less';
 </style>
-
+<!-- 系统用户 -->
 <template>
     <div class="formView">
 
@@ -538,10 +538,10 @@ export default {
     // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
-        this.currentPage = pageIndex;
+        // this.currentPage = pageIndex;
         for (let i in this.formInline) {
             if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline);  
+                this.getUser(this.formInline, pageIndex);  
                 return false;
             }
         };
@@ -561,10 +561,10 @@ export default {
     },
 
     // 为了解决异步问题
-    async getUser(filter) {
+    async getUser(filter, pageIndex = 1) {
         let params = {
             pageSize: 10,
-            startPos: filter ? 1 : this.currentPage
+            startPos: filter ? pageIndex : this.currentPage
         };
 
         if (filter) {

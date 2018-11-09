@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './AppOrderinfo.less';
 </style>
-
+<!-- App订单详情 -->
 <template>
     <div class="formView">
         <h2>订单信息</h2>
