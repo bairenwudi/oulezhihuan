@@ -17,7 +17,27 @@
     export default {
         data () {
             return {
-               
+            //    columns:[
+            //        {
+            //            title:'所属模块',
+            //            key: 'id',
+            //            filters: [
+            //                 {
+            //                 label: 'pending',
+            //                 value: 'pending'
+            //                 },
+            //                 {
+            //                 label: 'running',
+            //                 value: 'running'
+            //                 },
+            //                 {
+            //                 label: 'completed',
+            //                 value: 'completed'
+            //                 }
+            //             ]
+
+            //        }
+            //    ]
             }
         },
 

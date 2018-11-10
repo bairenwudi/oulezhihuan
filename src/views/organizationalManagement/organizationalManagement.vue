@@ -1,41 +1,38 @@
 <style scope lang="less">
-    @import './refundList.less';
+    @import './organizationalManagement.less';
 </style>
-
+ <!-- 机构管理 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入订单号"></Input>
-            </FormItem>
-
-            <FormItem prop="ord_customer" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.ord_customer" placeholder="请输入预订人"></Input>
-            </FormItem>
-
-            <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.ord_phone_number" placeholder="请输入预订人手机"></Input>
-            </FormItem>
-
-            <FormItem prop="ord_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="room_name" label="房型名称" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
-            </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="model8" clearable style="width:200px">
                  <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="province_name" label="省份" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in provinceTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="city_name" label="城市" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in cityTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="org_status" label="状态" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in statusTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem prop="adm_user_type" label="标签" :label-width="60">
+               <Select v-model="model8" clearable style="width:200px">
+                 <Option v-for="item in typeTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -54,6 +51,20 @@
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
     
+    <!-- 删除提示框 -->
+    <!-- <Modal v-model="delDilaog" width="360">
+        <p slot="header" style="color:#f60;text-align:center">
+            <Icon type="ios-information-circle"></Icon>
+            <span>提示</span>
+        </p>
+        <div style="text-align:center">
+            <p>您确定要删除吗？</p>
+        </div>
+        <div slot="footer">
+            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
+        </div>
+    </Modal> -->
+    
     </div>
 </template>
 
@@ -61,19 +72,39 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    refundList, //退款单列表
-    refundListSearch //退款单模糊查询
-} from '../../api/lp-order/api.js'
+    organizationalManagementList
+} from '../../api/lp-organizational/api.js'
 
 export default {
-  name: "refundListModel",
+  name: "organizationalManagementModel",
 
   components: {
     TableM
   }, 
   data() {
     return {
-        orderStatus: [
+       
+            institutionTitle:[
+                        {
+                            value: '海南',
+                            label: '海南'
+                        },
+                    ],
+    
+            provinceTitle:[
+                        {
+                            value: '北京',
+                            label: '北京'
+                        },
+                    ],
+            cityTitle:[
+                        {
+                            value: '北京',
+                            label: '北京'
+                        },
+                    ],
+            
+            statusTitle: [
                     {
                         value: '申请退房',
                         label: '申请退房'
@@ -87,29 +118,20 @@ export default {
                         label: '退房完成'
                     },                  
                 ],
-        institutionTitle:[
+            typeTitle: [
                     {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },
-                ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
+                        value: '1',
+                        label: '基地'
                     },
                     {
-                        value: 'London',
-                        label: 'London'
+                        value: '2',
+                        label: '个人'
                     },
                     {
-                        value: 'Sydney',
-                        label: 'Sydney'
+                        value: '3',
+                        label: '旅行社'
                     },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
+                                    
                 ],
                 model8:'',
         delDilaog: false,   // 控制删除弹出框
@@ -118,131 +140,64 @@ export default {
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 机构管理表头信息
             {
-                title: "订单号",
-                key: "ord_id",
-            },
-
-            {
-                title: "退款编号",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.third_code ? row.third_code : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "预订人",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_customer ? row.ord_customer : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "预订人手机",
-                width: 100,
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, 
-                    row.ord_phone_number ? row.ord_phone_number : `暂无${index}`)     
-                }
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
             },
 
             {
                 title: "机构标题",
+                key: "org_name",
+            },
+
+            {
+                title: "省份",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.org_name ? row.org_name : `暂无${index}`)
+                    }, row.province_name ? row.province_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "房间名称",
+                title: "城市",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.city_name ? row.city_name : `暂无${index}`)
                 }
             },
 
             {
-                title: "房间数量",
+                title: "手机号码",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, 
+                    row.adm_phonenum ? row.adm_phonenum : `暂无${index}`)     
                 }
             },
 
             {
-                title: "预定天数",
+                title: "上线时间",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_days ? row.ord_days : `暂无${index}`)
+                    }, row.org_login_time ? row.org_login_time : `暂无${index}`)
                 }
             },
 
             {
-                title: "入住日期",
+                title: "状态",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_in_time ? row.check_in_time : `暂无${index}`)
+                    }, row.org_status ? row.org_status : `暂无${index}`)
                 }
             },
 
             {
-                title: "离开日期",
+                title: "标签",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_out_time ? row.check_out_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "申请退款日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refund_time ? row.refund_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "订单金额",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "订单状态",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "退款手续费",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "退款滞纳金",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refunds ? row.refunds : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "退款金额",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
+                    }, row.adm_user_type ? row.adm_user_type : `暂无${index}`)
                 }
             },
 
@@ -264,11 +219,12 @@ export default {
                         },
                         on: {
                             click: () => {
-                                this.delClick(params);
+                                // this.editClick(params);
+                                this.goToInfo(params);
                             }
                         }
                         },
-                        "同意"
+                        "编辑"
                     ),
                     h(
                         "Button",
@@ -277,14 +233,32 @@ export default {
                             type: "primary",
                             size: "small"
                         },
+                        style: {
+                            marginRight: "5px"
+                        },
                         on: {
                             click: () => {
-                                this.goToInfo(params);
+                                this.onlineClick(params);
                             }
                         }
                         },
-                        "详情"
-                    )
+                        "上线"
+                    ),
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.goToInfo(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "详情"
+                    // )
                     ]);
                 }
             }
@@ -295,12 +269,13 @@ export default {
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            ord_id: '', 
-            ord_customer: '',
-            ord_phone_number: '', 
-            ord_status: '', 
-            org_name: '', 
-            room_name: ''
+            cus_account: '',
+            cus_nick_name: '',
+            org_status:'',
+            adm_user_type:'',
+            adm_city_code:'',
+            adm_province_code:'',
+            org_name:''
         },
 
         ruleInline: {   // 定义规则对象
@@ -320,10 +295,10 @@ export default {
   },
 
   methods: {
-    // 进入详情
-    goToInfo(params) {
+    // 进入编辑详情
+    goToEditInfo(params) {
         this.$router.push({
-            path: '/RefundListinfoModel',
+            path: '/infoModel',
             data: params 
         })
     },
@@ -391,8 +366,7 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await refundList(params);
-        console.log(data)
+        let { data } = await organizationalManagementList(params);
         this.total = data[0].count;
         console.log(this.total)
         data.shift(0);

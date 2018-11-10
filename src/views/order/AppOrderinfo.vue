@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './info.less';
+    @import './AppOrderinfo.less';
 </style>
 
 <template>
@@ -74,7 +74,7 @@
 
             </Card>
         </Row>
-        <h2>订单明细</h2>
+        <h2>订单明细</h2><br>
           <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
         <h2>预订人信息</h2>
           <Row>
@@ -91,7 +91,7 @@
 
             </Card>
         </Row>
-        <h2>入住人信息</h2>
+        <h2>入住人信息</h2><br>
           <TableM :columns="columns1" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
 
     </div>
@@ -100,7 +100,7 @@
 <script>
 import TableM from '@/common/table/table.vue'
 export default {
-  name: "info",
+  name: "AppOrderinfo",
   components: {
       TableM
   },

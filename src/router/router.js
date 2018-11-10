@@ -52,93 +52,143 @@ export const otherRouter = {
     children: [
         { path: 'home', title: {i18n: 'home'}, name: 'home_index', component: resolve => { require(['@/views/home/home.vue'], resolve); } },
         { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: resolve => { require(['@/views/own-space/own-space.vue'], resolve); } },
-        { path: 'infoModel', title: '详情信息', name: 'infoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/info.vue'], resolve); } },
+        { path: 'AppOrderinfoModel', title: 'App详情', name: 'AppOrderinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/AppOrderinfo.vue'], resolve); } },
+        { path: 'RefundListinfoModel', title: '退款单详情', name: 'RefundListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/RefundListinfo.vue'], resolve); } },
+        { path: 'CheckoutListinfoModel', title: '退房单详情', name: 'CheckoutListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/CheckoutListinfo.vue'], resolve); } },        
+        { path: 'batchReservationModel', title: '入住人信息', name: 'batchReservationModel', meta: { notCache: true }, component: resolve => { require(['@/views/batchReservation/batchReservationInfo.vue'], resolve); } },
     ]
 };
 
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 export const appRouter = [
     {
-        path: '/component',
+        path: '/organizationalManagement',
         icon: 'social-buffer',
-        name: 'component',
-        title: '组件',
+        name: 'organizationalManagement',
+        title: '机构管理',
         component: Main,
         children: [
             {
-                path: 'text-editor',
-                icon: 'compose',
-                name: 'text-editor',
-                title: '富文本编辑器',
-                component: resolve => { require(['@/views/my-components/text-editor/text-editor.vue'], resolve); }
+                path: 'organizationalManagementModel',
+                name: 'organizationalManagementModel',
+                title: '机构管理',
+                component: resolve => { require(['@/views/organizationalManagement/organizationalManagement.vue'], resolve); }
             },
-            
-        ]
-    },
-    {
-        path: '/table',
-        icon: 'social-buffer',
-        name: 'table',
-        title: '表格',
-        component: Main,
-        children: [
             {
-                path: 'tableModel',
-                icon: 'compose',
-                name: 'tableModel',
-                title: '表格',
-                component: resolve => { require(['@/views/table/table.vue'], resolve); }
+                path: 'baseInformationModel',
+                name: 'baseInformationModel',
+                title: '机构设置',
+                component: resolve => { require(['@/views/organizationalManagement/baseInformation.vue'], resolve); }
             }
         ]
     },
+
     {
-        path: '/form',
-        icon: 'social-buffer',
-        name: 'form',
-        title: '表单',
+        path: '/systemManagement',
+        icon: 'gear-b',
+        name: 'systemManagement',
+        title: '系统管理',
         component: Main,
         children: [
             {
-                path: 'formModel',
-                icon: 'compose',
-                name: 'formModel',
-                title: '表单',
-                component: resolve => { require(['@/views/form/form.vue'], resolve); }
+                path: 'userManagementModel',
+                name: 'userManagementModel',
+                title: '用户管理',
+                component: resolve => { require(['@/views/systemManagement/userManagement.vue'], resolve); }
+            },
+            {
+                path: 'bannerManagementModel',
+                name: 'bannerManagementModel',
+                title: 'banner管理',
+                component: resolve => { require(['@/views/systemManagement/bannerManagement.vue'], resolve); }
+            },
+            {
+                path: 'hotCityManagementModel',
+                name: 'hotCityManagementModel',
+                title: '热门城市管理',
+                component: resolve => { require(['@/views/systemManagement/hotCityManagement.vue'], resolve); }
+            },
+            {
+                path: 'evaluationSettingModel',
+                name: 'evaluationSettingModel',
+                title: '评价设置',
+                component: resolve => { require(['@/views/systemManagement/evaluationSetting.vue'], resolve); }
+            },
+            {
+                path: 'supportingFacilitiesModel',
+                name: 'supportingFacilitiesModel',
+                title: '配套设施设置',
+                component: resolve => { require(['@/views/systemManagement/supportingFacilities.vue'], resolve); }
+            },
+            {
+                path: 'FeedbackManagementModel',
+                name: 'FeedbackManagementModel',
+                title: '意见反馈管理',
+                component: resolve => { require(['@/views/systemManagement/FeedbackManagement.vue'], resolve); }
             }
         ]
     },
     
     {
+        path: '/RoomtypeNums',
+        icon: 'stats-bars',
+        name: 'RoomtypeNums',
+        title: '房型可预订数',
+        component: Main,
+        children: [
+            {
+                path: 'RoomtypeNumstModel',
+                name: 'RoomtypeNumsModel',
+                title: '房型可预订数',
+                component: resolve => { require(['@/views/RoomtypeNums/RoomtypeNums.vue'], resolve); }
+            }
+        ]
+    },
+
+    {
+        path: '/batchReservation',
+        icon: 'ios-pause-outline',
+        name: 'batchReservation',
+        title: '批量预定',
+        component: Main,
+        children: [
+            {
+                path: 'batchReservationModel',
+                name: 'batchReservationModel',
+                title: '批量预定',
+                component: resolve => { require(['@/views/batchReservation/batchReservation.vue'], resolve); }
+            }
+        ]
+    },
+
+    
+    {
         path: '/order',
-        icon: 'social-buffer',
+        icon: 'drag',
         name: 'order',
         title: '订单管理',
         component: Main,
         children: [
             {
                 path: 'appOrderModel',
-                icon: 'compose',
                 name: 'appOrderModel',
                 title: 'app订单',
                 component: resolve => { require(['@/views/order/appOrder.vue'], resolve); }
             },
             {
-                path: 'batchReservationModel',
-                icon: 'compose',
-                name: 'batchReservationModel',
-                title: '批量预定',
-                component: resolve => { require(['@/views/order/batchReservation.vue'], resolve); }
+                path: 'batchReservationOrderModel',
+                name: 'batchReservationOrderModel',
+                title: '批量预定订单',
+                component: resolve => { require(['@/views/order/batchReservationOrder.vue'], resolve); }
             },
             {
                 path: 'refundListModel',
-                icon: 'compose',
                 name: 'refundListModel',
                 title: '退款单',
                 component: resolve => { require(['@/views/order/refundList.vue'], resolve); }
             },
             {
                 path: 'checkoutListModel',
-                icon: 'compose',
                 name: 'checkoutListModel',
                 title: '退房单',
                 component: resolve => { require(['@/views/order/checkoutList.vue'], resolve); }
@@ -147,34 +197,54 @@ export const appRouter = [
         ]
     },
     {
-        path: '/system',
-        icon: 'social-buffer',
-        name: 'system',
-        title: '系统管理',
+        path: '/informationManagement',
+        icon: 'chatboxes',
+        name: 'informationManagement',
+        title: '信息管理',
         component: Main,
         children: [
             {
-                path: 'hotCity',
-                icon: 'compose',
-                name: 'hotCity',
-                title: '热门城市管理',
-                component: resolve => { require(['@/views/system/hotCity.vue'], resolve); }
-            },
-            {
-                path: 'bannerMana',
-                icon: 'compose',
-                name: 'bannerMana',
-                title: 'banner管理',
-                component: resolve => { require(['@/views/system/bannerMana.vue'], resolve); }
-            },
-            {
-                path: 'facilities',
-                icon: 'compose',
-                name: 'facilities',
-                title: '配套设施管理',
-                component: resolve => { require(['@/views/system/facilities.vue'], resolve); }
+                path: 'informationManagementModel',
+                name: 'informationManagementModel',
+                title: '信息管理',
+                component: resolve => { require(['@/views/informationManagement/informationManagement.vue'], resolve); }
             }
-            
+        ]
+    },
+    {
+        path: '/financialStatements',
+        icon: 'social-yen-outline',
+        name: 'financialStatements',
+        title: '财务报表',
+        component: Main,
+        children: [
+            {
+                path: 'financialStatementsModel',
+                name: 'financialStatementsModel',
+                title: '财务报表',
+                component: resolve => { require(['@/views/financialStatements/financialStatements.vue'], resolve); }
+            }
+        ]
+    },
+    {
+        path: '/authorityManagement',
+        icon: 'ios-people',
+        name: 'authorityManagement',
+        title: '权限管理',
+        component: Main,
+        children: [
+            {
+                path: 'authorityManagementModel',
+                name: 'authorityManagementModel',
+                title: '权限管理',
+                component: resolve => { require(['@/views/authorityManagement/authorityManagement.vue'], resolve); }
+            },
+            {
+                path: 'systemUserManagementModel',
+                name: 'systemUserManagementModel',
+                title: '系统用户管理',
+                component: resolve => { require(['@/views/authorityManagement/systemUserManagement.vue'], resolve); }
+            }
         ]
     }
 ];
@@ -188,7 +258,7 @@ export const routers = [
     page500,
     page403,
     page404,
-    hotCity,
-    bannerMana,
-    facilities
+    // hotCity,
+    // bannerMana,
+    // facilities
 ];
