@@ -12,7 +12,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        avatorPath: 'https://img2.woyaogexing.com/2018/10/21/c51fe45206f24611b010f82645b0fd4a!400x400.jpeg'
+        avatorPath: 'http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg'
     },
     mutations: {
         //

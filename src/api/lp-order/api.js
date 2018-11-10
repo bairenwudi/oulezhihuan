@@ -52,6 +52,11 @@ const checkoutListSearch = params => {
     return axios.post(`${baseUrl.base3}/CheckeOutOrder/selectCheckOutOrder?startPos=${params.startPos}&pageSize=10`, params);
 };
 
+// 机构设置-房间类型列表
+const roomtypeList = params => {
+    return axios.post(`${baseUrl.base3}/Zh_room_typeController/selectRoomType`, params);
+};
+
 export {
     appOrderList, //App订单列表
     appOrderSearch, //App订单模糊查询
@@ -60,7 +65,8 @@ export {
     refundList, //退款单列表
     refundListSearch, //退款单模糊查询
     checkoutList, //退房单列表
-    checkoutListSearch //退房单模糊查询
+    checkoutListSearch, //退房单模糊查询
+    roomtypeList, // 房间类型
 };
 
 // 组件中获取base地址

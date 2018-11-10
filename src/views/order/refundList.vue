@@ -18,23 +18,23 @@
             </FormItem>
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
+               <Select v-model="formInline.ord_status" clearable style="width:200px">
                  <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
             <FormItem prop="room_name" label="房型名称" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
+               <Select v-model="formInline.room_name" clearable style="width:200px">
                  <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+            <FormItem prop="check_in_time" label="入离时间" :label-width="60">              
+             <DatePicker v-model="formInline.check_in_time" v-for="item in roomType" type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
+               <Select v-model="formInline.org_name" clearable style="width:200px">
                  <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
@@ -75,17 +75,65 @@ export default {
     return {
         orderStatus: [
                     {
-                        value: '申请退房',
+                        value: '0',
+                        label: '待付款'
+                    },
+                    {
+                        value: '1',
+                        label: '待审核'
+                    },
+                    {
+                        value: '2',
+                        label: '已付款'
+                    },
+                    {
+                        value: '3',
+                        label: '已审核'
+                    },
+                    {
+                        value: '4',
+                        label: '申请退款'
+                    },
+                    {
+                        value: '5',
+                        label: '退款中'
+                    },
+                    {
+                        value: '6',
+                        label: '退款成功'
+                    }, 
+                    {
+                        value: '7',
+                        label: '退款失败'
+                    },
+                    {
+                        value: '8',
+                        label: '已入住'
+                    },
+                    {
+                        value: '9',
                         label: '申请退房'
                     },
                     {
-                        value: '退房中',
+                        value: '10',
                         label: '退房中'
+                    },  
+                    {
+                        value: '11',
+                        label: '退房成功'
                     },
                     {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },                  
+                        value: '12',
+                        label: '退房失败'
+                    },
+                    {
+                        value: '13',
+                        label: '订单取消'
+                    },
+                    {
+                        value: '14',
+                        label: '订单完成'
+                    }                            
                 ],
         institutionTitle:[
                     {
@@ -98,20 +146,8 @@ export default {
                         value: 'New York',
                         label: 'New York'
                     },
-                    {
-                        value: 'London',
-                        label: 'London'
-                    },
-                    {
-                        value: 'Sydney',
-                        label: 'Sydney'
-                    },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
+                                    
                 ],
-                model8:'',
         delDilaog: false,   // 控制删除弹出框
         
         delLoading: false,   // 控制删除按钮loading
@@ -225,8 +261,7 @@ export default {
             {
                 title: "退款手续费",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
                 }
             },
 
