@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './supportingFacilities.less';
+@import "./supportingFacilities.less";
 </style>
  <!-- 配套设施管理 -->
 <template>
@@ -20,7 +20,6 @@
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
                 title="新增"
-                :transfer="false"
                 :mask-closable="false"
                 @on-ok="ModalConfirm('addForm')"
                 @on-cancel="ModalReset('addForm')"
@@ -31,41 +30,24 @@
                 </FormItem>
 
                 <FormItem label="设施图片" prop="upLoad" :label-width="85">
-                    <div class="demo-upload-list" v-for="item in uploadList">
-                        <template v-if="item.status === 'finished'">
-                            <img :src="item.url">
-                            <div class="demo-upload-list-cover">
-                                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-                                <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-                        </template>
-                    </div>
-                    <Upload
-                        ref="upload"
-                        name="upLoad"
-                        :show-upload-list="false"
-                        :default-file-list="defaultImgList"
-                        :on-success="handleSuccess"
-                        :format="['jpg','jpeg','png']"
-                        :max-size="2048"
-                        :on-format-error="handleFormatError"
-                        :on-exceeded-size="handleMaxSize"
-                        :before-upload="handleBeforeUpload"
-                        multiple
-                        :data="dataFormData"
-                        type="drag"
+                    <el-upload
+                        ref="addUpload"
                         :action="actionUrl"
-                        style="display: inline-block;width:58px;"
+                        :data="addData"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :on-preview="handlePictureCardPreview"
+                        :on-success="uploadSuccess"
+                        :on-error="uploadError"
+                        :on-exceed="uploadonExceed"
+                        :on-remove="handleRemove"
+                        :limit="1"
                     >
-                        <div style="width: 58px;height:58px;line-height: 58px;">
-                            <Icon type="ios-camera" size="20"></Icon>
-                        </div>
-                    </Upload>
-                    <Modal :transfer="false" title="View Image" v-model="visible">
-                        <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+
+                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                        <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
             </Form>
@@ -89,25 +71,7 @@
                 </FormItem>
 
                 <FormItem label="设施图片" prop="upLoad" :label-width="85"> -->
-                    <!-- <Upload
-                        ref="upload"
-                        :show-upload-list="false"
-                        :default-file-list="defaultList"
-                        :on-success="handleSuccess"
-                        :format="['jpg','jpeg','png']"
-                        :max-size="2048"
-                        :on-format-error="handleFormatError"
-                        :on-exceeded-size="handleMaxSize"
-                        :before-upload="handleBeforeUpload"
-                        multiple
-                        type="drag"
-                        :action="actionUrl"
-                        style="display: inline-block;width:58px;">
-                        <div style="width: 58px;height:58px;line-height: 58px;">
-                            <Icon type="ios-camera" size="20"></Icon>
-                        </div>
-                    </Upload> -->
-
+                    
                     <!-- <Modal title="View Image" v-model="visible">
                         <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
                     </Modal> -->
@@ -137,322 +101,282 @@
 </template>
 
 <script>
-
 import TableM from "../../common/table/table.vue";
 import {
-    supportingFacilitiesList, //配套设施管理列表
-    supportingFacilitiesAdd,//配套设施管理添加
-    supportingFacilitiesEdit,//配套设施管理编辑
-    supportingFacilitiesDel,//配套设施管理删除
-    getBase, // 获取域名
-} from '../../api/lp-systemManagement/api.js'
+  supportingFacilitiesList, //配套设施管理列表
+  supportingFacilitiesAdd, //配套设施管理添加
+  supportingFacilitiesEdit, //配套设施管理编辑
+  supportingFacilitiesDel, //配套设施管理删除
+  getBase, // 获取域名
+} from "../../api/lp-systemManagement/api.js";
 
 export default {
   name: "supportingFacilitiesModel",
 
   components: {
     TableM
-  }, 
+  },
   data() {
     var DateValdate = (rule, value, callback) => {
-            if (value[0] === '') {
-                return callback(new Error('请填写完整'));
-            } else {
-                callback();
-            }
-        };
+      if (value[0] === "") {
+        return callback(new Error("请填写完整"));
+      } else {
+        callback();
+      }
+    };
 
     return {
-        formValidate: {     // 定义新增表单的对象
-            facilities_name: '',
-            upLoad: '',
+      formValidate: {
+        // 定义新增表单的对象
+        facilities_name: "",
+        upLoad: ""
+      },
+
+      addForm: {
+        facilities_name: ""
+      },
+
+      addRules: {
+        // 定义表单的校验规则
+        facilities_name: [
+          { required: true, message: "请输入预订人", trigger: "blur" }
+        ]
+      },
+
+      addData: {},
+
+      addModal: false,
+
+      editModal: false,
+
+      delDilaog: false, // 控制删除弹出框
+
+      delLoading: false, // 控制删除按钮loading
+
+      currentPageIndex: 1, // 当前页
+
+      imgUrl: "",
+
+      visible: false,
+
+      actionUrl: "",
+
+      columns: [
+        // 配套设施表头信息
+        {
+          type: "selection",
+          width: 60,
+          align: "center"
         },
 
-        addForm: {
-            facilities_name: '',
-            upLoad: '',
+        {
+          title: "设施名称",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.facilities_name ? row.facilities_name : `暂无${index}`
+            );
+          }
         },
 
-        addRules: {     // 定义表单的校验规则
-            facilities_name: [
-                { required: true, message: '请输入预订人', trigger: 'blur' }
-            ],
-        },
-        addModal: false,
-        
-        editModal: false,
-
-        visible: false,
-
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
-
-        currentPageIndex: 1,    // 当前页
-
-        defaultImgList: [],
-
-        imgName: '',
-
-        visible: false,
-
-        uploadList: [],
-
-        actionUrl: '',
-        
-        dataFormData: {},
-
-        columns: [    // 配套设施表头信息
-            {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
-            },
-
-            {
-                title: "设施名称",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.facilities_name ? row.facilities_name : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "设施图片",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.upLoad ? row.upLoad : `暂无${index}`)
-                }
-            }, 
-
-            {
-                title: "上传时间",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, 
-                    row.facilities_time ? row.facilities_time : `暂无${index}`)     
-                }
-            },
-
-            {
-                title: "操作",
-                key: "action",
-                align: "center",
-                render: (h, params) => {
-                    return h("div", [
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.editClick(params);
-                            }
-                        }
-                        },
-                        "编辑"
-                    ),
-                    // h(
-                    //     "Button",
-                    //     {
-                    //     props: {
-                    //         type: "primary",
-                    //         size: "small"
-                    //     },
-                    //     style: {
-                    //         marginRight: "5px"
-                    //     },
-                    //     on: {
-                    //         click: () => {
-                    //             this.delClick(params);
-                    //         }
-                    //     }
-                    //     },
-                    //     "删除"
-                    // ),
-                    ]);
-                }
-            }
-        ],
-
-        userData: [],   // 内容数据
-
-        total: 0,   // 总页数
-
-        formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+        {
+          title: "设施图片",
+          render: (h, { row, index }) => {
+            return h("span", {}, row.upLoad ? row.upLoad : `暂无${index}`);
+          }
         },
 
-        loading: false,  // 定义loading为true
+        {
+          title: "上传时间",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.facilities_time ? row.facilities_time : `暂无${index}`
+            );
+          }
+        },
 
-        currentPage: 1   // 定义当前页
+        {
+          title: "操作",
+          key: "action",
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.editClick(params);
+                    }
+                  }
+                },
+                "编辑"
+              )
+            ]);
+          }
+        }
+      ],
+
+      userData: [], // 内容数据
+
+      total: 0, // 总页数
+
+      formInline: {
+        // 定义表单对象
+        cus_account: "",
+        cus_nick_name: ""
+      },
+
+      loading: false, // 定义loading为true
+
+      currentPage: 1, // 定义当前页
     };
   },
 
   methods: {
-    // 默认手动上传
-    handleUpload() {
-        const check = this.uploadList.length < 5;
-        if (!check) {
-            this.$Notice.warning({
-                title: 'Up to five pictures can be uploaded.'
-            });
-        }
-        return check;
-    },
-
-    handleView (name) {
-        this.imgName = name;
+    // 上传时将图片赋到img上
+    handlePictureCardPreview(file) {
+        this.imgUrl = file.url;
         this.visible = true;
     },
 
-    handleRemove (file) {
-        const fileList = this.$refs.upload.fileList;
-        this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+    // 当图片数量超出规定的数量的钩子函数
+    uploadonExceed() {
+        this.$Message.warning('数量超出最大限制');
     },
 
-    handleSuccess (response, file, fileList) {
-        file.url = 'http://img.zcool.cn/community/01fbe655dfe31932f875a1328a500b.jpg@900w_1l_2o_100sh.jpg';
-        file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+    // 上传成功
+    uploadSuccess(response, file, fileList) {
+        console.log(response, file, fileList);
+        this.$Message.success('上传成功');
+    },
+    
+    // 上传失败
+    uploadError(err, file, fileList) {
+        console.log(err, file, fileList);
+        this.$Message.error('上传失败');
     },
 
-    handleFormatError (file) {
-        this.$Notice.warning({
-            title: 'The file format is incorrect',
-            desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
-        });
+    // 删除图片钩子函数
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
     },
 
-    handleMaxSize (file) {
-        this.$Notice.warning({
-            title: 'Exceeding file size limit',
-            desc: 'File  ' + file.name + ' is too large, no more than 2M.'
-        });
-    },
-
-    handleBeforeUpload (res) {
-        const check = this.uploadList.length < 1;
-        if (this.uploadList.length < 1) {
-            this.$Notice.warning({
-                title: '请您上传一张图片'
-            });
-        } else {
-            this.dataFormData.facilities_name = this.addForm.facilities_name;
-        }
-        return check;
-    },
-
+    // 重置页数
     resetTotal() {
-        this.currentPage = 1;
-        this.total = 1;
+      this.currentPage = 1;
+      this.total = 1;
     },
 
     // 执行新增的事件
     addClick() {
-        this.addModal = true;
+      this.addModal = true;
     },
 
     // 点击确定按钮
     ModalConfirm(name) {
-        this.$refs[name].validate((valid) => {
+        this.$refs[name].validate(valid => {
             if (valid) {
-                // this.loading = true;
-                this.addFormData = Object.assign({}, this[name]);
-                this.handleBeforeUpload();
+                this.addData = this[name];
+                setTimeout(() => {
+                    this.$refs.addUpload.submit();
+                });
             }
-        })
+        });
     },
 
     // 点击框取消按钮
     ModalReset(name) {
-        this.$refs[name].resetFields();
-        this.$Message.info("Clicked ok");
+      this.$refs[name].resetFields();
+      this.$Message.info("Clicked ok");
     },
 
     // 执行table编辑的事件
     editClick(params) {
-        this.editModal = true;
-        console.log(params);
+      this.editModal = true;
+      console.log(params);
     },
 
     // 执行删除的事件
     delClick(params) {
-        console.log(params);
-        this.delDilaog = true;
+      console.log(params);
+      this.delDilaog = true;
     },
 
     // 删除确定按钮
     delConfrmClick() {
-        this.delLoading = true;
-        setTimeout(() => {
-            this.delDilaog = false;
-            this.$Message.success('成功');
-            console.log('我滚了');
-        }, 1000)
+      this.delLoading = true;
+      setTimeout(() => {
+        this.delDilaog = false;
+        this.$Message.success("成功");
+        console.log("我滚了");
+      }, 1000);
     },
 
     // 获取时间
-        getFormatterTime(val) {
-            console.log(val);
-        },
+    getFormatterTime(val) {
+      console.log(val);
+    },
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
-        // 改变当前页
-        // this.currentPage = pageIndex;
-        for (let i in this.formInline) {
-            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline, pageIndex);  
-                return false;
-            }
-        };
-        this.getUser();
+      // 改变当前页
+      // this.currentPage = pageIndex;
+      for (let i in this.formInline) {
+        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+          this.getUser(this.formInline, pageIndex);
+          return false;
+        }
+      }
+      this.getUser();
     },
 
+    // 查询
     searchClick(filter) {
-        this.resetTotal();
-        if (filter) {
-            for (let i in filter) {
-                if (filter[i] === undefined || filter[i] === '') {
-                    delete filter[i];
-                }
-            };
-        };
-        this.getUser(filter);
+      this.resetTotal();
+      if (filter) {
+        for (let i in filter) {
+          if (filter[i] === undefined || filter[i] === "") {
+            delete filter[i];
+          }
+        }
+      }
+      this.getUser(filter);
     },
-     
-    //配套设施管理列表 
-    // 为了解决异步问题
+
+    //配套设施管理列表
     async getUser(filter, pageIndex = 1) {
-        let params = {
-            pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage
-        };
+      let params = {
+        pageSize: 10,
+        startPos: filter ? pageIndex : this.currentPage
+      };
 
-        if (filter) {
-            params = Object.assign(params, filter);
-        };
+      if (filter) {
+        params = Object.assign(params, filter);
+      }
 
-        this.loading = true;
-        let { data } = await supportingFacilitiesList(params);
-        this.total = data[0].count;
-        data.shift(0);
-        this.userData = data;
-        this.loading = false;
+      this.loading = true;
+      let { data } = await supportingFacilitiesList(params);
+      this.total = data[0].count;
+      data.shift(0);
+      this.userData = data;
+      this.loading = false;
     }
   },
   mounted() {
     this.getUser();
     this.base = getBase().base2;
     this.actionUrl = `${this.base}/Facilities_managementController/save`;
-    this.uploadList = this.$refs.upload.fileList;
   }
 };
 </script>

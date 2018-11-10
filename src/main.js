@@ -2,6 +2,8 @@ import Vue from 'vue';
 import iView from 'iview';
 import { router } from './router/index';
 import { appRouter } from './router/router';
+import { Upload } from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import store from './store';
 import App from './app.vue';
 import '@/locale';
@@ -16,6 +18,7 @@ Vue.prototype._ = _;
 
 Vue.use(VueI18n);
 Vue.use(iView);
+Vue.use(Upload);
 
 new Vue({
     el: '#app',
