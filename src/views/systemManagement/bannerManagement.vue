@@ -379,15 +379,15 @@ export default {
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
-      // 改变当前页
-      this.currentPage = pageIndex;
-      for (let i in this.formInline) {
-        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
-          this.getUser(this.formInline);
-          return false;
-        }
-      }
-      this.getUser();
+        // 改变当前页
+        // this.currentPage = pageIndex;
+        for (let i in this.formInline) {
+            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
+                this.getUser(this.formInline, pageIndex);  
+                return false;
+            }
+        };
+        this.getUser();
     },
 
     searchClick(filter) {
@@ -411,25 +411,25 @@ export default {
     },
     //Banner管理列表
     // 为了解决异步问题
-    async getUser(filter) {
-      let params = {
-        pageSize: 10,
-        startPos: filter ? 1 : this.currentPage
-      };
+    async getUser(filter, pageIndex = 1) {
+        let params = {
+            pageSize: 10,
+            startPos: filter ? pageIndex : this.currentPage
+        };
 
-      if (filter) {
-        params = Object.assign(params, filter);
-      }
+        if (filter) {
+            params = Object.assign(params, filter);
+        };
 
-      this.loading = true;
-      let { data } = await bannerManagementList(params);
-      console.log(data);
-      this.total = data[0].count;
-      console.log(this.total);
-      data.shift(0);
-      this.userData = data;
-      this.loading = false;
-      console.log(data);
+        this.loading = true;
+        let { data } = await bannerManagementList(params);
+        console.log(data)
+        this.total = data[0].count;
+        console.log(this.total)
+        data.shift(0);
+        this.userData = data;
+        this.loading = false;
+        console.log(data);
     }
   },
   mounted() {

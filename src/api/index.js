@@ -15,20 +15,6 @@ export const CorrectpathObj = {
   //   base6: 'http://xyo.zkjiashijie.com:8080'
   // },
 
-  // Correctpath: {
-  //   base1: 'http://test.zkjiashijie.com:8080',
-
-  //   base2: 'http://test.zkjiashijie.com:8080',
-    
-  //   base3: 'http://test.zkjiashijie.com:8080',
-    
-  //   base4: 'http://test.zkjiashijie.com:8080',
-    
-  //   base5: 'http://test.zkjiashijie.com:8080',
-    
-  //   base6: 'http://test.zkjiashijie.com:8080'
-  // },
-
   // 开发环境(本地)
   Correctpath: {
     base1:'http://192.168.1.6:8848',//刘天杨

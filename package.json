@@ -34,6 +34,7 @@
     "tinymce": "^4.7.4",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
+    "vue-virtual-scroll-list": "^1.2.8",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
