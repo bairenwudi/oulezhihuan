@@ -13,8 +13,8 @@
                 <Input type="text" clearable v-model="formInline.cus_nick_name" placeholder="请输入昵称"></Input>
             </FormItem>
 
-            <FormItem prop="p_system" label="来源" :label-width="60">
-               <Select v-model="formInline.p_system" clearable style="width:200px">
+            <FormItem prop="cus_phone_system" label="来源" :label-width="60">
+               <Select v-model="formInline.cus_phone_system" clearable style="width:200px">
                  <Option 
                  v-for="item in systemStatus" 
                  :value="item.value" 
