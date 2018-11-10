@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './CheckoutListinfo.less';
 </style>
-
+<!-- 退房单详情 -->
 <template>
     <div class="formView">
         <h2>订单信息</h2>
@@ -231,10 +231,10 @@ export default {
             // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
-        this.currentPage = pageIndex;
+        // this.currentPage = pageIndex;
         for (let i in this.formInline) {
             if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline);  
+                this.getUser(this.formInline, pageIndex);  
                 return false;
             }
         };

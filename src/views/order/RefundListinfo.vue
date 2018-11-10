@@ -1,7 +1,7 @@
 <style scope lang="less">
     @import './RefundListinfo.less';
 </style>
-
+<!-- 退款单详情 -->
 <template>
     <div class="formView">
         <h2>订单信息</h2>
@@ -99,8 +99,9 @@
 
             </Card>
         </Row>
-        <h2>订单明细</h2>
+        <h2>订单明细</h2><br/>
           <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <br/>
         <h2>预订人信息</h2>
           <Row>
             <Card class="TD-card">
@@ -116,7 +117,7 @@
 
             </Card>
         </Row>
-        <h2>入住人信息</h2>
+        <h2>入住人信息</h2><br/>
           <TableM :columns="columns1" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
 
     </div>
@@ -231,10 +232,10 @@ export default {
             // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
-        this.currentPage = pageIndex;
+        // this.currentPage = pageIndex;
         for (let i in this.formInline) {
             if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline);  
+                this.getUser(this.formInline, pageIndex);  
                 return false;
             }
         };
