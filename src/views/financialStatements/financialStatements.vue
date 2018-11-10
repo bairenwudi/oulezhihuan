@@ -20,11 +20,6 @@
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
 
-            <!-- <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem> -->
-
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
