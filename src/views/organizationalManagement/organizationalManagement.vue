@@ -58,7 +58,7 @@
             <span>提示</span>
         </p>
         <div style="text-align:center">
-            <p>您确定要删除吗？</p>
+            <p>确定要删除吗？</p>
         </div>
         <div slot="footer">
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
