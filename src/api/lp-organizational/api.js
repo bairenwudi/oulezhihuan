@@ -15,22 +15,22 @@ const baseObj = {
 
 //机构管理列表
 const organizationalManagementList = params => {
-    return axios.post(`${baseUrl.base2}/organ/selectOrg?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/organ/selectOrg?pageSize=10`, params);
 };
 
 //机构管理模糊查询
 const organizationalManagementSearch = params => {
-    return axios.post(`${baseUrl.base2}/organ/selectOrg?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/organ/selectOrg?pageSize=10`, params);
 };
 
 // 机构设置-基地信息列表
 const baseInformationList = params => {
-    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
 };
 
 // 机构设置-房间类型列表
 const roomtypeList = params => {
-    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
 };
 
 //机构设置-房间类型添加
