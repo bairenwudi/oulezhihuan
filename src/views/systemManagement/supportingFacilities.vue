@@ -26,7 +26,7 @@
             >
             <Form ref="addForm" :model="addForm" :rules="addRules" :label-width="80">
                 <FormItem label="设施名称" prop="facilities_name">
-                    <Input v-model="addForm.facilities_name" placeholder="请输入banner名称"></Input>
+                    <Input v-model="addForm.facilities_name" placeholder="请输入设施名称"></Input>
                 </FormItem>
 
                 <FormItem label="设施图片" :label-width="85">
@@ -144,7 +144,7 @@ export default {
       addRules: {
         // 定义表单的校验规则
         facilities_name: [
-          { required: true, message: "请输入预订人", trigger: "blur" }
+          { required: true, message: "请输入设施名称", trigger: "blur" }
         ]
       },
 
@@ -188,7 +188,19 @@ export default {
         {
           title: "设施图片",
           render: (h, { row, index }) => {
-            return h("span", {}, row.upLoad ? row.upLoad : `暂无${index}`);
+            return h(
+              "img",
+                {
+                 attrs: {
+                    src: this.imgFun(row)
+                  },
+                  style: {
+                    width: "100px",
+                    height: "80px",
+                    padding:"12px"
+                  }
+                },
+             );
           }
         },
 
@@ -262,14 +274,14 @@ export default {
 
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
-        this.$Message.warning('数量超出最大限制');
+        this.$Message.warning('请上传图片');
     },
 
     // 上传成功
     uploadSuccess(response, file, fileList) {
         console.log(response, file, fileList);
         this.isUpload = true;
-        this.$Message.success('上传成功');
+        this.getUser();
     },
     
     // 上传失败
@@ -291,21 +303,27 @@ export default {
 
     // 执行新增的事件
     addClick() {
-      this.addModal = true;
+       if (this.$refs["addForm"]) {
+        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
+      }  
+      this.addModal = true;  
     },
 
     // 点击确定按钮
     ModalConfirm(name) {
         this.$refs[name].validate(valid => {
             if (valid) {
-                if(!this.fileList.length) {
-                  this.$Message.warning('图片不能为空');
-                  return
-                }
+                // if(!this.fileList.length) {
+                //   this.$Message.warning('请上传图片');
+                //   return
+                // }
                 this.addData = this[name];
                 setTimeout(() => {
                   this.$refs.addUpload.submit();
-                });
+                  this.$Message.success("保存成功!");
+                  this.addModal = false;
+                  this.loading = false;
+                },400);
             }
         });
     },
@@ -313,7 +331,13 @@ export default {
     // 点击框取消按钮
     ModalReset(name) {
       this.$refs[name].resetFields();
-      this.$Message.info("Clicked ok");
+      this.$Message.info("已取消");
+    },
+
+    imgFun(val) {
+      // console.log(val);
+      // console.log(this.base); //http://192.168.1.39:8080
+      return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
     },
 
     // 执行table编辑的事件
@@ -367,6 +391,14 @@ export default {
         }
       }
       this.getUser(filter);
+    },
+
+    imgUrlFormat(facilities_pic_url, facilities_pic_name) {
+      var afterUpload = facilities_pic_url.split("/");
+      var newArr = afterUpload.slice(afterUpload.indexOf("upload"));
+      var newImgUrl = newArr.join("/");
+      var showUrl = this.base + "/" + newImgUrl + "/" + facilities_pic_name;
+      return showUrl;
     },
 
     // 配套设施管理列表
