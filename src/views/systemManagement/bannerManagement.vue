@@ -423,7 +423,7 @@ export default {
           this.loading = true;
           setTimeout(() => {
             this.$Message.success("Success!");
-            this.Modal = false;
+            this.addModal = false;
             this.loading = false;
           }, 1000);
         } else {

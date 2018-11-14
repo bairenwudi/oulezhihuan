@@ -8,19 +8,19 @@
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="OrganizationManagementForm.org_name" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in InstitutionalTitle" :value="item.org_name" :key="item.value">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="province_name" label="省份" :label-width="60">
-               <Select v-model="OrganizationManagementForm.province_name" clearable style="width:200px">
-                 <Option v-for="item in provinceTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            <FormItem prop="name" label="省份" :label-width="60">
+               <Select v-model="OrganizationManagementForm.adm_province_code" @on-change="provinceChange" clearable style="width:200px">
+                 <Option v-for="item in ProvinceTitle" :value="item.code" :key="item.id">{{ item.name }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="city_name" label="城市" :label-width="60">
-               <Select v-model="OrganizationManagementForm.city_name" clearable style="width:200px">
-                 <Option v-for="item in cityTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            <FormItem prop="name" label="城市" :label-width="60">
+               <Select v-model="OrganizationManagementForm.adm_city_code" clearable style="width:200px">
+                 <Option v-for="item in CityTitle" :value="item.code" :key="item.id">{{ item.name }}</Option>
                </Select>
             </FormItem>
 
@@ -40,16 +40,50 @@
                 <Button type="primary" @click.stop="searchClick(OrganizationManagementForm)">查询</Button>
             </FormItem>
 
+            <FormItem>
+                <Button type="primary" @click.stop="delClick">删除</Button>
+            </FormItem>
+            
+            <FormItem prop="org_status" label="更改状态" :label-width="60">
+               <Select v-model="OrganizationManagementForm.org_status" clearable style="width:200px">
+                 <Option v-for="item in statusTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               </Select>
+            </FormItem>
+
+            <FormItem>
+                <Button type="primary" @click.stop="delClick">确定</Button>
+            </FormItem>
+
         </Form>
 
         <TableM :columns="columns" :data="data" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+
+        <!-- 删除提示框 -->
+        <Modal v-model="delDilaog" width="360">
+            <p slot="header" style="color:#f60;text-align:center">
+                <Icon type="ios-information-circle"></Icon>
+                <span>提示</span>
+            </p>
+            <div style="text-align:center">
+                <p>确定要删除吗？</p>
+            </div>
+            <div slot="footer">
+                <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
+            </div>
+        </Modal>
 
     </div>
 </template>
 
 <script>
 import TableM from "../../common/table/table.vue";
-import { organizationalManagementList } from "../../api/lp-organizational/api.js";
+import { 
+  organizationalManagementList, //机构管理列表
+  organizationalManagementDel, //机构管理删除
+  InstitutionalTitleList, //机构管理-机构标题下拉框渲染 
+  ProvinceTitleList, //机构管理-省份下拉列表渲染
+  CityTitleList, //机构管理-城市下拉列表渲染      
+} from "../../api/lp-organizational/api.js";
 
 export default {
   name: "organizationalManagementModel",
@@ -59,39 +93,21 @@ export default {
   },
   data() {
     return {
-      institutionTitle: [
-        {
-          value: "海南",
-          label: "海南"
-        }
-      ],
+      InstitutionalTitle: [],
 
-      provinceTitle: [
-        {
-          value: "北京",
-          label: "北京"
-        }
-      ],
-      cityTitle: [
-        {
-          value: "北京",
-          label: "北京"
-        }
-      ],
+      ProvinceTitle: [],
+
+      CityTitle: [],
 
       statusTitle: [
         {
-          value: "申请退房",
-          label: "申请退房"
+          value: "1",
+          label: "已上线"
         },
         {
-          value: "退房中",
-          label: "退房中"
+          value: "0",
+          label: "已下线"
         },
-        {
-          value: "退房完成",
-          label: "退房完成"
-        }
       ],
       typeTitle: [
         {
@@ -176,7 +192,8 @@ export default {
             return h(
               "span",
               {},
-              row.org_status ? row.org_status : `暂无${index}`
+              // row.org_status ? row.org_status : `暂无${index}`
+              row.org_status === "1" ? `已上线` : `已下线`
             );
           }
         },
@@ -187,8 +204,7 @@ export default {
             return h(
               "span",
               {},
-              row.adm_user_type ? row.adm_user_type : `暂无${index}`
-            );
+              this.typeFilter(row.adm_user_type) || "暂无");
           }
         },
 
@@ -210,7 +226,6 @@ export default {
                   },
                   on: {
                     click: () => {
-                      // this.editClick(params);
                       this.goToInfo(params);
                     }
                   }
@@ -243,8 +258,21 @@ export default {
       data: [], // 内容数据
 
       total: 1, // 总页数
-
-      OrganizationManagementForm: {},
+            //       org_id,
+            // startPos: page || 1, //起始页或当前页
+            // pageSize: 10, //每页条数
+            // org_status: org_status,
+            // adm_user_type: adm_user_type,
+            // adm_city_code: adm_city_code,
+            // adm_province_code: adm_province_code,
+            // org_name: org_name   
+      OrganizationManagementForm: {
+          org_name:'',
+          adm_province_code:"",
+          adm_city_code:"",
+          org_status:"",
+          adm_user_type:"",
+      },
 
       loading: false, // 定义loading为true
 
@@ -253,6 +281,35 @@ export default {
   },
 
   methods: {
+    typeFilter(type) {
+      switch(type){
+        case 1:
+            return '基地';
+            break;
+        case 2:
+            return '个人';
+            break;
+        case 3:
+            return '旅行社';
+            break;
+        default:
+            return '';
+            break;
+      }
+    },
+    //省下拉框 选择触发
+    provinceChange(p_code){
+      console.log(p_code);
+      
+      if(p_code=== ''|| p_code === undefined){
+        this.CityTitle = [];
+        this.OrganizationManagementForm.adm_city_code = '';
+      }else{
+        this.CityTitleListFun(p_code)
+
+      }
+
+    },
     // 进入编辑详情
     goToEditInfo(params) {
       this.$router.push({
@@ -291,9 +348,9 @@ export default {
     pageChange(pageIndex) {
       // 改变当前页
       // this.currentPage = pageIndex;
-      for (let i in this.formInline) {
-        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
-          this.getUser(this.formInline, pageIndex);
+      for (let i in this.OrganizationManagementForm) {
+        if (this.OrganizationManagementForm[i] !== undefined || this.OrganizationManagementForm[i] !== "") {
+          this.getUser(this.OrganizationManagementForm, pageIndex);
           return false;
         }
       }
@@ -301,6 +358,9 @@ export default {
     },
 
     searchClick(filter) {
+      console.log(filter);
+      
+
       this.resetTotal();
       if (filter) {
         for (let i in filter) {
@@ -310,6 +370,31 @@ export default {
         }
       }
       this.getUser(filter);
+      console.log(filter)
+    },
+
+    // 渲染机构标题下拉列表
+    async InstitutionalTitleListFun() {
+        const { data } = await InstitutionalTitleList();
+        data.shift(0);
+        this.InstitutionalTitle = data;
+        console.log(this.InstitutionalTitle)
+    },
+
+    // 渲染省份下拉列表
+    async ProvinceTitleListFun() {
+
+        console.log(this.ProvinceTitleListFun)
+        const { data } = await ProvinceTitleList();
+        this.ProvinceTitle = data;
+        console.log(this.ProvinceTitle)
+    },
+
+    // 渲染城市下拉列表
+    async CityTitleListFun(p_code) {
+        const { data } = await CityTitleList({p_code});
+        this.CityTitle = data;
+        console.log(this.CityTitle)
     },
 
     // 为了解决异步问题
@@ -333,6 +418,9 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.InstitutionalTitleListFun();
+    this.ProvinceTitleListFun();
+    // this.CityTitleListFun();
   }
 };
 </script>

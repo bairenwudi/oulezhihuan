@@ -19,7 +19,7 @@
 
             <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
                <Select v-model="formInline.ord_payment_status" clearable style="width:200px">
-                 <Option v-for="item in payStatus" :value="item.ord_payment_status" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in payStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -29,7 +29,7 @@
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.ord_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.ord_status" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
