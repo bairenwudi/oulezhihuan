@@ -19,7 +19,7 @@
 
             <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
                <Select v-model="formInline.ord_payment_status" clearable style="width:200px">
-                 <Option v-for="item in payStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in payStatus" :value="item.ord_payment_status" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -29,20 +29,20 @@
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.ord_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in orderStatus" :value="item.ord_status" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in AppinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房型" :label-width="50">
-                <Select v-model="formInline.room_name" clearable style="width:200px">
+            <FormItem prop="room_type" label="房型名称" :label-width="60">
+                <Select v-model="formInline.room_type" clearable style="width:200px">
                     <virtual-list :size="30" :remain="5">
-                        <Option v-for="item in roomType" :value="item.room_name" :key="item.room_type_id">{{ item.room_name }}</Option>
+                        <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
                     </virtual-list>
                 </Select>
             </FormItem>
@@ -68,7 +68,8 @@ import TableM from "@/common/table/table.vue";
 import {
   appOrderList, // App订单列表
   appOrderSearch, // App订单模糊查询
-  roomtypeList, // 查询房间类型
+  roomtypeList, // App订单-房间类型下拉框渲染
+  AppInstitutionalTitleList, //App订单-机构标题下拉框渲染
 } from "../../api/lp-order/api.js";
 
 // 补充时间格式 不够10 补充 0
@@ -157,12 +158,12 @@ export default {
           label: "订单完成"
         }
       ],
-      institutionTitle: [
+      AppinstitutionTitle: [
         {
-          value: "退房完成",
-          label: "退房完成"
+          adm_user_type : 3
         }
       ],
+
       roomType: [],
 
       currentPageIndex: 1, // 当前页
@@ -206,12 +207,12 @@ export default {
         },
 
         {
-          title: "房间名称",
+          title: "房型名称",
           render: (h, { row, index }) => {
             return h(
               "span",
               {},
-              row.room_name ? row.room_name : `暂无${index}`
+              row.room_type ? row.room_type : `暂无${index}`
             );
           }
         },
@@ -325,19 +326,8 @@ export default {
         ord_payment_status: "",
         ord_status: "",
         org_name: "",
-        room_name: "",
+        room_type: "",
         check_time: ''
-      },
-
-      ruleInline: {
-        // 定义规则对象
-        cus_account: [
-          { required: true, message: "请输入账号", trigger: "blur" }
-        ],
-        cus_nick_name: [
-          { required: true, message: "请输入昵称", trigger: "blur" }
-          // { type: 'string', min: 11, message: '电话最多为11位', trigger: 'blur' }
-        ]
       },
 
       loading: false, // 定义loading为true
@@ -432,6 +422,14 @@ export default {
       this.getUser();
     },
 
+    // 渲染机构标题下拉列表
+    async AppInstitutionalTitleListFun() {
+        const { data } = await AppInstitutionalTitleList();
+        data.shift(0);
+        this.AppinstitutionTitle = data;
+        console.log(this.AppinstitutionTitle)
+    },
+
     // 渲染房间类型下拉列表
     async roomtypeListFun() {
         const { data } = await roomtypeList();
@@ -482,7 +480,8 @@ export default {
   },
   mounted() {
     this.getUser();
-    this.roomtypeListFun()
+    this.roomtypeListFun();
+    this.AppInstitutionalTitleListFun();
   }
 };
 </script>

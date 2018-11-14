@@ -7,18 +7,20 @@
         <Form ref="formInline" :model="formInline" inline>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               <Select v-model="formInline.org_name" clearable style="width:200px">
+                 <Option v-for="item in financialinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="check_in_time" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
+            <FormItem prop="check_time" label="入离时间" :label-width="60">              
+             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
+
+            
 
         </Form>
 
@@ -33,23 +35,28 @@ import TableM from "../../common/table/table.vue";
 import {
     financialStatementsList, //财务报表列表
     financialStatementsSearch, //财务报表模糊查询
+    financialInstitutionalTitleList //财务报表-机构标题下拉框渲染
 } from '../../api/lp-financialStatements/api.js'
+
+// 补充时间格式 不够10 补充 0
+import { formatTime } from "@/common/date/formatTime.js";
+// 引入优化滚动插件
+import VirtualList from 'vue-virtual-scroll-list'
 
 export default {
   name: "financialStatementsModel",
 
   components: {
-    TableM
+    TableM,
+    VirtualList
   }, 
   data() {
     return {
-        institutionTitle:[
+        financialinstitutionTitle:[
                     {
-                        value: '退房完成',
-                        label: '退房完成'
+                        adm_user_type : 3
                     },
                 ],
-                model8:'',
 
         currentPageIndex: 1,    // 当前页
 
@@ -77,7 +84,7 @@ export default {
             },
 
             {
-                title: "房间名称",
+                title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.room_name ? row.room_name : `暂无${index}`)
@@ -172,16 +179,7 @@ export default {
 
         formInline: {   // 定义表单对象
             org_name: '', //机构标题
-        },
-
-        ruleInline: {   // 定义规则对象
-            cus_account: [
-                { required: true, message: '请输入账号', trigger: 'blur' }
-            ],
-            cus_nick_name: [
-                { required: true, message: '请输入昵称', trigger: 'blur' }
-                // { type: 'string', min: 11, message: '电话最多为11位', trigger: 'blur' }
-            ]
+            check_time: ''
         },
 
         loading: false,  // 定义loading为true
@@ -204,27 +202,6 @@ export default {
         this.total = 1;
     },
 
-    // 执行table编辑的事件
-    editClick(params) {
-        console.log(params);
-    },
-
-    // 执行删除的事件
-    delClick(params) {
-        console.log(params);
-        this.delDilaog = true;
-    },
-
-    // 删除确定按钮
-    delConfrmClick() {
-        this.delLoading = true;
-        setTimeout(() => {
-            this.delDilaog = false;
-            this.$Message.success('成功');
-            console.log('我滚了');
-        }, 1000)
-    },
-
     // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
@@ -236,6 +213,14 @@ export default {
             }
         };
         this.getUser();
+    },
+
+    // 渲染机构标题下拉列表
+    async financialInstitutionalTitleListFun() {
+        const { data } = await financialInstitutionalTitleList();
+        data.shift(0);
+        this.financialinstitutionTitle = data;
+        console.log(this.financialinstitutionTitle)
     },
 
     searchClick(filter) {
@@ -274,6 +259,7 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.financialInstitutionalTitleListFun();
   }
 };
 </script>
