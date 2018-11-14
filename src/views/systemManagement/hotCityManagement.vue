@@ -125,7 +125,37 @@ export default {
       }
     };
     
+    var emptyValidP_name = (rule, value, callback) => {
+      
+      console.log(rule);
+      console.log(value);
+      console.log(callback);
+      if(value === ''){
+        // alert(1)
+      }
+      
+      if(value === '') {
+        return callback(new Error("请填写完整1"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValidC_name = (rule, value, callback) => {
+      console.log(rule);
+      console.log(value);
+      console.log(callback);
+      if(!value){
+        // alert(1)
+      }
+      if(value === '') {
+        return callback(new Error("请填写完整2"));
+      } else {
+        callback();
+      }
+    };
     var emptyValid = (rule, value, callback) => {
+      console.log(value);
+
       if(!value) {
         return callback(new Error("请填写完整"));
       } else {
@@ -149,6 +179,12 @@ export default {
       },
       ruleValidate: {
         // 定义表单的校验规则
+        p_name: [
+          { validator: emptyValidP_name }
+        ],
+        c_name: [
+          { validator: emptyValidC_name }
+        ],
         hcm_sort: [
           { validator: emptyValid, trigger: "blur" }
         ]
@@ -303,6 +339,8 @@ export default {
     add(name) {
 
       this.$refs[name].validate(valid => {
+        console.log(valid);
+        
         if (valid) {
           this.loading = true;
           let params = {
@@ -330,6 +368,8 @@ export default {
     },
     edit(name) {
       this.$refs[name].validate(valid => {
+        console.log(valid);
+        
         if (valid) {
           this.loading = true;
           let params = {
