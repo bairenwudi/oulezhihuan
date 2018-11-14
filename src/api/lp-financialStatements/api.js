@@ -22,11 +22,17 @@ const financialStatementsSearch = params => {
     return axios.post(`${baseUrl.base3}/FinanceController/select_finance?startPos=${params.startPos}&pageSize=10`, params);
 };
 
+// 财务报表模糊查询-机构标题下拉列表渲染
+const financialInstitutionalTitleList = params => {
+    return axios.post(`${baseUrl.base3}/FinanceController/Select_org_name`, params);
+};
+
 
 
 export {
     financialStatementsList, //财务报表列表
     financialStatementsSearch, //财务报表模糊查询
+    financialInstitutionalTitleList //财务报表-机构标题下拉框渲染
 };
 
 // 组件中获取base地址

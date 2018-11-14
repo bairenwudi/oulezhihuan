@@ -12,7 +12,7 @@
                 :open-names="openedSubmenuArr"
                 :menu-list="menuList">
                 <div slot="top" class="logo-con">
-                    <span class="FshrinkDesc" v-show="!shrink">置换后台管理系统</span>
+                    <span class="FshrinkDesc" v-show="!shrink" :style="{ color: spanTheme }">置换后台管理系统</span>
                     <img v-show="shrink" src="../images/logo-min.jpg" key="min-logo" />
                 </div>
             </shrinkable-menu>
@@ -81,14 +81,19 @@
             breadcrumbNav,
             fullScreen,
             lockScreen,
-            themeSwitch
+            themeSwitch,
         },
         data () {
             return {
                 shrink: false,
+
                 userName: '',
+
                 isFullScreen: false,
-                openedSubmenuArr: this.$store.state.app.openedSubmenuArr
+
+                openedSubmenuArr: this.$store.state.app.openedSubmenuArr,
+
+                spanTheme: ''
             };
         },
         computed: {
@@ -111,7 +116,11 @@
                 return this.$store.state.app.lang;
             },
             menuTheme () {
-                console.log(this.$store.state.app.menuTheme);
+                this.$store.state.app.menuTheme === 'light'
+                ?
+                this.spanTheme = '#000'
+                :
+                this.spanTheme = '#fff'
                 return this.$store.state.app.menuTheme;
             }
         },

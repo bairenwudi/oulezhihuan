@@ -6,15 +6,15 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
             <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入订单号"></Input>
+                <Input type="text" v-model="formInline.ord_id" clearable placeholder="请输入订单号"></Input>
             </FormItem>
 
             <FormItem prop="ord_customer" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.ord_customer" placeholder="请输入预订人"></Input>
+                <Input type="text" v-model="formInline.ord_customer" clearable placeholder="请输入预订人"></Input>
             </FormItem>
 
             <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.ord_phone_number" placeholder="请输入预订人手机"></Input>
+                <Input type="text" v-model="formInline.ord_phone_number" clearable placeholder="请输入预订人手机"></Input>
             </FormItem>
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
@@ -23,19 +23,19 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房型名称" :label-width="60">
-               <Select v-model="formInline.room_name" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            <FormItem prop="room_type" label="房型名称" :label-width="60">
+               <Select v-model="formInline.room_type" clearable style="width:200px">
+                 <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="check_in_time" label="入离时间" :label-width="60">              
-             <DatePicker v-model="formInline.check_in_time" v-for="item in roomType" type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+            <FormItem prop="check_time" label="入离时间" :label-width="60">              
+             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in RefundinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
@@ -62,14 +62,22 @@
 import TableM from "../../common/table/table.vue";
 import {
     refundList, //退款单列表
-    refundListSearch //退款单模糊查询
+    refundListSearch, //退款单模糊查询
+    roomtypeList, // 退款单-房间类型下拉框渲染
+    RefundInstitutionalTitleList, //退款单-机构标题下拉框渲染
 } from '../../api/lp-order/api.js'
+
+// 补充时间格式 不够10 补充 0
+import { formatTime } from "@/common/date/formatTime.js";
+// 引入优化滚动插件
+import VirtualList from 'vue-virtual-scroll-list'
 
 export default {
   name: "refundListModel",
 
   components: {
-    TableM
+    TableM,
+    VirtualList
   }, 
   data() {
     return {
@@ -135,26 +143,17 @@ export default {
                         label: '订单完成'
                     }                            
                 ],
-        institutionTitle:[
+        RefundinstitutionTitle:[
                     {
-                        value: '退房完成',
-                        label: '退房完成'
+                        adm_user_type : 3
                     },
                 ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
-                    },
-                                    
-                ],
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
+        roomType: [],
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    
+            // 退款单表头信息
             {
                 title: "订单号",
                 key: "ord_id",
@@ -195,10 +194,10 @@ export default {
             },
 
             {
-                title: "房间名称",
+                title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_type ? row.room_type : `暂无${index}`)
                 }
             },
 
@@ -253,15 +252,15 @@ export default {
             {
                 title: "订单状态",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
                 }
             },
 
             {
                 title: "退款手续费",
                 render: (h, {row, index}) => {
-                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
+                    return h('span', {
+                    }, row.refund_formalities ? row. refund_formalities: `暂无${index}`);
                 }
             },
 
@@ -335,17 +334,8 @@ export default {
             ord_phone_number: '', 
             ord_status: '', 
             org_name: '', 
-            room_name: ''
-        },
-
-        ruleInline: {   // 定义规则对象
-            cus_account: [
-                { required: true, message: '请输入账号', trigger: 'blur' }
-            ],
-            cus_nick_name: [
-                { required: true, message: '请输入昵称', trigger: 'blur' }
-                // { type: 'string', min: 11, message: '电话最多为11位', trigger: 'blur' }
-            ]
+            room_type: '',
+            check_time: ''
         },
 
         loading: false,  // 定义loading为true
@@ -363,30 +353,68 @@ export default {
         })
     },
 
+    // 转化时间
+    dataFormat(time) {
+        return formatTime(time);
+    },
+
+    // 过滤订单状态
+    SetStatusFilter(status) {
+        switch(status) {
+            case 0:
+                return '待付款';
+                break;
+            case 1:
+                return '待审核';
+                break;
+            case 2:
+                return '已付款';
+                break;
+            case 3:
+                return '已审核';
+                break;
+            case 4:
+                return '申请退款';
+                break;
+            case 5:
+                return '退款中';
+                break;
+            case 6:
+                return '退款成功';
+                break;
+            case 7:
+                return '退款失败';
+                break;
+            case 8:
+                return '已入住';
+                break;
+            case 9:
+                return '申请退房';
+                break;
+            case 10:
+                return '退房中';
+                break;
+            case 11:
+                return '退房中';
+                break;
+            case 12:
+                return '退房失败';
+                break;
+            case 13:
+                return '订单取消';
+                break;
+            case 14:
+                return '订单完成';
+                break;
+            default:
+                return '';
+                break;
+        }
+    },
+
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;
-    },
-
-    // 执行table编辑的事件
-    editClick(params) {
-        console.log(params);
-    },
-
-    // 执行删除的事件
-    delClick(params) {
-        console.log(params);
-        this.delDilaog = true;
-    },
-
-    // 删除确定按钮
-    delConfrmClick() {
-        this.delLoading = true;
-        setTimeout(() => {
-            this.delDilaog = false;
-            this.$Message.success('成功');
-            console.log('我滚了');
-        }, 1000)
     },
 
     // 改变分页触发的事件
@@ -400,6 +428,22 @@ export default {
             }
         };
         this.getUser();
+    },
+
+    // 渲染机构标题下拉列表
+    async RefundInstitutionalTitleListFun() {
+        const { data } = await RefundInstitutionalTitleList();
+        data.shift(0);
+        this.RefundinstitutionTitle = data;
+        console.log(this.RefundinstitutionTitle)
+    },
+
+    // 渲染房间类型下拉列表
+    async roomtypeListFun() {
+        const { data } = await roomtypeList();
+        data.shift(0);
+        this.roomType = data;
+        console.log(this.roomType)
     },
 
     searchClick(filter) {
@@ -421,9 +465,13 @@ export default {
             startPos: filter ? pageIndex : this.currentPage
         };
 
-        if (filter) {
-            params = Object.assign(params, filter);
-        };
+         if (filter) {
+        params = Object.assign(params, filter);
+        if(filter.check_time[0] !== '') {
+            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+        }
+      }
 
         this.loading = true;
         let { data } = await refundList(params);
@@ -438,6 +486,8 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.roomtypeListFun();
+    this.RefundInstitutionalTitleListFun();
   }
 };
 </script>

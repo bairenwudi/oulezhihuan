@@ -7,36 +7,36 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
             <FormItem prop="ord_id" label="订单号" :label-width="50">
-                <Input type="text" v-model="formInline.ord_id" placeholder="请输入订单号"></Input>
+                <Input type="text" v-model="formInline.ord_id" clearable placeholder="请输入订单号"></Input>
             </FormItem>
 
             <FormItem prop="ord_customer" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.ord_customer" placeholder="请输入预订人"></Input>
+                <Input type="text" v-model="formInline.ord_customer" clearable placeholder="请输入预订人"></Input>
             </FormItem>
 
             <FormItem prop="ord_phone_number" label="预订人手机" :label-width="75">
-                <Input type="text" v-model="formInline.ord_phone_number" placeholder="请输入预订人手机"></Input>
+                <Input type="text" v-model="formInline.ord_phone_number" clearable placeholder="请输入预订人手机"></Input>
             </FormItem>
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
+               <Select v-model="formInline.ord_status" clearable style="width:200px">
                  <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房型名称" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            <FormItem prop="room_type" label="房型名称" :label-width="60">
+               <Select v-model="formInline.room_type" clearable style="width:200px">
+                 <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="cus_nick_name" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+            <FormItem prop="check_time" label="入离时间" :label-width="60">              
+             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               <Select v-model="formInline.org_name" clearable style="width:200px">
+                 <Option v-for="item in checkoutinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
@@ -63,60 +63,97 @@
 import TableM from "../../common/table/table.vue";
 import {
     checkoutList, //退房单列表
-    checkoutListSearch //退房单模糊查询
+    checkoutListSearch, //退房单模糊查询
+    roomtypeList, // 退房单-房间类型下拉框渲染
+    checkoutInstitutionalTitleList //退房单-机构标题下拉框渲染
 } from '../../api/lp-order/api.js'
+
+// 补充时间格式 不够10 补充 0
+import { formatTime } from "@/common/date/formatTime.js";
+// 引入优化滚动插件
+import VirtualList from 'vue-virtual-scroll-list'
 
 export default {
   name: "checkoutListModel",
 
   components: {
-    TableM
+    TableM,
+    VirtualList
   }, 
   data() {
     return {
         orderStatus: [
                     {
-                        value: '申请退房',
+                        value: '0',
+                        label: '待付款'
+                    },
+                    {
+                        value: '1',
+                        label: '待审核'
+                    },
+                    {
+                        value: '2',
+                        label: '已付款'
+                    },
+                    {
+                        value: '3',
+                        label: '已审核'
+                    },
+                    {
+                        value: '4',
+                        label: '申请退款'
+                    },
+                    {
+                        value: '5',
+                        label: '退款中'
+                    },
+                    {
+                        value: '6',
+                        label: '退款成功'
+                    }, 
+                    {
+                        value: '7',
+                        label: '退款失败'
+                    },
+                    {
+                        value: '8',
+                        label: '已入住'
+                    },
+                    {
+                        value: '9',
                         label: '申请退房'
                     },
                     {
-                        value: '退房中',
+                        value: '10',
                         label: '退房中'
+                    },  
+                    {
+                        value: '11',
+                        label: '退房成功'
                     },
                     {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },                  
+                        value: '12',
+                        label: '退房失败'
+                    },
+                    {
+                        value: '13',
+                        label: '订单取消'
+                    },
+                    {
+                        value: '14',
+                        label: '订单完成'
+                    }                                 
                 ],
-        institutionTitle:[
+        checkoutinstitutionTitle:[
                     {
-                        value: '退房完成',
-                        label: '退房完成'
+                        adm_user_type : 3
                     },
                 ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
-                    },
-                    {
-                        value: 'London',
-                        label: 'London'
-                    },
-                    {
-                        value: 'Sydney',
-                        label: 'Sydney'
-                    },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
-                ],
-                model8:'',
+        roomType: [],
 
         currentPageIndex: 1,    // 当前页
 
-        columns: [    // 表头信息
+        columns: [    // 退房单表头信息
             {
                 title: "订单号",
                 key: "ord_id",
@@ -306,17 +343,8 @@ export default {
             ord_phone_number: '', 
             ord_status: '', 
             org_name: '', 
-            room_name: ''
-        },
-
-        ruleInline: {   // 定义规则对象
-            cus_account: [
-                { required: true, message: '请输入账号', trigger: 'blur' }
-            ],
-            cus_nick_name: [
-                { required: true, message: '请输入昵称', trigger: 'blur' }
-                // { type: 'string', min: 11, message: '电话最多为11位', trigger: 'blur' }
-            ]
+            room_type: '',
+            check_time: ''
         },
 
         loading: false,  // 定义loading为true
@@ -332,6 +360,65 @@ export default {
             path: '/CheckoutListinfoModel',
             data: params 
         })
+    },
+
+     // 转化时间
+    dataFormat(time) {
+        return formatTime(time);
+    },
+
+    // 过滤订单状态
+    SetStatusFilter(status) {
+        switch(status) {
+            case 0:
+                return '待付款';
+                break;
+            case 1:
+                return '待审核';
+                break;
+            case 2:
+                return '已付款';
+                break;
+            case 3:
+                return '已审核';
+                break;
+            case 4:
+                return '申请退款';
+                break;
+            case 5:
+                return '退款中';
+                break;
+            case 6:
+                return '退款成功';
+                break;
+            case 7:
+                return '退款失败';
+                break;
+            case 8:
+                return '已入住';
+                break;
+            case 9:
+                return '申请退房';
+                break;
+            case 10:
+                return '退房中';
+                break;
+            case 11:
+                return '退房中';
+                break;
+            case 12:
+                return '退房失败';
+                break;
+            case 13:
+                return '订单取消';
+                break;
+            case 14:
+                return '订单完成';
+                break;
+            default:
+                return '';
+                break;
+        }
     },
 
     resetTotal() {
@@ -350,6 +437,22 @@ export default {
             }
         };
         this.getUser();
+    },
+
+    // 渲染机构标题下拉列表
+    async checkoutInstitutionalTitleListFun() {
+        const { data } = await checkoutInstitutionalTitleList();
+        data.shift(0);
+        this.checkoutinstitutionTitle = data;
+        console.log(this.checkoutinstitutionTitle)
+    },
+
+    // 渲染房间类型下拉列表
+    async roomtypeListFun() {
+        const { data } = await roomtypeList();
+        data.shift(0);
+        this.roomType = data;
+        console.log(this.roomType)
     },
 
     searchClick(filter) {
@@ -388,6 +491,8 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.roomtypeListFun();
+    this.checkoutInstitutionalTitleListFun();
   }
 };
 </script>
