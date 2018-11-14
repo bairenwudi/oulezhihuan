@@ -6,12 +6,12 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
 
-             <FormItem>
-                <Button type="primary" @click="addClick">新增</Button>
+            <FormItem>
+              <Button type="primary" @click="addClick">新增</Button>
             </FormItem>
 
-             <FormItem>
-                <Button type="primary" @click="delClick">删除</Button>
+            <FormItem>
+              <Button type="primary" @click="delClick">删除</Button>
             </FormItem>
         </Form>
 
@@ -29,13 +29,15 @@
                     <Input v-model="addForm.facilities_name" placeholder="请输入banner名称"></Input>
                 </FormItem>
 
-                <FormItem label="设施图片" prop="upLoad" :label-width="85">
+                <FormItem label="设施图片" :label-width="85">
                     <el-upload
                         ref="addUpload"
+                        name="upLoad"
                         :action="actionUrl"
                         :data="addData"
                         list-type="picture-card"
                         :auto-upload="false"
+                        :on-change="onChange"
                         :on-preview="handlePictureCardPreview"
                         :on-success="uploadSuccess"
                         :on-error="uploadError"
@@ -126,6 +128,9 @@ export default {
     };
 
     return {
+
+      fileList: [],
+
       formValidate: {
         // 定义新增表单的对象
         facilities_name: "",
@@ -250,6 +255,11 @@ export default {
         this.visible = true;
     },
 
+    // 图片上传之前的钩子
+    onChange(file, fileList) {
+      this.fileList = fileList;
+    },
+
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
         this.$Message.warning('数量超出最大限制');
@@ -258,6 +268,7 @@ export default {
     // 上传成功
     uploadSuccess(response, file, fileList) {
         console.log(response, file, fileList);
+        this.isUpload = true;
         this.$Message.success('上传成功');
     },
     
@@ -287,9 +298,13 @@ export default {
     ModalConfirm(name) {
         this.$refs[name].validate(valid => {
             if (valid) {
+                if(!this.fileList.length) {
+                  this.$Message.warning('图片不能为空');
+                  return
+                }
                 this.addData = this[name];
                 setTimeout(() => {
-                    this.$refs.addUpload.submit();
+                  this.$refs.addUpload.submit();
                 });
             }
         });
@@ -354,7 +369,7 @@ export default {
       this.getUser(filter);
     },
 
-    //配套设施管理列表
+    // 配套设施管理列表
     async getUser(filter, pageIndex = 1) {
       let params = {
         pageSize: 10,
@@ -367,6 +382,7 @@ export default {
 
       this.loading = true;
       let { data } = await supportingFacilitiesList(params);
+      console.log(data);
       this.total = data[0].count;
       data.shift(0);
       this.userData = data;

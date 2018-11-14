@@ -31,7 +31,21 @@
                 </FormItem>
 
                 <FormItem label="banner图" prop="upLoad" width='100'>
-                    
+                  <template>
+                    <div>
+                        <Upload
+                          :before-upload="handleUpload"
+                          action="//jsonplaceholder.typicode.com/posts/">
+                          <Button icon="ios-cloud-upload-outline">Select the file to upload</Button>
+                        </Upload>
+                      <div v-if="file !== null" class="imgDiv">
+                        Upload file: {{ file.name }}
+                        <img :src="picSrc" alt="" style="width:100%;height:100%">
+                        <Button type="text"></Button>
+                      </div>
+
+                    </div>
+                  </template>
                 </FormItem>
 
                 <FormItem label="上传H5" prop="upLoad">
@@ -172,6 +186,8 @@ export default {
           }
         ]
       },
+      picSrc:'',
+      file:null,
 
       addModal: false,
 
@@ -310,6 +326,29 @@ export default {
   },
 
   methods: {
+    // getImgUrl
+    getObjectURL(file) {
+        var url = null ;
+        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+        if (window.createObjectURL!=undefined) { // basic
+            url = window.createObjectURL(file) ;
+        } else if (window.URL!=undefined) { // mozilla(firefox)
+            url = window.URL.createObjectURL(file) ;
+        } else if (window.webkitURL!=undefined) { // webkit or chrome
+            url = window.webkitURL.createObjectURL(file) ;
+        }
+        return url ;
+    },
+    //图片上传阻止默认上传
+    handleUpload(file){
+      console.log(file);
+      
+      this.file = file;
+      var dd = this.getObjectURL(file)
+      console.log(dd);
+      this.picSrc = dd + '/' + file.name;
+      return false;
+    },
     resetTotal() {
       this.currentPage = 1;
       this.total = 1;
@@ -342,9 +381,8 @@ export default {
       this.$refs[name].resetFields();
     },
     imgFun(val) {
-      //http://192.168.1.39:8080/upload/upBanner/2018-10-13_16-32-00/184dc4b777e54d6785e217e296a80120/admin_bottom.png
-      console.log(val);
-      console.log(this.base); //http://192.168.1.39:8080
+      // console.log(val);
+      // console.log(this.base); //http://192.168.1.39:8080
       return this.imgUrlFormat(val.banner_url, val.banner_name);
     },
     h5fun(val){
