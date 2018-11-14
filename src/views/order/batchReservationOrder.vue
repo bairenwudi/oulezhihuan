@@ -4,9 +4,6 @@
 <!--批量预定订单 -->
 <template>
     <div class="formView">
-        <Modal title="View Image" v-model="visible">
-            <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
-        </Modal>
 
         <Form ref="formInline" :model="formInline" inline>
 
