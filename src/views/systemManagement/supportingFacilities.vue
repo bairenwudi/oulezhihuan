@@ -21,8 +21,8 @@
         <Modal v-model="addModal"
                 title="新增"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('addForm')"
-                @on-cancel="ModalReset('addForm')"
+                @on-ok="AddModalConfirm('addForm')"
+                @on-cancel="AddModalReset('addForm')"
             >
             <Form ref="addForm" :model="addForm" :rules="addRules" :label-width="80">
                 <FormItem label="设施名称" prop="facilities_name">
@@ -55,35 +55,48 @@
             </Form>
 
             <div slot="footer" align="center">
-                <Button type="primary" @click="ModalConfirm('addForm')" :loading="loading">确定</Button>
-                <Button @click="ModalReset('addForm')" style="margin-left: 8px">重置</Button>
+                <Button type="primary" @click="AddModalConfirm('addForm')" :loading="loading">确定</Button>
+                <Button @click="AddModalReset('addForm')" style="margin-left: 8px">取消</Button>
             </div>
         </Modal>
 
      <!--  编辑提示框 -->
-        <!-- <Modal v-model="editModal"
+        <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
-                @on-cancel="ModalReset('formValidate')"
+                @on-ok="EditModalConfirm('editForm')"
+                @on-cancel="EditModalReset('editForm')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <FormItem label="设施名称" prop="facilities_name">
-                    <Input v-model="formValidate.facilities_name" placeholder="请输入banner名称"></Input>
-                </FormItem>
+            <Form ref="editForm" :model="editForm" :rules="editRules" :label-width="80">
+                <FormItem label="设施图片" :label-width="85">
+                    <!-- <el-upload
+                        ref="editUpload"
+                        name="upLoad"
+                        :action="actionUrl"
+                        :data="editData"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :on-change="onChange"
+                        :on-preview="handlePictureCardPreview"
+                        :on-success="uploadSuccess"
+                        :on-error="uploadError"
+                        :on-exceed="edituploadonExceed"
+                        :on-remove="handleRemove"
+                        :limit="1"
+                    >
+                        <i class="el-icon-plus"></i>
+                    </el-upload> -->
 
-                <FormItem label="设施图片" prop="upLoad" :label-width="85"> -->
-                    
-                    <!-- <Modal title="View Image" v-model="visible">
-                        <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
-                    </Modal> -->
-                <!-- </FormItem>
+                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                        <img :src="imgUrl" v-if="visible" style="width: 100%">
+                    </Modal>
+                </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalReset('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="EditModalConfirm('formValidate')" :loading="loading">确定</Button>
+                    <Button @click="EditModalReset('formValidate')" style="margin-left: 8px">取消</Button>
                 </div>
-        </Modal> -->
+        </Modal>
 
     <!-- 删除提示框 -->
     <Modal v-model="delDilaog" width="360">
@@ -131,17 +144,26 @@ export default {
 
       fileList: [],
 
-      formValidate: {
-        // 定义新增表单的对象
-        facilities_name: "",
-        upLoad: ""
-      },
+      
 
       addForm: {
         facilities_name: ""
       },
 
+      editForm: {
+        // 定义新增表单的对象
+        facilities_name: "",
+        upLoad: ""
+      },
+
       addRules: {
+        // 定义表单的校验规则
+        facilities_name: [
+          { required: true, message: "请输入设施名称", trigger: "blur" }
+        ]
+      },
+
+      editRules: {
         // 定义表单的校验规则
         facilities_name: [
           { required: true, message: "请输入设施名称", trigger: "blur" }
@@ -310,7 +332,7 @@ export default {
     },
 
     // 点击确定按钮
-    ModalConfirm(name) {
+    AddModalConfirm(name) {
         this.$refs[name].validate(valid => {
             if (valid) {
                 // if(!this.fileList.length) {
@@ -329,7 +351,7 @@ export default {
     },
 
     // 点击框取消按钮
-    ModalReset(name) {
+    AddModalReset(name) {
       this.$refs[name].resetFields();
       this.$Message.info("已取消");
     },
