@@ -14,50 +14,45 @@ const baseObj = {
 
 
 //机构管理列表
-const organizationalManagementList = params => {
+export const organizationalManagementList = params => {
     return axios.post(`${baseUrl.base2}/organ/selectOrg?pageSize=10`, params);
 };
 
+// 机构标题下拉框渲染（传值参数org_name）
+export const selectOrg_name = params => {
+    return axios.post(`${baseUrl.base2}/Admin_userController/selectOrg_name`, params);
+};
+
 //机构管理模糊查询
-const organizationalManagementSearch = params => {
+export const organizationalManagementSearch = params => {
     return axios.post(`${baseUrl.base2}/organ/selectOrg?pageSize=10`, params);
 };
 
 // 机构设置-基地信息列表
-const baseInformationList = params => {
+export const baseInformationList = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
 };
 
 // 机构设置-房间类型列表
-const roomtypeList = params => {
+export const roomtypeList = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
 };
 
 //机构设置-房间类型添加
-const roomtypeAdd = params => {
+export const roomtypeAdd = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_typeController/save`, params);
 }
 
 //机构设置-房间类型编辑
-const roomtypeEdit = params => {
+export const roomtypeEdit = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_typeController/updateById`, params);
 }
 
 //机构设置-房间类型删除
-const roomtypeDel = params => {
+export const roomtypeDel = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_typeController/deleteById`, params);
 }
 
-
-export {
-    organizationalManagementList, //机构管理列表
-    organizationalManagementSearch,//机构管理模糊查询
-    baseInformationList,//机构设置-基地信息
-    roomtypeList, //机构设置-房间类型列表
-    roomtypeAdd, //机构设置-房间类型添加
-    roomtypeEdit, //机构设置-房间类型编辑
-    roomtypeDel, //机构设置-房间类型删除
-};
 
 // 组件中获取base地址
 export const getBase = () => {

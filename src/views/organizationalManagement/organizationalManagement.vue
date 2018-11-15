@@ -49,7 +49,10 @@
 
 <script>
 import TableM from "../../common/table/table.vue";
-import { organizationalManagementList } from "../../api/lp-organizational/api.js";
+import { 
+  organizationalManagementList,
+  selectOrg_name,
+} from "../../api/lp-organizational/api.js";
 
 export default {
   name: "organizationalManagementModel",
@@ -59,25 +62,11 @@ export default {
   },
   data() {
     return {
-      institutionTitle: [
-        {
-          value: "海南",
-          label: "海南"
-        }
-      ],
+      institutionTitle: [],   // 机构标题
 
-      provinceTitle: [
-        {
-          value: "北京",
-          label: "北京"
-        }
-      ],
-      cityTitle: [
-        {
-          value: "北京",
-          label: "北京"
-        }
-      ],
+      provinceTitle: [],  // 省份
+
+      cityTitle: [],    // 城市
 
       statusTitle: [
         {
