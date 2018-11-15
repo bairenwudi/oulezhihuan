@@ -6,12 +6,12 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
 
-             <FormItem>
-                <Button type="primary" @click="addClick">新增</Button>
+            <FormItem>
+              <Button type="primary" @click="addClick">新增</Button>
             </FormItem>
 
-             <FormItem>
-                <Button type="primary" @click="delClick">删除</Button>
+            <FormItem>
+              <Button type="primary" @click="delClick">删除</Button>
             </FormItem>
         </Form>
 
@@ -26,16 +26,18 @@
             >
             <Form ref="addForm" :model="addForm" :rules="addRules" :label-width="80">
                 <FormItem label="设施名称" prop="facilities_name">
-                    <Input v-model="addForm.facilities_name" placeholder="请输入banner名称"></Input>
+                    <Input v-model="addForm.facilities_name" placeholder="请输入设施名称"></Input>
                 </FormItem>
 
-                <FormItem label="设施图片" prop="upLoad" :label-width="85">
+                <FormItem label="设施图片" :label-width="85">
                     <el-upload
                         ref="addUpload"
+                        name="upLoad"
                         :action="actionUrl"
                         :data="addData"
                         list-type="picture-card"
                         :auto-upload="false"
+                        :on-change="onChange"
                         :on-preview="handlePictureCardPreview"
                         :on-success="uploadSuccess"
                         :on-error="uploadError"
@@ -126,6 +128,9 @@ export default {
     };
 
     return {
+
+      fileList: [],
+
       formValidate: {
         // 定义新增表单的对象
         facilities_name: "",
@@ -139,7 +144,7 @@ export default {
       addRules: {
         // 定义表单的校验规则
         facilities_name: [
-          { required: true, message: "请输入预订人", trigger: "blur" }
+          { required: true, message: "请输入设施名称", trigger: "blur" }
         ]
       },
 
@@ -183,7 +188,19 @@ export default {
         {
           title: "设施图片",
           render: (h, { row, index }) => {
-            return h("span", {}, row.upLoad ? row.upLoad : `暂无${index}`);
+            return h(
+              "img",
+                {
+                 attrs: {
+                    src: this.imgFun(row)
+                  },
+                  style: {
+                    width: "100px",
+                    height: "80px",
+                    padding:"12px"
+                  }
+                },
+             );
           }
         },
 
@@ -250,15 +267,21 @@ export default {
         this.visible = true;
     },
 
+    // 图片上传之前的钩子
+    onChange(file, fileList) {
+      this.fileList = fileList;
+    },
+
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
-        this.$Message.warning('数量超出最大限制');
+        this.$Message.warning('请上传图片');
     },
 
     // 上传成功
     uploadSuccess(response, file, fileList) {
         console.log(response, file, fileList);
-        this.$Message.success('上传成功');
+        this.isUpload = true;
+        this.getUser();
     },
     
     // 上传失败
@@ -280,17 +303,27 @@ export default {
 
     // 执行新增的事件
     addClick() {
-      this.addModal = true;
+       if (this.$refs["addForm"]) {
+        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
+      }  
+      this.addModal = true;  
     },
 
     // 点击确定按钮
     ModalConfirm(name) {
         this.$refs[name].validate(valid => {
             if (valid) {
+                // if(!this.fileList.length) {
+                //   this.$Message.warning('请上传图片');
+                //   return
+                // }
                 this.addData = this[name];
                 setTimeout(() => {
-                    this.$refs.addUpload.submit();
-                });
+                  this.$refs.addUpload.submit();
+                  this.$Message.success("保存成功!");
+                  this.addModal = false;
+                  this.loading = false;
+                },400);
             }
         });
     },
@@ -298,7 +331,13 @@ export default {
     // 点击框取消按钮
     ModalReset(name) {
       this.$refs[name].resetFields();
-      this.$Message.info("Clicked ok");
+      this.$Message.info("已取消");
+    },
+
+    imgFun(val) {
+      // console.log(val);
+      // console.log(this.base); //http://192.168.1.39:8080
+      return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
     },
 
     // 执行table编辑的事件
@@ -354,7 +393,15 @@ export default {
       this.getUser(filter);
     },
 
-    //配套设施管理列表
+    imgUrlFormat(facilities_pic_url, facilities_pic_name) {
+      var afterUpload = facilities_pic_url.split("/");
+      var newArr = afterUpload.slice(afterUpload.indexOf("upload"));
+      var newImgUrl = newArr.join("/");
+      var showUrl = this.base + "/" + newImgUrl + "/" + facilities_pic_name;
+      return showUrl;
+    },
+
+    // 配套设施管理列表
     async getUser(filter, pageIndex = 1) {
       let params = {
         pageSize: 10,
@@ -367,6 +414,7 @@ export default {
 
       this.loading = true;
       let { data } = await supportingFacilitiesList(params);
+      console.log(data);
       this.total = data[0].count;
       data.shift(0);
       this.userData = data;

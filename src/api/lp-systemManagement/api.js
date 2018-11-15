@@ -69,17 +69,19 @@ const hotCityManagementDel = params => {
     return axios.post(`${baseUrl.base2}/Hot_city_managementController/deleteById`, params);
 }
 
-//热门城市管理省列表渲染
+//热门城市管理 省 列表渲染
 const hotCityPList = params => {
     return axios.post(`${baseUrl.base2}/Region_province_infoController/findAll`, params);
 }
 
-//热门城市管理市列表渲染
+//热门城市管理 市 列表渲染
 const hotCityCList = params => {
     return axios.post(`${baseUrl.base2}/Region_city_infoController/findAll`, params);
 }
-
-
+//热门城市管理 点击编辑获取信息
+const hotCityGetEditMessage = params => {
+    return axios.post(`${baseUrl.base2}/Hot_city_managementController/selectHotCityByObj`, params);
+}
 
 
 
@@ -129,8 +131,9 @@ export {
     hotCityManagementAdd,//热门城市管理添加
     hotCityManagementEdit,//热门城市管理编辑
     hotCityManagementDel,//热门城市管理删除
-    hotCityPList,
-    hotCityCList,
+    hotCityGetEditMessage,//热门城市管理点击编辑获取信息
+    hotCityPList,//热门城市管理 省 列表渲染
+    hotCityCList,//热门城市管理删除 市 列表渲染
     supportingFacilitiesList, //配套设施管理列表
     supportingFacilitiesAdd,//配套设施管理添加
     supportingFacilitiesEdit,//配套设施管理编辑

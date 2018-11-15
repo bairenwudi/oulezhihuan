@@ -4,14 +4,11 @@
 <!--批量预定订单 -->
 <template>
     <div class="formView">
-        <Modal title="View Image" v-model="visible">
-            <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
-        </Modal>
 
         <Form ref="formInline" :model="formInline" inline>
 
             <FormItem prop="reserve_persion_name" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.cus_nick_name" placeholder="请输入预订人"></Input>
+                <Input type="text" v-model="formInline.reserve_persion_name" placeholder="请输入预订人"></Input>
             </FormItem>
 
             <FormItem prop="reserve_persion_phone" label="预订人手机" :label-width="75">
@@ -19,25 +16,25 @@
             </FormItem>
 
              <FormItem prop="order_status" label="订单状态" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
+               <Select v-model="formInline.order_status" clearable style="width:200px">
                  <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
              <FormItem prop="reserve_destination" label="目的地" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
+               <Select v-model="formInline.reserve_destination" clearable style="width:200px">
                  <Option v-for="item in destination" :value="item.value" :key="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
              <FormItem prop="org_name" label="预定机构" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in institutionTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               <Select v-model="formInline.org_name" clearable style="width:200px">
+                 <Option v-for="item in batchinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="begin_time" label="入离时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择" style="width: 300px"></DatePicker>
+            <FormItem prop="check_time" label="入离时间" :label-width="60">              
+             <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
              <FormItem>
@@ -239,6 +236,8 @@ export default {
         };
 
     return {
+        adm_id: "",
+
         addModal: false,
         
         editModal: false,
@@ -258,20 +257,17 @@ export default {
                 org_name:'',
                 reserve_destination:'', 
                 getFormatterTime:'',
+                check_time: ''
             },
+        batchinstitutionTitle:[],
+
+        orderStatus:[],
+
+        destination:[],
+
+        ruleValidate: {     // 定义表单的校验规则
         
-        payStatus:[
-                    {
-                        value: '已支付',
-                        label: '已支付'
-                    },
-                    {
-                        value: '未支付',
-                        label: '未支付'
-                    },                  
-                ],
-                ruleValidate: {     // 定义表单的校验规则
-                cus_nick_name: [
+        cus_nick_name: [
                     { required: true, message: '请输入预订人', trigger: 'blur' }
                 ],
 
@@ -306,51 +302,8 @@ export default {
                     { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }
                 ]
             },
-        orderStatus: [
-                    {
-                        value: '申请退房',
-                        label: '申请退房'
-                    },
-                    {
-                        value: '退房中',
-                        label: '退房中'
-                    },
-                    {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },                  
-                ],
-        destination:[
-                    {
-                        value: '北京',
-                        label: '北京'
-                    }
-                ],
-        institutionTitle:[
-                    {
-                        value: '退房完成',
-                        label: '退房完成'
-                    },
-                ],
-        roomType: [
-                    {
-                        value: 'New York',
-                        label: 'New York'
-                    },
-                    {
-                        value: 'London',
-                        label: 'London'
-                    },
-                    {
-                        value: 'Sydney',
-                        label: 'Sydney'
-                    },
-                    {
-                        value: 'Ottawa',
-                        label: 'Ottawa'
-                    },                   
-                ],
-                model8:'',
+        destination:[],
+        
         delDilaog: false,   // 控制删除弹出框
         
         delLoading: false,   // 控制删除按钮loading
@@ -625,12 +578,17 @@ export default {
     async getUser(filter) {
         let params = {
             pageSize: 10,
-            startPos: filter ? 1 : this.currentPage
+            startPos: filter ? 1 : this.currentPage,
+            adm_user_id: this.adm_id
         };
 
         if (filter) {
             params = Object.assign(params, filter);
-        };
+            if(filter.check_time[0] !== '') {
+                params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+                params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+            }
+        }
 
         this.loading = true;
         let { data } = await batchReservationOrderList(params);

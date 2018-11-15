@@ -31,7 +31,26 @@
                 </FormItem>
 
                 <FormItem label="banner图" prop="upLoad" width='100'>
-                    
+                    <el-upload
+                        ref="addUpload"
+                        name="upLoad"
+                        :action="actionUrl"
+                        :data="addData"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :on-change="onChange"
+                        :on-preview="handlePictureCardPreview"
+                        :on-success="uploadSuccess"
+                        :on-error="uploadError"
+                        :on-exceed="uploadonExceed"
+                        :on-remove="handleRemove"
+                        :limit="1"
+                    >
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                        <img :src="imgUrl" v-if="visible" style="width: 100%">
+                    </Modal>
                 </FormItem>
 
                 <FormItem label="上传H5" prop="upLoad">
@@ -54,7 +73,7 @@
         </Modal>
 
      <!--  编辑提示框 -->
-        <Modal v-model="editModal"
+        <!-- <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
                 @on-ok="ModalConfirm('formValidate')"
@@ -93,10 +112,10 @@
                     <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
-        </Modal>
+        </Modal> -->
 
     <!-- 删除提示框 -->
-    <Modal v-model="delDilaog" width="360">
+    <!-- <Modal v-model="delDilaog" width="360">
         <p slot="header" style="color:#f60;text-align:center">
             <Icon type="ios-information-circle"></Icon>
             <span>提示</span>
@@ -107,7 +126,7 @@
         <div slot="footer">
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
         </div>
-    </Modal>
+    </Modal> -->
     
     </div>
 </template>
@@ -129,49 +148,59 @@ export default {
     TableM
   },
   data() {
-    var DateValdate = (rule, value, callback) => {
-      if (value[0] === "") {
-        return callback(new Error("请填写完整"));
-      } else {
-        callback();
-      }
-    };
+    // var DateValdate = (rule, value, callback) => {
+    //   if (value[0] === "") {
+    //     return callback(new Error("请填写完整"));
+    //   } else {
+    //     callback();
+    //   }
+    // };
 
     return {
+      fileList: [],
       formValidate: {
         // 定义新增表单的对象
         module: "",
         banner_title: "",
         upLoad: "",
-        sort: []
+        sort: ""
       },
       ruleValidate: {
         // 定义表单的校验规则
         banner_title: [
-          { required: true, message: "请输入预订人", trigger: "blur" }
+          {
+            required: true,
+            type: "string",
+            message: "请输入预订人",
+            trigger: "blur"
+          }
         ],
 
         module: [
           {
             required: true,
-            type: "array",
+            type: "string",
             min: 1,
             message: "所属模块选择",
             trigger: "change"
           },
-          { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
+          { type: "string", max: 1, message: "至多选择一个", trigger: "change" }
         ],
 
         sort: [
           { required: true, message: "请输入排序", trigger: "blur" },
           {
             type: "string",
-            min: 20,
+            min: 1,
             message: "Introduce no less than 20 words",
             trigger: "blur"
           }
         ]
       },
+      picSrc: "",
+      file: null,
+
+      addData: {},
 
       addModal: false,
 
@@ -184,6 +213,12 @@ export default {
       delLoading: false, // 控制删除按钮loading
 
       currentPageIndex: 1, // 当前页
+
+      imgUrl: "",
+
+      visible: false,
+
+      actionUrl: "",
 
       columns: [
         // banner管理表头信息
@@ -223,7 +258,7 @@ export default {
                 style: {
                   width: "100px",
                   height: "80px",
-                  padding:"12px"
+                  padding: "12px"
                 }
               },
               ""
@@ -233,9 +268,7 @@ export default {
         {
           title: "H5地址",
           render: (h, { row, index }) => {
-            return h("span", {
-                
-            }, this.h5fun(row));
+            return h("span", {}, this.h5fun(row));
           }
         },
 
@@ -310,6 +343,69 @@ export default {
   },
 
   methods: {
+    handlePictureCardPreview(file) {
+      this.imgUrl = file.url;
+      this.visible = true;
+    },
+    // 图片上传之前的钩子
+    onChange(file, fileList) {
+      this.fileList = fileList;
+    },
+    // 当图片数量超出规定的数量的钩子函数
+    uploadonExceed() {
+      this.$Message.warning("数量超出最大限制");
+    },
+
+    // 上传成功
+    uploadSuccess(response, file, fileList) {
+      console.log(response, file, fileList);
+      this.isUpload = true;
+      this.$Message.success("上传成功");
+    },
+    
+    // 上传失败
+    uploadError(err, file, fileList) {
+      console.log(err, file, fileList);
+      this.$Message.error("上传失败");
+    },
+
+    // 删除图片钩子函数
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+
+    // 重置页数
+    resetTotal() {
+      this.currentPage = 1;
+      this.total = 1;
+    },
+
+    // getImgUrl
+    getObjectURL(file) {
+      var url = null;
+      // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+      if (window.createObjectURL != undefined) {
+        // basic
+        url = window.createObjectURL(file);
+      } else if (window.URL != undefined) {
+        // mozilla(firefox)
+        url = window.URL.createObjectURL(file);
+      } else if (window.webkitURL != undefined) {
+        // webkit or chrome
+        url = window.webkitURL.createObjectURL(file);
+      }
+      return url;
+    },
+    //图片上传阻止默认上传
+    handleUpload(file) {
+      console.log(file);
+
+      this.file = file;
+      var dd = this.getObjectURL(file);
+      console.log(dd);
+      this.picSrc = dd + "/" + file.name;
+      return false;
+    },
     resetTotal() {
       this.currentPage = 1;
       this.total = 1;
@@ -327,7 +423,7 @@ export default {
           this.loading = true;
           setTimeout(() => {
             this.$Message.success("Success!");
-            this.Modal = false;
+            this.addModal = false;
             this.loading = false;
           }, 1000);
         } else {
@@ -342,13 +438,12 @@ export default {
       this.$refs[name].resetFields();
     },
     imgFun(val) {
-      //http://192.168.1.39:8080/upload/upBanner/2018-10-13_16-32-00/184dc4b777e54d6785e217e296a80120/admin_bottom.png
-      console.log(val);
-      console.log(this.base); //http://192.168.1.39:8080
+      // console.log(val);
+      // console.log(this.base); //http://192.168.1.39:8080
       return this.imgUrlFormat(val.banner_url, val.banner_name);
     },
-    h5fun(val){
-        return this.imgUrlFormat(val.h5_path,val.h5_name)
+    h5fun(val) {
+      return this.imgUrlFormat(val.h5_path, val.h5_name);
     },
     // 执行table编辑的事件
     editClick(params) {
@@ -379,15 +474,15 @@ export default {
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
-        // 改变当前页
-        // this.currentPage = pageIndex;
-        for (let i in this.formInline) {
-            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline, pageIndex);  
-                return false;
-            }
-        };
-        this.getUser();
+      // 改变当前页
+      // this.currentPage = pageIndex;
+      for (let i in this.formInline) {
+        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+          this.getUser(this.formInline, pageIndex);
+          return false;
+        }
+      }
+      this.getUser();
     },
 
     searchClick(filter) {
@@ -412,29 +507,30 @@ export default {
     //Banner管理列表
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
-        let params = {
-            pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage
-        };
+      let params = {
+        pageSize: 10,
+        startPos: filter ? pageIndex : this.currentPage
+      };
 
-        if (filter) {
-            params = Object.assign(params, filter);
-        };
+      if (filter) {
+        params = Object.assign(params, filter);
+      }
 
-        this.loading = true;
-        let { data } = await bannerManagementList(params);
-        console.log(data)
-        this.total = data[0].count;
-        console.log(this.total)
-        data.shift(0);
-        this.userData = data;
-        this.loading = false;
-        console.log(data);
+      this.loading = true;
+      let { data } = await bannerManagementList(params);
+      console.log(data);
+      this.total = data[0].count;
+      console.log(this.total);
+      data.shift(0);
+      this.userData = data;
+      this.loading = false;
+      console.log(data);
     }
   },
   mounted() {
     this.getUser();
     this.base = getBase().base2;
+    this.actionUrl = `${this.base}/Banner_managementController/save`;
   }
 };
 </script>

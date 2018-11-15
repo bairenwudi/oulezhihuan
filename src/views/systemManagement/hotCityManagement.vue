@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './hotCityManagement.less';
+@import "./hotCityManagement.less";
 </style>
 <!-- 热门城市管理 -->
 <template>
@@ -16,21 +16,26 @@
         <Modal v-model="addModal"
                 title="新增"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
+                @on-ok="add('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <FormItem label="省份" prop="p_name" :label-width="85">
-                    <Select v-model="formValidate.p_name" placeholder="请选择">
-                        <Option value="1">春晚</Option>
-                        <Option value="2">8强</Option>
+
+                <FormItem label="省份" prop="p_name">
+                    <Select v-model="formValidate.p_name" @on-change="provinceChange" placeholder="请选择">
+                        <Option v-for="(item, index) in pList" :value="item.code" :label="item.name" :key="`p_name_${index}`"></Option>
                     </Select>
                 </FormItem>
 
-                <FormItem label="城市" prop="c_name" :label-width="85">
+                <!-- <FormItem label="城市" prop="c_name">
                     <Select v-model="formValidate.c_name" placeholder="请选择">
-                        <Option value="1">春晚</Option>
-                        <Option value="2">8强</Option>
+                        <Option v-for="item in cList" :value="item.code" :key="item.id">{{ item.name }}</Option>
+                    </Select>
+                </FormItem> -->
+
+                <FormItem label="城市" prop="c_name">
+                    <Select v-model="formValidate.c_name" placeholder="请选择">
+                        <Option v-for="(item, index) in cList" :value="item.code" :label="item.name" :key="`c_name_${index}`"></Option>
                     </Select>
                 </FormItem>
 
@@ -40,7 +45,7 @@
 
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
+                    <Button type="primary" @click="add('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
         </Modal>
@@ -49,21 +54,19 @@
         <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
+                @on-ok="edit('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                 <FormItem label="省份" prop="p_name" :label-width="85">
-                    <Select v-model="formValidate.p_name" placeholder="请选择">
-                        <Option value="1">春晚</Option>
-                        <Option value="2">8强</Option>
+                    <Select v-model="formValidate.p_name" @on-change="provinceChange" placeholder="请选择">
+                        <Option v-for="(item, index) in pList" :value="item.code" :label="item.name" :key="`p_name_${index}`"></Option>
                     </Select>
                 </FormItem>
 
                 <FormItem label="城市" prop="c_name" :label-width="85">
                     <Select v-model="formValidate.c_name" placeholder="请选择">
-                        <Option value="1">春晚</Option>
-                        <Option value="2">8强</Option>
+                        <Option v-for="(item, index) in cList" :value="item.code" :label="item.name" :key="`c_name_${index}`"></Option>
                     </Select>
                 </FormItem>
 
@@ -73,7 +76,7 @@
 
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
+                    <Button type="primary" @click="edit('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
         </Modal>
@@ -91,277 +94,423 @@
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
         </div>
     </Modal>
-    
+
     </div>
 </template>
 
 <script>
-
 import TableM from "../../common/table/table.vue";
 import {
-    hotCityManagementList, //热门城市管理列表
-    hotCityManagementAdd,//热门城市管理添加
-    hotCityManagementEdit,//热门城市管理编辑
-    hotCityManagementDel,//热门城市管理删除
-} from '../../api/lp-systemManagement/api.js'
+  hotCityManagementList, //热门城市管理列表
+  hotCityManagementAdd, //热门城市管理添加
+  hotCityManagementEdit, //热门城市管理编辑
+  hotCityManagementDel, //热门城市管理删除
+  hotCityPList,
+  hotCityCList,
+  hotCityGetEditMessage//热门城市管理点击编辑获取信息
+} from "../../api/lp-systemManagement/api.js";
 
 export default {
   name: "hotCityManagementModel",
 
   components: {
     TableM
-  }, 
+  },
   data() {
     var DateValdate = (rule, value, callback) => {
-            if (value[0] === '') {
-                return callback(new Error('请填写完整'));
-            } else {
-                callback();
-            }
-        };
+      if (value[0] === "") {
+        return callback(new Error("请填写完整"));
+      } else {
+        callback();
+      }
+    };
+    
+    var emptyValidP_name = (rule, value, callback) => {
+      
+      console.log(rule);
+      console.log(value);
+      console.log(callback);
+      if(value === ''){
+        // alert(1)
+      }
+      
+      if(value === '') {
+        return callback(new Error("请填写完整1"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValidC_name = (rule, value, callback) => {
+      console.log(rule);
+      console.log(value);
+      console.log(callback);
+      if(!value){
+        // alert(1)
+      }
+      if(value === '') {
+        return callback(new Error("请填写完整2"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValid = (rule, value, callback) => {
+      console.log(value);
+
+      if(!value) {
+        return callback(new Error("请填写完整"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValidPChange = (rule,value,callback) => {
+      console.log(value);
+      
+      // if(!value){
+
+      // }
+    };
 
     return {
-
-        formValidate: {     // 定义新增表单的对象
-                p_name: '',
-                c_name: '',
-                hcm_sort: '',
-            },
-        ruleValidate: {     // 定义表单的校验规则
-                p_name: [
-                    { required: true, message: '请输入选择省份', trigger: 'change' }
-                ],
-
-                c_name: [
-                    { required: true, message: '请输入选择城市', trigger: 'change' }
-                ],
-
-                hcm_sort: [
-                    { required: true, message: '请输入排序', trigger: 'blur' },
-                ]
-            },
-
-        addModal: false,
-        
-        editModal: false,
-
-        visible: false,
-
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
-
-        currentPageIndex: 1,    // 当前页
-
-        columns: [    // 表头信息
-            {
-                title: "省份",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.p_name ? row.p_name : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "城市",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.c_name ? row.c_name : `暂无${index}`)
-                }
-            }, 
-
-            {
-                title: "排序",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, 
-                    row.hcm_sort ? row.hcm_sort : `暂无${index}`)     
-                }
-            },
-
-            {
-                title: "创建时间",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.create_date ? row.create_date : `暂无${index}`)
-                }
-            },
-
-
-            {
-                title: "操作",
-                key: "action",
-                align: "center",
-                render: (h, params) => {
-                    return h("div", [
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.editClick(params);
-                            }
-                        }
-                        },
-                        "编辑"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "删除"
-                    ),
-                    ]);
-                }
-            }
+      formValidate: {
+        // 定义新增表单的对象
+        p_name: "",
+        c_name: "",
+        hcm_sort: ""
+      },
+      ruleValidate: {
+        // 定义表单的校验规则
+        p_name: [
+          { validator: emptyValidP_name }
         ],
+        c_name: [
+          { validator: emptyValidC_name }
+        ],
+        hcm_sort: [
+          { validator: emptyValid, trigger: "blur" }
+        ]
+      },
 
-        userData: [],   // 内容数据
+      addModal: false,
 
-        total: 0,   // 总页数
+      editModal: false,
 
-        formInline: {   // 定义表单对象
-            p_name: '',
-            c_name: '',
-            hcm_sort: ''
+      visible: false,
+
+      deleteHcm_id:"",//删除需要的hcm_id
+
+      delDilaog: false, // 控制删除弹出框
+
+      delLoading: false, // 控制删除按钮loading
+
+      currentPageIndex: 1, // 当前页
+
+      columns: [
+        // 表头信息
+        {
+          title: "省份",
+          render: (h, { row, index }) => {
+            return h("span", {}, row.p_name ? row.p_name : `暂无${index}`);
+          }
         },
 
-        loading: false,  // 定义loading为true
+        {
+          title: "城市",
+          render: (h, { row, index }) => {
+            return h("span", {}, row.c_name ? row.c_name : `暂无${index}`);
+          }
+        },
 
-        currentPage: 1   // 定义当前页
+        {
+          title: "排序",
+          render: (h, { row, index }) => {
+            return h("span", {}, row.hcm_sort ? row.hcm_sort : `暂无${index}`);
+          }
+        },
+
+        {
+          title: "创建时间",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.create_date ? row.create_date : `暂无${index}`
+            );
+          }
+        },
+
+        {
+          title: "操作",
+          key: "action",
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.editClick(params);
+                    }
+                  }
+                },
+                "编辑"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.delClick(params);
+                    }
+                  }
+                },
+                "删除"
+              )
+            ]);
+          }
+        }
+      ],
+      pList: [],
+
+      cList:[],
+      // pList:"",
+
+      userData: [], // 内容数据
+
+      total: 0, // 总页数
+
+      formInline: {
+        // 定义表单对象
+        p_name: "",
+        c_name: "",
+        hcm_sort: ""
+      },
+
+      loading: false, // 定义loading为true
+
+      currentPage: 1 // 定义当前页
     };
   },
 
   methods: {
-
     resetTotal() {
-        this.currentPage = 1;
-        this.total = 1;
+      this.currentPage = 1;
+      this.total = 1;
     },
 
     // 执行新增的事件
     addClick() {
-            this.addModal = true;
-        },
+      this.addModal = true;
+      this.formValidate.p_name = '';
+      this.formValidate.c_name = '';
+      this.formValidate.hcm_sort = '';
+      this.deleteHcm_id = '';
+    },
 
     // 点击确定按钮
-        ModalConfirm(name) {
-            this.$refs[name].validate((valid) => {
-                if (valid) {
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.$Message.success('Success!');
-                        this.Modal = false;
-                        this.loading = false;
-                    }, 1000)
-                } else {
-                    this.$Message.error('Fail!');
-                }
-            })
-        },
+    ModalConfirm(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.loading = true;
+          setTimeout(() => {
+            this.$Message.success("Success!");
+            this.Modal = false;
+            this.loading = false;
+          }, 1000);
+        } else {
+          this.$Message.error("Fail!");
+        }
+      });
+    },
+    add(name) {
 
-        // 点击框取消按钮
-        ModalCancel(name) {
-            this.$Message.info("Clicked ok");
-            this.$refs[name].resetFields();
-        },
+      this.$refs[name].validate(valid => {
+        console.log(valid);
+        
+        if (valid) {
+          this.loading = true;
+          let params = {
+            hcm_provice_code:this.formValidate.p_name,
+            hcm_city_code:this.formValidate.c_name,
+            hcm_sort:this.formValidate.hcm_sort,
+          }
+          hotCityManagementAdd(params).then(res => {
+            console.log(res);
+            if(res.data === 1){
+              this.$Message.success("Success!");
+              this.getUser();
+            }else{
+              this.$Message.error("Fail!");
+            }
+            this.loading = false;
+          })
+          console.log(data);
+          
+          // setTimeout(() => {
+          
+          // }, 1000);
+        }
+      });
+    },
+    edit(name) {
+      this.$refs[name].validate(valid => {
+        console.log(valid);
+        
+        if (valid) {
+          this.loading = true;
+          let params = {
+            hcm_provice_code:this.formValidate.p_name,
+            hcm_city_code:this.formValidate.c_name,
+            hcm_sort:this.formValidate.hcm_sort,
+            hcm_id:this.deleteHcm_id
+          }
+          hotCityManagementEdit(params).then(res => {
+            console.log(res);
+            if(res.data === 1){
+              this.$Message.success("Success!");
+              this.editModal = false;
+              this.getUser();
+            }else{
+              this.$Message.error("Fail!");
+            }
+            this.loading = false;
+          })
+          console.log(data);
+          
+          // setTimeout(() => {
+          
+          // }, 1000);
+        }
+      });
+    },
+
+    // 点击框取消按钮
+    ModalCancel(name) {
+      this.$Message.info("Clicked ok");
+      this.$refs[name].resetFields();
+    },
 
     // 执行table编辑的事件
-    editClick(params) {
-        this.editModal = true;
-        console.log(params);
+    async editClick(params) {
+      this.editModal = true;
+      this.deleteHcm_id = params.row.hcm_id;
+      const { data } = await hotCityGetEditMessage({hcm_id:this.deleteHcm_id});
+      console.log(data);
+      this.formValidate.p_name = data.hcm_provice_code - 0 // hcm_provice_code 是字符串类型 - 0  转化为数字类型
+      // alert(this.formValidate.p_name)
+      this.getClist(this.formValidate.p_name)
+      this.formValidate.c_name = data.hcm_city_code - 0
+      this.formValidate.hcm_sort = data.hcm_sort;
     },
 
     // 执行删除的事件
     delClick(params) {
-        console.log(params);
-        this.delDilaog = true;
+      this.deleteHcm_id = params.row.hcm_id;
+      this.delDilaog = true;
     },
 
     // 删除确定按钮
-    delConfrmClick() {
-        this.delLoading = true;
-        setTimeout(() => {
-            this.delDilaog = false;
-            this.$Message.success('成功');
-            console.log('我滚了');
-        }, 1000)
+    async delConfrmClick() {
+      this.delLoading = true;
+      let params = {
+        hcm_id:this.deleteHcm_id
+      }
+      const { data } = await hotCityManagementDel(params);
+      console.log(data);
+      if(data === 1){
+        this.$Message.success("Success!");
+        this.delDilaog = false;
+        this.getUser();
+      }else{
+        this.$Message.error("fail!");
+      }
+      this.delLoading = false;
     },
 
     // 获取时间
-        getFormatterTime(val) {
-            console.log(val);
-        },
+    getFormatterTime(val) {
+      console.log(val);
+    },
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
-        // 改变当前页
-        // this.currentPage = pageIndex;
-        for (let i in this.formInline) {
-            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline, pageIndex);  
-                return false;
-            }
-        };
-        this.getUser();
+      // 改变当前页
+      // this.currentPage = pageIndex;
+      for (let i in this.formInline) {
+        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+          this.getUser(this.formInline, pageIndex);
+          return false;
+        }
+      }
+      this.getUser();
     },
 
     searchClick(filter) {
-        this.resetTotal();
-        if (filter) {
-            for (let i in filter) {
-                if (filter[i] === undefined || filter[i] === '') {
-                    delete filter[i];
-                }
-            };
-        };
-        this.getUser(filter);
+      this.resetTotal();
+      if (filter) {
+        for (let i in filter) {
+          if (filter[i] === undefined || filter[i] === "") {
+            delete filter[i];
+          }
+        }
+      }
+      this.getUser(filter);
     },
-     
-    //热门城市管理列表 
+    async getPlist() {
+      let params = {};
+      let { data } = await hotCityPList(); 
+      this.pList = data;
+    },
+    provinceChange(val){
+      this.formValidate.c_name = '11';
+      this.getClist(val);
+    },
+    async getClist(p_code){
+      console.log(p_code);
+      
+      let { data } = await hotCityCList({p_code});
+      this.cList = data;
+    },
+
+    //热门城市管理列表
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
-        let params = {
-            pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage
-        };
+      let params = {
+        pageSize: 10,
+        startPos: filter ? pageIndex : this.currentPage
+      };
 
-        if (filter) {
-            params = Object.assign(params, filter);
-        };
+      if (filter) {
+        params = Object.assign(params, filter);
+      }
 
-        this.loading = true;
-        let { data } = await hotCityManagementList(params);
-        console.log(data)
-        this.total = data[0].count;
-        console.log(this.total)
-        data.shift(0);
-        this.userData = data;
-        this.loading = false;
-        console.log(data);
+      this.loading = true;
+      let { data } = await hotCityManagementList(params);
+      console.log(data);
+      this.total = data[0].count;
+      console.log(this.total);
+      data.shift(0);
+      this.userData = data;
+      this.loading = false;
     }
   },
   mounted() {
     this.getUser();
+    this.getPlist();
   }
 };
 </script>
