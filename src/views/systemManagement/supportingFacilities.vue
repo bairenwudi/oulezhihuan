@@ -325,7 +325,7 @@ export default {
 
     // 执行新增的事件
     addClick() {
-       if (this.$refs["addForm"]) {
+      if (this.$refs["addForm"]) {
         this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
       }  
       this.addModal = true;  
