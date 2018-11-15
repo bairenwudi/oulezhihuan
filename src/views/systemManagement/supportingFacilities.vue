@@ -33,8 +33,9 @@
                     <el-upload
                         ref="addUpload"
                         name="upLoad"
-                        :action="actionUrl"
+                        :action="addActionUrl"
                         :data="addData"
+                        :file-list="addFileList"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChange"
@@ -68,24 +69,30 @@
                 @on-cancel="EditModalReset('editForm')"
             >
             <Form ref="editForm" :model="editForm" :rules="editRules" :label-width="80">
+
+              <FormItem label="设施名称" prop="facilities_name">
+                    <Input v-model="editForm.facilities_name" placeholder="请输入设施名称"></Input>
+                </FormItem>
+
                 <FormItem label="设施图片" :label-width="85">
-                    <!-- <el-upload
+                    <el-upload
                         ref="editUpload"
                         name="upLoad"
-                        :action="actionUrl"
+                        :action="editActionUrl"
                         :data="editData"
+                        :file-list="editFileList"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChange"
                         :on-preview="handlePictureCardPreview"
                         :on-success="uploadSuccess"
                         :on-error="uploadError"
-                        :on-exceed="edituploadonExceed"
+                        :on-exceed="uploadonExceed"
                         :on-remove="handleRemove"
                         :limit="1"
                     >
                         <i class="el-icon-plus"></i>
-                    </el-upload> -->
+                    </el-upload>
 
                     <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
@@ -93,8 +100,8 @@
                 </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="EditModalConfirm('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="EditModalReset('formValidate')" style="margin-left: 8px">取消</Button>
+                    <Button type="primary" @click="EditModalConfirm('editForm')" :loading="loading">确定</Button>
+                    <Button @click="EditModalReset('editForm')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
 
@@ -144,16 +151,12 @@ export default {
 
       fileList: [],
 
-      
-
-      addForm: {
+      addForm: {              // 定义编辑表单的对象
         facilities_name: ""
       },
 
-      editForm: {
-        // 定义新增表单的对象
+      editForm: {             // 定义新增表单的对象
         facilities_name: "",
-        upLoad: ""
       },
 
       addRules: {
@@ -172,6 +175,12 @@ export default {
 
       addData: {},
 
+      editData: {},
+
+      editFileList: [],
+
+      addFileList: [],
+
       addModal: false,
 
       editModal: false,
@@ -186,7 +195,9 @@ export default {
 
       visible: false,
 
-      actionUrl: "",
+      addActionUrl: "",
+
+      editActionUrl: "",
 
       columns: [
         // 配套设施表头信息
@@ -241,7 +252,7 @@ export default {
           title: "操作",
           key: "action",
           align: "center",
-          render: (h, params) => {
+          render: (h, { row }) => {
             return h("div", [
               h(
                 "Button",
@@ -255,7 +266,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.editClick(params);
+                      this.editClick(row);
                     }
                   }
                 },
@@ -291,12 +302,14 @@ export default {
 
     // 图片上传之前的钩子
     onChange(file, fileList) {
+      console.log(fileList)
       this.fileList = fileList;
+      this.editFileList = fileList;
     },
 
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
-        this.$Message.warning('请上传图片');
+      this.$Message.warning('超出图片最大限制');
     },
 
     // 上传成功
@@ -305,16 +318,24 @@ export default {
         this.isUpload = true;
         this.getUser();
     },
-    
+
     // 上传失败
     uploadError(err, file, fileList) {
         console.log(err, file, fileList);
         this.$Message.error('上传失败');
     },
 
+    // 清除图片列表动作
+    handleResetFile() {
+      this.fileList = [];
+      this.editFileList = [];
+      this.addFileList = [];
+    },
+
     // 删除图片钩子函数
     handleRemove(file, fileList) {
-        console.log(file, fileList);
+      this.handleResetFile();
+      console.log(file, fileList);
     },
 
     // 重置页数
@@ -331,18 +352,23 @@ export default {
       this.addModal = true;  
     },
 
-    // 点击确定按钮
-    AddModalConfirm(name) {
-        this.$refs[name].validate(valid => {
+    // 新增点击确定按钮
+    AddModalConfirm(formName) {
+        this.$refs[formName].validate(valid => {
             if (valid) {
-                // if(!this.fileList.length) {
-                //   this.$Message.warning('请上传图片');
-                //   return
-                // }
-                this.addData = this[name];
+                if(!this.fileList.length) {
+                  this.$Message.warning('请上传图片');
+                  return
+                };
+                this.addData = this[formName];
                 setTimeout(() => {
                   this.$refs.addUpload.submit();
                   this.$Message.success("保存成功!");
+                  this.$refs.addForm.resetFields();
+                  setTimeout(() =>{ 
+                    this.handleResetFile();
+                    this.getUser();
+                  }, 200)
                   this.addModal = false;
                   this.loading = false;
                 },400);
@@ -353,19 +379,54 @@ export default {
     // 点击框取消按钮
     AddModalReset(name) {
       this.$refs[name].resetFields();
-      this.$Message.info("已取消");
+      this.handleResetFile();
+      this.addModal = false;
     },
 
+    // 编辑取消事件
+    EditModalReset(formName) {
+      this.$refs[formName].resetFields();
+      this.handleResetFile();
+      this.editModal = false;
+    },
+
+    // 编辑确定按钮
+    EditModalConfirm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if(valid) {
+          // 执行
+          if(!this.editFileList.length) {
+            this.$Message.warning('请上传图片');
+            return
+          };
+          this.editData = this[formName];
+          console.log(this.editData)
+          setTimeout(() => {
+            this.$refs.editUpload.submit();
+            this.$Message.success("保存成功!");
+            setTimeout(() =>{ 
+              this.handleResetFile();
+              this.getUser();
+            }, 200)
+            this.editModal = false;
+            this.loading = false;
+          }, 400);
+        }
+      })
+    },
+
+    // 处理带有盘符的img路径
     imgFun(val) {
-      // console.log(val);
-      // console.log(this.base); //http://192.168.1.39:8080
       return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
     },
 
     // 执行table编辑的事件
-    editClick(params) {
+    editClick(row) {
+      this.editForm = Object.assign({}, row);
+      const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      this.editFileList = [];
+      this.editFileList.push({ url, name: url });
       this.editModal = true;
-      console.log(params);
     },
 
     // 执行删除的事件
@@ -392,7 +453,6 @@ export default {
     // 改变分页触发的事件
     pageChange(pageIndex) {
       // 改变当前页
-      // this.currentPage = pageIndex;
       for (let i in this.formInline) {
         if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
           this.getUser(this.formInline, pageIndex);
@@ -415,11 +475,10 @@ export default {
       this.getUser(filter);
     },
 
+    // 处理盘符
     imgUrlFormat(facilities_pic_url, facilities_pic_name) {
-      var afterUpload = facilities_pic_url.split("/");
-      var newArr = afterUpload.slice(afterUpload.indexOf("upload"));
-      var newImgUrl = newArr.join("/");
-      var showUrl = this.base + "/" + newImgUrl + "/" + facilities_pic_name;
+      const afterUpload = facilities_pic_url.split("static/")[1];
+      var showUrl = this.base + "/" + afterUpload + "/" + facilities_pic_name;
       return showUrl;
     },
 
@@ -436,17 +495,22 @@ export default {
 
       this.loading = true;
       let { data } = await supportingFacilitiesList(params);
-      console.log(data);
       this.total = data[0].count;
       data.shift(0);
       this.userData = data;
       this.loading = false;
+    },
+
+    // 用来初始化一些变量值
+    init() {
+      this.base = getBase().base2;
+      this.addActionUrl = `${this.base}/Facilities_managementController/save`;
+      this.editActionUrl = `${this.base}/Facilities_managementController/updateById`;
     }
   },
   mounted() {
     this.getUser();
-    this.base = getBase().base2;
-    this.actionUrl = `${this.base}/Facilities_managementController/save`;
+    this.init();
   }
 };
 </script>
