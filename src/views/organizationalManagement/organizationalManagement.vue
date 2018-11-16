@@ -56,7 +56,15 @@
 
         </Form>
 
-        <TableM :columns="columns" :data="data" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM
+          :columns="columns"
+          :data="data"
+          :loading="loading"
+          :current.async="currentPageIndex"
+          :total="total"
+          @pageChange="pageChange"
+          >
+        </TableM>
 
         <!-- 删除提示框 -->
         <Modal v-model="delDilaog" width="360">
@@ -193,7 +201,7 @@ export default {
               "span",
               {},
               // row.org_status ? row.org_status : `暂无${index}`
-              row.org_status === "1" ? `已上线` : `已下线`
+              row.org_status === 1 ? `说说已上线` : `已下线`
             );
           }
         },
