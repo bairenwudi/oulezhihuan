@@ -28,7 +28,7 @@
                 </FormItem>
 
                 <!-- <FormItem label="城市" prop="c_name">
-                    <Select v-model="formValidate.c_name" placeholder="请选择">
+                    <Select v-model="formValidate.c_name" placehFormItemolder="请选择">
                         <Option v-for="item in cList" :value="item.code" :key="item.id">{{ item.name }}</Option>
                     </Select>
                 </FormItem> -->
@@ -127,14 +127,12 @@ export default {
     
     var emptyValidP_name = (rule, value, callback) => {
       
-      console.log(rule);
-      console.log(value);
-      console.log(callback);
       if(value === ''){
-        // alert(1)
+        return callback(new Error("请填写完整"));
+
       }
       
-      if(value === '') {
+      if(!value) {
         return callback(new Error("请填写完整1"));
       } else {
         callback();
@@ -145,7 +143,8 @@ export default {
       console.log(value);
       console.log(callback);
       if(!value){
-        // alert(1)
+        return callback(new Error("请填写完整"));
+
       }
       if(value === '') {
         return callback(new Error("请填写完整2"));
@@ -321,21 +320,21 @@ export default {
       this.deleteHcm_id = '';
     },
 
-    // 点击确定按钮
-    ModalConfirm(name) {
-      this.$refs[name].validate(valid => {
-        if (valid) {
-          this.loading = true;
-          setTimeout(() => {
-            this.$Message.success("Success!");
-            this.Modal = false;
-            this.loading = false;
-          }, 1000);
-        } else {
-          this.$Message.error("Fail!");
-        }
-      });
-    },
+    // // 点击确定按钮
+    // ModalConfirm(name) {
+    //   this.$refs[name].validate(valid => {
+    //     if (valid) {
+    //       this.loading = true;
+    //       setTimeout(() => {
+    //         this.$Message.success("Success!");
+    //         this.Modal = false;
+    //         this.loading = false;
+    //       }, 1000);
+    //     } else {
+    //       this.$Message.error("Fail!");
+    //     }
+    //   });
+    // },
     add(name) {
 
       this.$refs[name].validate(valid => {
@@ -476,7 +475,7 @@ export default {
       this.pList = data;
     },
     provinceChange(val){
-      this.formValidate.c_name = '11';
+      // this.formValidate.c_name = val;
       this.getClist(val);
     },
     async getClist(p_code){

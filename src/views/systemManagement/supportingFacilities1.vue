@@ -101,7 +101,7 @@
                         :limit="1"
                     >
                         <i class="el-icon-plus"></i>
-                    </el-upload>
+                    </el-upload> 
 
                     <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
@@ -162,6 +162,12 @@ export default {
       editFileList: [],  // 编辑默认图片列表
 
       selection: [],   // 存放select选中的数组
+
+      addForm: {
+        facilities_name: ""
+      },
+
+      
 
       addForm: {
         facilities_name: ""
@@ -371,7 +377,7 @@ export default {
 
     // 执行新增的事件
     addClick() {
-       if (this.$refs["addForm"]) {
+      if (this.$refs["addForm"]) {
         this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
       }  
       this.addModal = true;  
