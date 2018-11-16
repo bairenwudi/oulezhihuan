@@ -19,7 +19,12 @@ const roomtypeNumsList = params => {
 
 //房型可预订数模糊查询
 const roomtypeNumsSearch = params => {
-    return axios.post(`${baseUrl.base2}/CustomerController/selectCustomer?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Zh_room_reserve_numController/selectRoomNum?startPos=${params.startPos}&pageSize=10`, params);
+};
+
+// 机构设置-房间类型列表(房型可预订数 模糊查询-房型下拉列表渲染)
+const roomtypeList = params => {
+    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType`, params);
 };
 
 //房型可预订数新增
@@ -30,6 +35,7 @@ const roomtypeNumsAdd = params => {
 export {
     roomtypeNumsList, //房型可预订数列表
     roomtypeNumsSearch,//房型可预订数模糊查询
+    roomtypeList,//房型可预订数-房间类型下拉框渲染
     roomtypeNumsAdd,//房型可预订数新增
 };
 

@@ -17,24 +17,18 @@
 
              <FormItem prop="order_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.order_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in orderStatus" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
              <FormItem prop="reserve_destination" label="目的地" :label-width="60">
                <Select v-model="formInline.reserve_destination" clearable style="width:200px">
-                 <Option v-for="item in destination" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
-            </FormItem>
-
-             <FormItem prop="org_name" label="预定机构" :label-width="60">
-               <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="item in batchinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
+                 <Option v-for="item in destinationTitle" :value="item.reserve_destination" :key="item.value">{{ item.reserve_destination }}</Option>
                </Select>
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-             <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+             <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
              <FormItem>
@@ -45,82 +39,74 @@
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
 
-            <!-- <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem> -->
-
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+        :columns="columns" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
+
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
                 title="新增"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
+                @on-ok="AddModalConfirm('addForm')"
+                @on-cancel="AddModalReset('addForm')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
-                <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="formValidate.cus_nick_name" placeholder="请输入预订人"></Input>
+            <Form ref="addForm" :model="addForm" :rules="ruleValidate" :label-width="100">
+                <FormItem label="预订人" prop="reserve_person_name">
+                    <Input v-model="addForm.reserve_person_name" placeholder="请输入预订人"></Input>
                 </FormItem>
 
                 <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
-                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+                    <Input v-model="addForm.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
                 </FormItem>
 
                 <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入预订机构"></Input>
+                    <Input v-model="addForm.org_name" placeholder="请输入预订机构"></Input>
                 </FormItem>
 
                 <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入机构手机"></Input>
+                    <Input v-model="addForm.org_name" placeholder="请输入机构手机"></Input>
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="formValidate.reserve_destination" placeholder="请选择">
-                        <Option value="beijing">New York</Option>
-                        <Option value="shanghai">London</Option>
-                        <Option value="shenzhen">Sydney</Option>
-                    </Select>
+                    <Select v-model="addForm.reserve_destination" clearable style="width:200px">
+                 <Option v-for="item in destinationTitle" :value="item.reserve_destination" :key="item.value">{{ item.reserve_destination }}</Option>
+               </Select>
                 </FormItem>
 
-                <FormItem label="入离时间" prop="Date">
-                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="Select date and time" style="width: 300px"></DatePicker>
+                <FormItem prop="check_time" label="入离时间" :label-width="60">              
+                  <DatePicker v-model="addForm.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
                 </FormItem>
-
-                <!-- <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem> -->
-
-                
 
                 <FormItem label="入住天数" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
+                    <Input v-model="addForm.org_name" placeholder=""></Input>
                 </FormItem>
 
                 <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
+                    <CheckboxGroup v-model="addForm.interest">
                         <Checkbox label="大床"></Checkbox>
                         <Checkbox label="标准间"></Checkbox>
                         <Checkbox label="单人间"></Checkbox>
                     </CheckboxGroup>
                 </FormItem>
 
-                <FormItem label="订单金额" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
+                <FormItem label="订单金额" prop="ord_amount">
+                    <Input v-model="addForm.ord_amount" placeholder=""></Input>
                 </FormItem>
 
                 <FormItem label="备注" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+                    <Input v-model="addForm.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
                 </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="AddModalConfirm('addForm')" >确定</Button>
+                    <Button @click="AddModalReset('addForm')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
 
@@ -128,71 +114,186 @@
         <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
+                @on-ok="EditModalConfirm('editForm')"
+                @on-cancel="EditModalReset('editForm')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
+            <Form ref="editForm" :model="editForm" :rules="ruleValidate" :label-width="100">
                 <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="formValidate.cus_nick_name"　size:default placeholder="请输入预订人"></Input>
+                    <Input v-model="editForm.cus_nick_name"　size:default placeholder="请输入预订人"></Input>
                 </FormItem>
 
                 <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
-                    <Input v-model="formValidate.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
+                    <Input v-model="editForm.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
                 </FormItem>
 
                 <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入预订机构"></Input>
+                    <Input v-model="editForm.org_name" placeholder="请输入预订机构"></Input>
                 </FormItem>
 
                 <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder="请输入机构手机"></Input>
+                    <Input v-model="editForm.org_name" placeholder="请输入机构手机"></Input>
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="formValidate.reserve_destination" placeholder="请选择">
+                    <Select v-model="editForm.reserve_destination" placeholder="请选择">
                         <Option value="beijing">New York</Option>
                         <Option value="shanghai">London</Option>
                         <Option value="shenzhen">Sydney</Option>
                     </Select>
                 </FormItem>
 
-                <FormItem label="入离时间" prop="Date">
-                    <DatePicker @on-change="getFormatterTime" format="yyyy-MM-dd hh:ss:mm" v-model="formValidate.Date" type="datetimerange" placeholder="请选择日期" style="width: 300px"></DatePicker>
-                </FormItem>
-
-                <!-- <FormItem label="Gender" prop="gender">
-                    <RadioGroup v-model="formValidate.gender">
-                        <Radio label="male">Male</Radio>
-                        <Radio label="female">Female</Radio>
-                    </RadioGroup>
-                </FormItem> -->
-
-                
+                <FormItem prop="check_time" label="入离时间" :label-width="60">              
+             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+            </FormItem>
 
                 <FormItem label="入住天数" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
+                    <Input v-model="editForm.org_name" placeholder=""></Input>
                 </FormItem>
 
                 <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="formValidate.interest">
+                    <CheckboxGroup v-model="editForm.interest">
                         <Checkbox label="大床"></Checkbox>
                         <Checkbox label="标准间"></Checkbox>
                         <Checkbox label="单人间"></Checkbox>
                     </CheckboxGroup>
                 </FormItem>
 
-                <FormItem label="订单金额" prop="org_name">
-                    <Input v-model="formValidate.org_name" placeholder=""></Input>
+                <FormItem label="订单金额" prop="ord_amount">
+                    <Input v-model="editForm.ord_amount" placeholder=""></Input>
                 </FormItem>
 
                 <FormItem label="备注" prop="desc">
-                    <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+                    <Input v-model="editForm.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
                 </FormItem>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">提交</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="EditModalConfirm('editForm')" >确定</Button>
+                    <Button @click="EditModalReset('editForm')" style="margin-left: 8px">取消</Button>
                 </div>
+        </Modal>
+
+        <!--  绑定提示框 -->
+        <Modal v-model="bindingModal"
+                title="绑定"
+                :mask-closable="false"
+                @on-ok="BindingModalConfirm('bindingForm')"
+                @on-cancel="BindingModalReset('bindingForm')"
+            >
+            <template>
+    <div class="formView">
+         <h2>
+            入住人信息
+        </h2>
+        <Form ref="formInline" :model="formInline" inline class="ClickButton">
+            <FormItem>
+                <Button type="primary" @click="addClickBinding">新增入住人</Button>
+            </FormItem>
+
+            <FormItem>
+                <Button icon='' type="primary" @click="delClickBinding">删除</Button>
+            </FormItem>
+
+            <FormItem>
+                <Button type="primary" @click="downloadClick">下载</Button>
+            </FormItem>
+
+            <FormItem>
+                <Button type="primary" @click="uploadClick">导入Excel</Button>
+            </FormItem>
+        </Form>
+
+        <TableM 
+        :columns="columns1" 
+        class="Table" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
+        <!-- 绑定-新增提示框 -->
+        <Modal v-model="bindingaddModal"
+                title="新增"
+                :mask-closable="false"
+                @on-ok="bindingAddModalConfirm('bindingAddForm')"
+                @on-cancel="bindingAddModalCancel('bindingAddForm')"
+            >
+            <Form ref="bindingAddForm" :model="bindingAddForm" :rules="ruleValidate" :label-width="90">
+                <FormItem label="姓名" prop="cus_nick_name">
+                    <Input v-model="bindingAddForm.cus_nick_name" placeholder="请输入姓名"></Input>
+                </FormItem>
+
+                <FormItem label="身份证号码" prop="reserve_persion_phone">
+                    <Input v-model="bindingAddForm.reserve_persion_phone" placeholder="请输入身份证号码"></Input>
+                </FormItem>
+
+                <FormItem label="证件类型" prop="reserve_persion_phone">
+                    <Input v-model="bindingAddForm.reserve_persion_phone" placeholder="请输入证件类型" disabled></Input>
+                </FormItem>
+
+                <FormItem label="联系电话" prop="org_name">
+                    <Input v-model="bindingAddForm.org_name" placeholder="请输入联系电话"></Input>
+                </FormItem>
+
+            </Form>
+                <div slot="footer" align="center">
+                    <Button type="primary" @click="bindingAddModalConfirm('bindingAddForm')" :loading="loading">确定</Button>
+                    <Button @click="bindingAddModalCancel('bindingAddForm')" style="margin-left: 8px">重置</Button>
+                </div>
+        </Modal>
+
+     <!--  绑定-编辑提示框 -->
+        <Modal v-model="bindingeditModal"
+                title="编辑"
+                :mask-closable="false"
+                @on-ok="bindingEditModalConfirm('bindingEditForm')"
+                @on-cancel="bindingEditModalCancel('bindingEditForm')"
+            >
+            <Form ref="bindingEditForm" :model="bindingEditForm" :rules="ruleValidate" :label-width="90">
+                <FormItem label="姓名" prop="cus_nick_name">
+                    <Input v-model="bindingEditForm.cus_nick_name" placeholder="请输入姓名"></Input>
+                </FormItem>
+
+                <FormItem label="身份证号码" prop="reserve_persion_phone">
+                    <Input v-model="bindingEditForm.reserve_persion_phone" placeholder="请输入身份证号码"></Input>
+                </FormItem>
+
+                <FormItem label="证件类型" prop="reserve_persion_phone">
+                    <Input v-model="bindingEditForm.reserve_persion_phone" placeholder="请输入证件类型" disabled></Input>
+                </FormItem>
+
+                <FormItem label="联系电话" prop="org_name">
+                    <Input v-model="bindingEditForm.org_name" placeholder="请输入联系电话"></Input>
+                </FormItem>
+
+            </Form>
+                <div slot="footer" align="center">
+                    <Button type="primary" @click="bindingEditModalConfirm('bindingEditForm')" :loading="loading">确定</Button>
+                    <Button @click="bindingEditModalCancel('bindingEditForm')" style="margin-left: 8px">取消</Button>
+                </div>
+        </Modal>
+
+    <!-- 删除提示框 -->
+    <Modal v-model="delDilaog" width="360">
+        <p slot="header" style="color:#f60;text-align:center">
+            <Icon type="ios-information-circle"></Icon>
+            <span>提示</span>
+        </p>
+        <div style="text-align:center">
+            <p>确定要删除吗？</p>
+        </div>
+        <div slot="footer">
+            <Button type="error" size="large" long :loading="delLoading" @click="bindingdelConfrmClick">删除</Button>
+        </div>
+    </Modal>
+
+    <div slot="footer" align="center">
+        <Button type="primary" @click="BindingModalConfirm('bindingForm')" :loading="loading">确定</Button>
+        <Button @click="BindingModalReset('bindingForm')" style="margin-left: 8px">取消</Button>
+    </div>
+    
+    </div>
+</template>
         </Modal>
 
     <!-- 删除提示框 -->
@@ -217,7 +318,8 @@
 import TableM from "../../common/table/table.vue";
 import {
     batchReservationOrderList, //批量预定订单列表
-    batchReservationOrderSearch //批量预定订单模糊查询
+    batchReservationOrderSearch, //批量预定订单模糊查询
+    destinationTitleList,// 批量预定订单模糊查询-目的地下拉列表渲染
 } from '../../api/lp-order/api.js'
 
 export default {
@@ -236,38 +338,61 @@ export default {
         };
 
     return {
-        adm_id: "",
+        adm_id: "adm_user_id",
 
         addModal: false,
-        
+
         editModal: false,
+
+        bindingModal:false,
+
+        bindingaddModal:false,
+
+        bindingeditModal:false,
+
+        addForm: {              // 定义新增表单的对象
+            reserve_persion_name: "",
+            reserve_persion_phone:'',
+            ord_status: "",
+            reserve_destination:'',
+            org_name: "",
+            check_time: ''
+        },
+
+        bindingAddForm:{
+
+        },
+
+        editForm: {             // 定义编辑表单的对象
+            facilities_name: "",
+        },
+        
+        bindingEditForm:{
+
+        },
 
         visible: false,
 
-        formValidate: {     // 定义新增表单的对象
-                name: '',
-                city: '',
-                gender: '',
-                interest: [],
-                Date: [],
-                time: '',
-                desc: '',
-                cus_nick_name:'',
-                reserve_persion_phone:'',
-                org_name:'',
-                reserve_destination:'', 
-                getFormatterTime:'',
-                check_time: ''
+        orderStatus:[
+            {
+                value: 1,
+                label: "待审核"
             },
-        batchinstitutionTitle:[],
+            {
+                value: 3,
+                label: "已审核"
+            },
+            {
+                value: 13,
+                label: "取消订单"
+            },
+        ],
 
-        orderStatus:[],
-
-        destination:[],
+        destinationTitle:[],
 
         ruleValidate: {     // 定义表单的校验规则
         
-        cus_nick_name: [
+                reserve_persion_name: [
                     { required: true, message: '请输入预订人', trigger: 'blur' }
                 ],
 
@@ -386,8 +511,7 @@ export default {
             {
                 title: "订单状态",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无")
                 }
             },
 
@@ -411,11 +535,47 @@ export default {
                         },
                         on: {
                             click: () => {
+                                this.bindingClick(params);
+                            }
+                        }
+                        },
+                        "绑定"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
                                 this.editClick(params);
                             }
                         }
                         },
                         "编辑"
+                    ),
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.submitClick(params);
+                            }
+                        }
+                        },
+                        "提交"
                     ),
                     h(
                         "Button",
@@ -455,13 +615,88 @@ export default {
             }
         ],
 
+        columns1: [    // 绑定-表头信息
+            {
+                type: 'selection',
+                width: 60,
+                align: 'center'
+            },
+
+            {
+                title: "姓名",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.reserve_person_name ? row.reserve_person_name : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "证件类型",
+                width: 100,
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, 
+                    row.reserve_persion_phone ? row.reserve_persion_phone : `暂无${index}`)     
+                }
+            },
+
+            {
+                title: "身份证号码",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.org_name ? row.org_name : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "联系电话",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                }
+            },
+
+            {
+                title: "操作",
+                width: 200,
+                key: "action",
+                align: "center",
+                render: (h, params) => {
+                    return h("div", [
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                            size: "small"
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                                this.editClickBinding(params);
+                            }
+                        }
+                        },
+                        "编辑"
+                    ),
+                    ]);
+                }
+            }
+        ],
+
         userData: [],   // 内容数据
 
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+            reserve_persion_name: "",
+            reserve_persion_phone:'',
+            ord_status: "",
+            reserve_destination:'',
+            org_name: "",
+            check_time: ''
         },
 
         ruleInline: {   // 定义规则对象
@@ -489,6 +724,29 @@ export default {
         })
     },
 
+    
+    // 过滤订单状态
+    SetStatusFilter(status){
+        switch(status){
+            case 1:
+              return '待审核';
+              break;
+            case 3:
+              return '已审核';
+              break;
+            case 13:
+              return '订单取消';
+              break;
+            default:
+              return '';
+              break;
+
+        }
+    },
+
+    // 清除图片列表动作
+    handleResetFile() {},
+
     resetTotal() {
         this.currentPage = 1;
         this.total = 1;
@@ -496,11 +754,14 @@ export default {
 
     // 执行新增的事件
     addClick() {
-            this.addModal = true;
+      if (this.$refs["addForm"]) {
+        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
+      }  
+      this.addModal = true;  
         },
 
     // 点击确定按钮
-        ModalConfirm(name) {
+        AddModalConfirm(name) {
             this.$refs[name].validate((valid) => {
                 if (valid) {
                     this.loading = true;
@@ -515,16 +776,24 @@ export default {
             })
         },
 
-        // 点击框取消按钮
-        ModalCancel(name) {
-            this.$Message.info("Clicked ok");
-            this.$refs[name].resetFields();
-        },
+ // 点击新增框取消按钮
+    AddModalReset(name) {
+      this.$refs[name].resetFields();
+      this.handleResetFile();
+      this.addModal = false;
+    },
 
     // 执行table编辑的事件
     editClick(params) {
         this.editModal = true;
         console.log(params);
+    },
+
+    // 编辑取消事件
+    EditModalReset(formName) {
+      this.$refs[formName].resetFields();
+      this.handleResetFile();
+      this.editModal = false;
     },
 
     // 执行删除的事件
@@ -543,6 +812,98 @@ export default {
         }, 1000)
     },
 
+    // 绑定-执行新增的事件
+    addClickBinding() {
+      if (this.$refs["addForm"]) {
+        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
+      }  
+      this.bindingaddModal = true;  
+        },
+
+    // 绑定- 点击确定按钮
+        bindingModalConfirm(name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.$Message.success('Success!');
+                        this.Modal = false;
+                        this.loading = false;
+                    }, 1000)
+                } else {
+                    this.$Message.error('Fail!');
+                }
+            })
+        },
+
+ // 绑定- 点击取消按钮
+    bindingModalCancel(name) {
+      this.$refs[name].resetFields();
+      this.handleResetFile();
+      this.addModal = false;
+    },
+      
+
+    // 绑定- 点击新增确定按钮
+        bindingAddModalConfirm(name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.$Message.success('Success!');
+                        this.Modal = false;
+                        this.loading = false;
+                    }, 1000)
+                } else {
+                    this.$Message.error('Fail!');
+                }
+            })
+        },
+
+ // 绑定- 点击新增框取消按钮
+    bindingAddModalCancel(name) {
+      this.$refs[name].resetFields();
+      this.handleResetFile();
+      this.addModal = false;
+    },
+
+    // 绑定- 执行table编辑的事件
+    editClickBinding(params) {
+        this.editModal = true;
+        console.log(params);
+    },
+
+    // 绑定- 编辑取消事件
+    bindingEditModalCancel(formName) {
+      this.$refs[formName].resetFields();
+      this.handleResetFile();
+      this.editModal = false;
+    },
+
+    // 绑定- 执行删除的事件
+    delClickBinding(params) {
+        console.log(params);
+        this.delDilaog = true;
+    },
+
+    // 绑定- 删除确定按钮
+    bindingdelConfrmClick() {
+        this.delLoading = true;
+        setTimeout(() => {
+            this.delDilaog = false;
+            this.$Message.success('成功');
+            console.log('我滚了');
+        }, 1000)
+    },
+
+    downloadClick(){
+
+    },
+
+    uploadClick(){
+
+    },
+
     // 获取时间
         getFormatterTime(val) {
             console.log(val);
@@ -559,6 +920,14 @@ export default {
             }
         };
         this.getUser();
+    },
+
+    // 渲染目的地下拉列表
+    async destinationTitleFun() {
+        const { data } = await destinationTitleList();
+        data.shift(0);
+        this.destinationTitle = Array.from(new Set(data));
+        // console.log(arr)
     },
 
     searchClick(filter) {
@@ -590,7 +959,7 @@ export default {
             }
         }
 
-        this.loading = true;
+        // this.loading = true;
         let { data } = await batchReservationOrderList(params);
         console.log(data)
         this.total = data[0].count;
@@ -603,6 +972,7 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.destinationTitleFun();
   }
 };
 </script>

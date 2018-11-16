@@ -7,39 +7,27 @@
         <Form ref="formInline" :model="formInline" inline>
 
             <FormItem prop="cus_account" label="用户账号" :label-width="60">
-                <Input type="text" v-model="formInline.cus_account" placeholder="请输入用户账号"></Input>
+                <Input type="text" clearable v-model="formInline.cus_account" placeholder="请输入用户账号"></Input>
             </FormItem>
 
             <FormItem prop="contact_phone" label="联系电话" :label-width="60">              
-                <Input type="text" v-model="formInline.contact_phone" placeholder="请输入联系电话"></Input>
+                <Input type="text" clearable v-model="formInline.contact_phone" placeholder="请输入联系电话"></Input>
             </FormItem>
 
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
 
-            <!-- <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem> -->
-
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-
-        <Modal v-model="moreModal"
-                title="预览"
-                <!-- :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
-                @on-cancel="ModalCancel('formValidate')" -->
-            >           
-            <Carousel autoplay v-model="value2" loop>
-                <!-- <CarouselItem v-for="item in visit" :key="item"> -->
-                    <!-- <img :src="base + '/' + item" alt=""  width="100%" height="100%"> -->
-                <!-- </CarouselItem> -->
-            </Carousel>
-
-        </Modal>
+        <TableM 
+        :columns="columns" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
 
     </div>
 </template>
@@ -50,6 +38,7 @@ import TableM from "../../common/table/table.vue";
 import {
     FeedbackList, //意见反馈列表
     FeedbackSearch, //意见反馈模糊查询
+    getBase, // 获取域名
 } from '../../api/lp-systemManagement/api.js'
 
 export default {
@@ -90,41 +79,31 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.suggestion_details ? row.suggestion_details : `暂无${index}`)
-                }
-            },
 
-            {
-                title: "反馈内容",
-                key: "action",
-                align: "center",
-                render: (h, params) => {
-                    return h("div", [
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.moreClick(params);
-                            }
-                        }
-                        },
-                        "预览图片"
-                    )
-                    ]);
                 }
             },
 
             {
                 title: "反馈图片",
+                key: "action",
+                align: "center",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
-                }
+                    return h('img', 
+                    {
+                        attrs:{
+                            src: this.imgFun(row)
+                        },
+                        style:{
+                            width: "100px",
+                            height: "80px",
+                            padding:"12px"
+                        }
+                    }, 
+                    )
+                },
+                
             },
+
 
             {
                 title: "反馈时间",
@@ -211,10 +190,31 @@ export default {
         this.userData = data.content.list;
         this.loading = false;
         console.log(data);
+    },
+
+    // 处理带有盘符的img路径
+     imgFun(val) {
+      return this.imgUrlFormat(val.visit);
+    },
+
+    // 处理盘符
+    imgUrlFormat(visit) {
+      var showUrl = this.base + "/" + visit;
+      console.log(getBase().base2);
+      console.log(this.base);
+      
+      return showUrl;
+    },
+    
+    // 用来初始化一些变量值
+    init() {
+      this.base = getBase().base2;
     }
+
   },
   mounted() {
     this.getUser();
+    this.init();
   }
 };
 </script>
