@@ -5,97 +5,31 @@
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
+            <FormItem prop="cus_account" label="基地名称" :label-width="50">
+                <Input type="text" clearable v-model="formInline.cus_account" placeholder="请输入账号"></Input>
+            </FormItem>
 
-             <FormItem>
-                <Button type="primary" @click="addClick">新增</Button>
+            <FormItem prop="cus_account" label="账号" :label-width="50">
+                <Input type="text" clearable v-model="formInline.cus_account" placeholder="请输入账号"></Input>
+            </FormItem>
+
+            <FormItem prop="cus_nick_name" label="昵称" :label-width="50">
+                <Input type="text" clearable v-model="formInline.cus_nick_name" placeholder="请输入昵称"></Input>
+            </FormItem>
+
+            <FormItem>
+                <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
-        <!-- 新增提示框 -->
-        <Modal v-model="addModal"
-                title="新增"
-                :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
-            >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <FormItem label="banner名称" prop="banner_title">
-                    <Input v-model="formValidate.banner_title" placeholder="请输入banner名称"></Input>
-                </FormItem>
-
-                <FormItem label="所属模块选择" prop="module" :label-width="85">
-                    <Select v-model="formValidate.module" placeholder="请选择">
-                        <Option value="1">春晚</Option>
-                        <Option value="2">8强</Option>
-                    </Select>
-                </FormItem>
-
-                <FormItem label="banner图" prop="upLoad" width='100'>
-                    
-                </FormItem>
-
-                <FormItem label="上传H5" prop="upLoad">
-                   
-                </FormItem>
-
-                <FormItem label="第三方地址" prop="third_url">
-                    <Input v-model="formValidate.third_url" placeholder="请输入第三方地址"></Input>
-                </FormItem>
-
-                <FormItem label="轮播顺序" prop="sort">
-                    <Input v-model="formValidate.sort" placeholder="请输入轮播顺序"></Input>
-                </FormItem>
-
-            </Form>
-                <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
-                </div>
-        </Modal>
-
-     <!--  编辑提示框 -->
-        <Modal v-model="editModal"
-                title="编辑"
-                :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
-            >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <FormItem label="banner名称" prop="banner_title">
-                    <Input v-model="formValidate.banner_title" placeholder="请输入banner名称"></Input>
-                </FormItem>
-
-                <FormItem label="所属模块选择" prop="module" :label-width="85">
-                    <Select v-model="formValidate.module" placeholder="请选择">
-                        <Option value="1">春晚</Option>
-                        <Option value="2">8强</Option>
-                    </Select>
-                </FormItem>
-
-                <FormItem label="banner图" prop="upLoad" width='100'>
-                    
-                </FormItem>
-
-                <FormItem label="上传H5" prop="upLoad">
-                   
-                </FormItem>
-
-                <FormItem label="第三方地址" prop="third_url">
-                    <Input v-model="formValidate.third_url" placeholder="请输入第三方地址"></Input>
-                </FormItem>
-
-                <FormItem label="轮播顺序" prop="sort">
-                    <Input v-model="formValidate.sort" placeholder="请输入轮播顺序"></Input>
-                </FormItem>
-
-            </Form>
-            </Form>
-                <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
-                </div>
-        </Modal>
+        <TableM 
+        :columns="columns" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
 
     <!-- 删除提示框 -->
     <Modal v-model="delDilaog" width="360">
@@ -177,7 +111,7 @@ export default {
 
         columns: [    // 表头信息
             {
-                title: "设施名称",
+                title: "基地名称",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.facilities_name ? row.facilities_name : `暂无${index}`)
@@ -185,7 +119,7 @@ export default {
             },
 
             {
-                title: "设施图片",
+                title: "账号",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.banner_title ? row.banner_title : `暂无${index}`)
@@ -193,7 +127,24 @@ export default {
             }, 
 
             {
-                title: "上传时间",
+                title: "昵称",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, 
+                    row.upLoad ? row.upLoad : `暂无${index}`)     
+                }
+            },
+
+            {
+                title: "评价内容",
+                render: (h, {row, index}) => {
+                    return h('span', {
+                    }, row.banner_title ? row.banner_title : `暂无${index}`)
+                }
+            }, 
+
+            {
+                title: "评价星级",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
@@ -219,11 +170,11 @@ export default {
                         },
                         on: {
                             click: () => {
-                                this.editClick(params);
+                                this.topClick(params);
                             }
                         }
                         },
-                        "编辑"
+                        "置顶"
                     ),
                     h(
                         "Button",

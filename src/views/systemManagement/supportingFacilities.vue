@@ -10,9 +10,9 @@
               <Button type="primary" @click="addClick">新增</Button>
             </FormItem>
 
-            <!-- <FormItem>
+            <FormItem>
               <Button type="primary" @click="delClick">删除</Button>
-            </FormItem> -->
+            </FormItem>
         </Form>
 
         <TableM 
@@ -42,9 +42,9 @@
                     <el-upload
                         ref="addUpload"
                         name="upLoad"
-                        :action="actionUrl"
+                        :action="addActionUrl"
                         :data="addData"
-                        :file-list="fileList"
+                        :file-list="addFileList"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChange"
@@ -78,18 +78,18 @@
                 @on-cancel="EditModalReset('editForm')"
             >
             <Form ref="editForm" :model="editForm" :rules="editRules" :label-width="80">
-                
-                 <FormItem label="设施名称" prop="facilities_name">
+
+              <FormItem label="设施名称" prop="facilities_name">
                     <Input v-model="editForm.facilities_name" placeholder="请输入设施名称"></Input>
                 </FormItem>
-                
+
                 <FormItem label="设施图片" :label-width="85">
                     <el-upload
                         ref="editUpload"
                         name="upLoad"
-                        :action="actionUrl"
+                        :action="editActionUrl"
                         :data="editData"
-                        :file-list="fileList"
+                        :file-list="editFileList"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChange"
@@ -101,7 +101,7 @@
                         :limit="1"
                     >
                         <i class="el-icon-plus"></i>
-                    </el-upload> 
+                    </el-upload>
 
                     <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
@@ -158,6 +158,7 @@ export default {
 
     return {
       
+      fileList: [],
 
       editFileList: [],  // 编辑默认图片列表
 
@@ -167,16 +168,12 @@ export default {
         facilities_name: ""
       },
 
-      
-
-      addForm: {
+      addForm: {              // 定义编辑表单的对象
         facilities_name: ""
       },
 
-      editForm: {
-        // 定义新增表单的对象
+      editForm: {             // 定义新增表单的对象
         facilities_name: "",
-        upLoad: ""
       },
 
       addRules: {
@@ -197,6 +194,10 @@ export default {
 
       editData: {},
 
+      editFileList: [],
+
+      addFileList: [],
+
       addModal: false,
 
       editModal: false,
@@ -213,7 +214,9 @@ export default {
 
       visible: false,
 
-      actionUrl: "",
+      addActionUrl: "",
+
+      editActionUrl: "",
 
       columns: [
         // 配套设施表头信息
@@ -268,7 +271,7 @@ export default {
           title: "操作",
           key: "action",
           align: "center",
-          render: (h, params) => {
+          render: (h, { row }) => {
             return h("div", [
               h(
                 "Button",
@@ -281,26 +284,26 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.editClick(params);
+                      this.editClick(row);
                     }
                   }
                 },
                 "编辑"
               ),
-              h(
-                "Button",
-                {
-                props: {
-                    type: "primary",
-                },
-                on: {
-                    click: () => {
-                        this.delClick(params);
-                    }
-                }
-                },
-                "删除"
-            )
+            //   h(
+            //     "Button",
+            //     {
+            //     props: {
+            //         type: "primary",
+            //     },
+            //     on: {
+            //         click: () => {
+            //             this.delClick(params);
+            //         }
+            //     }
+            //     },
+            //     "删除"
+            // )
             ]);
           }
         }
@@ -333,12 +336,14 @@ export default {
 
     // 图片上传之前的钩子
     onChange(file, fileList) {
+      console.log(fileList)
       this.fileList = fileList;
+      this.editFileList = fileList;
     },
 
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
-        this.$Message.warning('请上传图片');
+      this.$Message.warning('超出图片最大限制');
     },
 
     // 上传成功
@@ -347,16 +352,24 @@ export default {
         this.isUpload = true;
         this.getUser();
     },
-    
+
     // 上传失败
     uploadError(err, file, fileList) {
         console.log(err, file, fileList);
         this.$Message.error('上传失败');
     },
 
+    // 清除图片列表动作
+    handleResetFile() {
+      this.fileList = [];
+      this.editFileList = [];
+      this.addFileList = [];
+    },
+
     // 删除图片钩子函数
     handleRemove(file, fileList) {
-        console.log(file, fileList);
+      this.handleResetFile();
+      console.log(file, fileList);
     },
 
     // 清空默认图片列表
@@ -375,171 +388,23 @@ export default {
       this.selection = selection;
     },
 
-    // 执行新增的事件
-    addClick() {
-      if (this.$refs["addForm"]) {
-        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
-      }  
-      this.addModal = true;  
-    },
-    
-    // 点击新增确定按钮
-    AddModalConfirm(name) {
-      this.$refs[name].validate(valid => {
-          if (valid) {
-            supportingFacilitiesAdd(this[name]).then(res =>{
-               if(!this.fileList.length) {
-                this.$Message.warning('请上传图片');
-                return
-              }
-              this.addData = this[name];
-              setTimeout(() => {
-                this.$refs.addUpload.submit();
-                if(res.data === 1){
-                    this.$Message.success("Success!");
-                    this.getUser();
-                  }else{
-                    this.$Message.error("Fail!");
-                  }
-                this.addModal = false;
-                this.loading = false;
-              }, 400);
-            })             
-          }
-      });
-    },
-
-    // 点击新增框取消按钮
-    AddModalReset(name) {
-      this.addModal = false;
-    },
-
-    imgFun(val) {
-      return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
-    },
-
-    // 执行table编辑的事件
-    editClick({ row }) {
-      console.log(this.editFileList)
-      this.editForm = row;
-      this.editFileList.push(
-        { url: this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name)}
-      );
-      this.$nextTick(() =>{
-        this.editModal = true;
-      })
-    },
-
-    // 点击编辑确定按钮
-    EditModalConfirm(formName) {
-      this.$refs[formName].validate((valid) =>{
-        if (valid) {
-          supportingFacilitiesEdit(this[formName]).then(res => {
-            console.log(res);
-            if(!this.fileList.length) {
-              this.$Message.warning('请上传图片');
-              return
-            }
-
-            this.editData = {
-              facilities_name: this[formName].facilities_name,
-            };
-
-            setTimeout(() => {
-              this.$refs.editUpload.submit();
-              this.$Message.success("保存成功!");
-              this.editModal = false;
-              this.loading = false;
-              this.resetFileList('editFileList');
-            },400);
-          })
-        }
-      })
-    },
-
-    // 点击编辑框取消按钮
-    EditModalReset(name) {
-      // this.$refs[name].resetFields();
-      // this.$Message.info("已取消");
-
-      this.editModal = false;
-      this.resetFileList('editFileList');
-      
-    },
-
-    // 执行删除的事件
-
-    //多删执行删除的事件
-    // delClick({ row }) {
-    //   console.log(this.selection)
-    //   for(var i = 0;i<this.selection.length;i++){
-    //     this.delArr.push(this.selection[i].facilities_id)
-    //   }
-    //   if(!this.selection.length) {
-    //     this.$Message.warning('请选择');
-    //     return
-    //   };
-    //   this.delDilaog = true;
-    // },
-
-    // 单删执行删除的事件
-    delClick(params) {
-      this.deletefacilities_id = params.row.facilities_id;
-      this.delDilaog = true;
-    },
-
-    // 删除确定按钮
-
-    // 多删删除确定按钮
-    // async delConfrmClick() {
-    //   this.delLoading = true;
-    //   return
-    //   const { data } = await supportingFacilitiesDel({facilities_id: [...this.delArr]});
-    //   console.log(data);
-    //   if(data === 1){
-    //     this.$Message.success("删除成功!");
-    //     this.delDilaog = false;
-    //     this.getUser();
-    //   }else{
-    //     this.$Message.error("删除失败!");
-    //   }
-    //   this.delLoading = false;
-    // },
-
-    // 单删删除确定按钮
-    async delConfrmClick() {
-      this.delLoading = true;
+    // 配套设施管理列表渲染
+    async getUser(filter, pageIndex = 1) {
       let params = {
-        facilities_id:this.deletefacilities_id
-      }
-      const { data } = await supportingFacilitiesDel(params);
-      console.log(data);
-      if(data === 1){
-        this.$Message.success("删除成功!");
-        this.delDilaog = false;
-        this.getUser();
-      }else{
-        this.$Message.error("删除失败!");
-      }
-      this.delLoading = false;
-    },
+        pageSize: 10,
+        startPos: filter ? pageIndex : this.currentPage
+      };
 
-    // 获取时间
-    getFormatterTime(val) {
-      console.log(val);
-    },
-
-    // 改变分页触发的事件
-    pageChange(pageIndex) {
-      // 改变当前页
-      // this.currentPage = pageIndex;
-      for (let i in this.formInline) {
-        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
-          this.getUser(this.formInline, pageIndex);
-          return false;
-        }
+      if (filter) {
+        params = Object.assign(params, filter);
       }
-      this.getUser();
+
+      this.loading = true;
+      let { data } = await supportingFacilitiesList(params);
+      this.total = data[0].count;
+      data.shift(0);
+      this.userData = data;
+      this.loading = false;
     },
 
     // 查询
@@ -555,38 +420,181 @@ export default {
       this.getUser(filter);
     },
 
-    imgUrlFormat(facilities_pic_url, facilities_pic_name) {
-      this.$nextTick(() => {
-        var afterUpload = facilities_pic_url.split("static/")[1];
-        var showUrl = `${this.base}/${afterUpload}/${facilities_pic_name}`;
-        return showUrl;
+    // 改变分页触发的事件
+    pageChange(pageIndex) {
+      // 改变当前页
+      for (let i in this.formInline) {
+        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+          this.getUser(this.formInline, pageIndex);
+          return false;
+        }
+      }
+      this.getUser();
+    },
+
+    // 执行新增的事件
+    addClick() {
+      if (this.$refs["addForm"]) {
+        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
+      }  
+      this.addModal = true;  
+    },
+
+    // 新增点击确定按钮
+    AddModalConfirm(formName) {
+        this.$refs[formName].validate(valid => {
+            if (valid) {
+                if(!this.fileList.length) {
+                  this.$Message.warning('请上传图片');
+                  return
+                };
+                this.addData = this[formName];
+                setTimeout(() => {
+                  this.$refs.addUpload.submit();
+                  this.$Message.success("保存成功!");
+                  this.$refs.addForm.resetFields();
+                  setTimeout(() =>{ 
+                    this.handleResetFile();
+                    this.getUser();
+                  }, 200)
+                  this.addModal = false;
+                  this.loading = false;
+                },400);
+            }
+        });
+    },
+
+    // 点击新增框取消按钮
+    AddModalReset(name) {
+      this.$refs[name].resetFields();
+      this.handleResetFile();
+      this.addModal = false;
+    },
+
+  
+     // 执行table编辑的事件
+    editClick(row) {
+      this.editForm = Object.assign({}, row);
+      const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      this.editFileList = [];
+      this.editFileList.push({ url, name: url });
+      this.editModal = true;
+    },
+    
+    // 编辑确定按钮
+    EditModalConfirm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if(valid) {
+          // 执行
+          if(!this.editFileList.length) {
+            this.$Message.warning('请上传图片');
+            return
+          };
+          this.editData = this[formName];
+          console.log(this.editData)
+          setTimeout(() => {
+            this.$refs.editUpload.submit();
+            this.$Message.success("保存成功!");
+            setTimeout(() =>{ 
+              this.handleResetFile();
+              this.getUser();
+            }, 200)
+            this.editModal = false;
+            this.loading = false;
+          }, 400);
+        }
       })
     },
 
-    // 配套设施管理列表
-    async getUser(filter, pageIndex = 1) {
-      let params = {
-        pageSize: 10,
-        startPos: filter ? pageIndex : this.currentPage
-      };
+    // 编辑取消事件
+    EditModalReset(formName) {
+      this.$refs[formName].resetFields();
+      this.handleResetFile();
+      this.editModal = false;
+    },
 
-      if (filter) {
-        params = Object.assign(params, filter);
+    
+    // 执行删除的事件
+
+    //多删执行删除的事件
+    delClick({ row }) {
+      console.log(this.selection)
+      for(var i = 0;i<this.selection.length;i++){
+        this.delArr.push(this.selection[i].facilities_id)
       }
+      if(!this.selection.length) {
+        this.$Message.warning('请选择');
+        return
+      };
+      this.delDilaog = true;
+    },
 
-      this.loading = true;
-      let { data } = await supportingFacilitiesList(params);
+    // 单删执行删除的事件
+    // delClick(params) {
+    //   this.deletefacilities_id = params.row.facilities_id;
+    //   this.delDilaog = true;
+    // },
+
+    // 删除确定按钮
+
+    // 多删删除确定按钮
+    async delConfrmClick() {
+      // this.delLoading = true;
+      return
+      const { data } = await supportingFacilitiesDel({facilities_id: [...this.delArr]});
       console.log(data);
-      this.total = data[0].count;
-      data.shift(0);
-      this.userData = data;
-      this.loading = false;
+      if(data === 1){
+        this.$Message.success("删除成功!");
+        this.delDilaog = false;
+        this.getUser();
+      }else{
+        this.$Message.error("删除失败!");
+      }
+      // this.delLoading = false;
+    },
+
+    // 单删删除确定按钮
+    // async delConfrmClick() {
+    //   this.delLoading = true;
+    //   let params = {
+    //     facilities_id:this.deletefacilities_id
+    //   }
+    //   const { data } = await supportingFacilitiesDel(params);
+    //   console.log(data);
+    //   if(data === 1){
+    //     this.$Message.success("删除成功!");
+    //     this.delDilaog = false;
+    //     this.getUser();
+    //   }else{
+    //     this.$Message.error("删除失败!");
+    //   }
+    //   this.delLoading = false;
+    // },
+ 
+
+    // 处理带有盘符的img路径
+    imgFun(val) {
+      return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
+    },
+
+    // 处理盘符
+    imgUrlFormat(facilities_pic_url, facilities_pic_name) {
+      const afterUpload = facilities_pic_url.split("static/")[1];
+      var showUrl = this.base + "/" + afterUpload + "/" + facilities_pic_name;
+      return showUrl;
+    },
+
+    
+    // 用来初始化一些变量值
+    init() {
+      this.base = getBase().base2;
+      this.addActionUrl = `${this.base}/Facilities_managementController/save`;
+      this.editActionUrl = `${this.base}/Facilities_managementController/updateById`;
     }
   },
   mounted() {
     this.getUser();
-    this.base = getBase().base3;
-    this.actionUrl = `${this.base}/Facilities_managementController/save`;
+    this.init();
   }
 };
 </script>

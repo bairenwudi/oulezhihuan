@@ -141,16 +141,6 @@ export default {
             p_system: ''
         },
 
-        ruleInline: {   // 定义规则对象
-            cus_account: [
-                { required: true, message: '请输入账号', trigger: 'blur' }
-            ],
-            cus_nick_name: [
-                { required: true, message: '请输入昵称', trigger: 'blur' }
-                // { type: 'string', min: 11, message: '电话最多为11位', trigger: 'blur' }
-            ]
-        },
-
         loading: false,  // 定义loading为true
 
         currentPage: 1   // 定义当前页

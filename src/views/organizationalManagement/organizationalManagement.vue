@@ -51,7 +51,7 @@
             </FormItem>
 
             <FormItem>
-                <Button type="primary" @click.stop="delClick">确定</Button>
+                <Button type="primary" @click.stop="handleStatusClick">确定</Button>
             </FormItem>
 
         </Form>
@@ -281,6 +281,7 @@ export default {
   },
 
   methods: {
+    // 类型过滤
     typeFilter(type) {
       switch(type){
         case 1:
@@ -297,6 +298,7 @@ export default {
             break;
       }
     },
+
     //省下拉框 选择触发
     provinceChange(p_code){
       console.log(p_code);
@@ -308,8 +310,8 @@ export default {
         this.CityTitleListFun(p_code)
 
       }
-
     },
+
     // 进入编辑详情
     goToEditInfo(params) {
       this.$router.push({
@@ -318,6 +320,7 @@ export default {
       });
     },
 
+    // 初始化分页
     resetTotal() {
       this.currentPage = 1;
       this.total = 1;
@@ -326,6 +329,11 @@ export default {
     // 执行table编辑的事件
     editClick(params) {
       console.log(params);
+    },
+
+    // 执行更改状态确定按钮
+    handleStatusClick() {
+      
     },
 
     // 执行删除的事件

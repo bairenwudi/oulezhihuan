@@ -17,7 +17,7 @@
                 title="新增"
                 :mask-closable="false"
                 @on-ok="add('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
+                @on-cancel="addModalCancel('formValidate')"
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
 
@@ -46,7 +46,7 @@
             </Form>
                 <div slot="footer" align="center">
                     <Button type="primary" @click="add('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button @click="addModalCancel('formValidate')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
 
@@ -54,30 +54,30 @@
         <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
-                @on-ok="edit('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
+                @on-ok="edit('editFormValidate')"
+                @on-cancel="editModalCancel('editFormValidate')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+            <Form ref="editFormValidate" :model="editFormValidate" :rules="ruleValidate" :label-width="80">
                 <FormItem label="省份" prop="p_name" :label-width="85">
-                    <Select v-model="formValidate.p_name" @on-change="provinceChange" placeholder="请选择">
+                    <Select v-model="editFormValidate.p_name" @on-change="provinceChange" placeholder="请选择">
                         <Option v-for="(item, index) in pList" :value="item.code" :label="item.name" :key="`p_name_${index}`"></Option>
                     </Select>
                 </FormItem>
 
                 <FormItem label="城市" prop="c_name" :label-width="85">
-                    <Select v-model="formValidate.c_name" placeholder="请选择">
+                    <Select v-model="editFormValidate.c_name" placeholder="请选择">
                         <Option v-for="(item, index) in cList" :value="item.code" :label="item.name" :key="`c_name_${index}`"></Option>
                     </Select>
                 </FormItem>
 
                 <FormItem label="排序" prop="hcm_sort">
-                    <Input v-model="formValidate.hcm_sort" placeholder="请输入排序"></Input>
+                    <Input v-model="editFormValidate.hcm_sort" placeholder="请输入排序"></Input>
                 </FormItem>
 
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="edit('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="edit('editFormValidate')" :loading="loading">确定</Button>
+                    <Button @click="editModalCancel('editFormValidate')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
 
@@ -126,13 +126,9 @@ export default {
     };
     
     var emptyValidP_name = (rule, value, callback) => {
-      
       if(value === ''){
         return callback(new Error("请填写完整"));
-
-      }
-      
-      if(!value) {
+      } else if(!value) {
         return callback(new Error("请填写完整1"));
       } else {
         callback();
@@ -176,16 +172,27 @@ export default {
         c_name: "",
         hcm_sort: ""
       },
+      editFormValidate: {
+        // 定义新增表单的对象
+        p_name: "",
+        c_name: "",
+        hcm_sort: ""
+      },
+
       ruleValidate: {
         // 定义表单的校验规则
         p_name: [
-          { validator: emptyValidP_name }
+          { validator: emptyValidP_name, trigger:"change" }
+          // { required: true, message:"请选择省" , trigger:"change" }
         ],
         c_name: [
-          { validator: emptyValidC_name }
+          { validator: emptyValidC_name, trigger:"change" }
+          // { required: true, message:"请选择市" , trigger:"change" }
+
         ],
         hcm_sort: [
           { validator: emptyValid, trigger: "blur" }
+          // { required: true, message:"请选择序号" , trigger:"blur" }
         ]
       },
 
@@ -350,8 +357,11 @@ export default {
           hotCityManagementAdd(params).then(res => {
             console.log(res);
             if(res.data === 1){
+
               this.$Message.success("Success!");
               this.getUser();
+              this.addModal = false;
+
             }else{
               this.$Message.error("Fail!");
             }
@@ -372,9 +382,9 @@ export default {
         if (valid) {
           this.loading = true;
           let params = {
-            hcm_provice_code:this.formValidate.p_name,
-            hcm_city_code:this.formValidate.c_name,
-            hcm_sort:this.formValidate.hcm_sort,
+            hcm_provice_code:this.editFormValidate.p_name,
+            hcm_city_code:this.editFormValidate.c_name,
+            hcm_sort:this.editFormValidate.hcm_sort,
             hcm_id:this.deleteHcm_id
           }
           hotCityManagementEdit(params).then(res => {
@@ -388,32 +398,33 @@ export default {
             }
             this.loading = false;
           })
-          console.log(data);
-          
-          // setTimeout(() => {
-          
-          // }, 1000);
         }
       });
     },
 
     // 点击框取消按钮
-    ModalCancel(name) {
+    editModalCancel(name) {
       this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
+      this.editModal = false;
     },
+    addModalCancel(name) {
+      this.$Message.info("Clicked ok");
+      this.$refs[name].resetFields();
+      this.addModal = false;
 
+    },
     // 执行table编辑的事件
     async editClick(params) {
       this.editModal = true;
       this.deleteHcm_id = params.row.hcm_id;
       const { data } = await hotCityGetEditMessage({hcm_id:this.deleteHcm_id});
       console.log(data);
-      this.formValidate.p_name = data.hcm_provice_code - 0 // hcm_provice_code 是字符串类型 - 0  转化为数字类型
-      // alert(this.formValidate.p_name)
-      this.getClist(this.formValidate.p_name)
-      this.formValidate.c_name = data.hcm_city_code - 0
-      this.formValidate.hcm_sort = data.hcm_sort;
+      this.editFormValidate.p_name = data.hcm_provice_code - 0 // hcm_provice_code 是字符串类型 - 0  转化为数字类型
+      // alert(this.editFormValidate.p_name)
+      this.getClist(this.editFormValidate.p_name)
+      this.editFormValidate.c_name = data.hcm_city_code - 0
+      this.editFormValidate.hcm_sort = data.hcm_sort;
     },
 
     // 执行删除的事件
@@ -475,7 +486,7 @@ export default {
       this.pList = data;
     },
     provinceChange(val){
-      // this.formValidate.c_name = val;
+      this.editFormValidate.c_name = "";
       this.getClist(val);
     },
     async getClist(p_code){
