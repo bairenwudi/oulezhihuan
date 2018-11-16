@@ -31,7 +31,7 @@
                     </Select>
                 </FormItem>
 
-                <FormItem label="banner图" prop="upLoad" width='50' class="bcd">
+                <FormItem label="banner图" prop="upLoad" width='50' class="uploadImg">
                     <el-upload
                         ref="addUpload"
                         name="upLoad"
@@ -54,28 +54,29 @@
                     </Modal>
                 </FormItem>
 
-                <FormItem label="上传H5" prop="upLoad" class="abc">
+                <FormItem label="上传H5" prop="upLoad" class="uploadH5">
                     <el-upload
                         ref="H5Upload"
                         name="upLoad"
                         :action="actionUrl"
                         :data="addData"
+                        :file-list="addFileList"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChangeH5"
-                        :on-preview="handlePictureCardPreviewH5"
-                        :on-success="uploadSuccessH5"
+                        :show-file-list="false"
+                        :on-success="uploadSuccess"
                         :on-error="uploadErrorH5"
                         :on-exceed="uploadonExceedH5"
                         :on-remove="handleRemoveH5"
                         :limit="1"
                     >
                         <!-- <i class="el-qwe">上传H5</i> -->
-                        <span class="h5">上传h5</span>
+                        <span class="h5">{{ H5fileName ? H5fileName : "上传h5" }}</span>
                     </el-upload>
                     <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
                         <!-- <img :src="imgUrl" v-if="visible" style="width: 100%"> -->
-                        {{  }}
+                        
                     </Modal>
                 </FormItem>
 
@@ -95,49 +96,91 @@
         </Modal>
 
      <!--  编辑提示框 -->
-        <!-- <Modal v-model="editModal"
+        <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
-                @on-ok="edit('formValidate')"
-                @on-cancel="ModalCancel('formValidate')"
+                @on-ok="edit('editForm')"
+                @on-cancel="ModalCancel('editForm')"
             >
-            <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+            <Form ref="editForm" :model="editForm" :rules="ruleValidate" :label-width="80">
                 <FormItem label="banner名称" prop="banner_title">
-                    <Input v-model="formValidate.banner_title" placeholder="请输入banner名称"></Input>
+                    <Input v-model="editForm.banner_title" placeholder="请输入banner名称"></Input>
                 </FormItem>
 
                 <FormItem label="所属模块选择" prop="module" :label-width="85">
-                    <Select v-model="formValidate.module" placeholder="请选择">
+                    <Select v-model="editForm.module" placeholder="请选择">
                        <Option value="zhfw">置换-房屋</Option>
                     </Select>
                 </FormItem>
 
                 <FormItem label="banner图" prop="upLoad" width='100'>
-                    
+                    <el-upload
+                        ref="editUpload"
+                        name="upLoad"
+                        :action="actionUrl"
+                        :data="editData"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :file-list="editFileList"
+
+                        :on-change="onChangeEdit"
+                        :on-preview="handlePictureCardPreviewEdit"
+                        :on-success="uploadSuccessEdit"
+                        :on-error="uploadErrorEdit"
+                        :on-exceed="uploadonExceedEdit"
+                        :on-remove="handleRemoveEdit"
+                        :limit="1"
+                    >
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <Modal :footer-hide="true" title="预览图片" v-model="visible">
+                        <img :src="imgUrl" v-if="visible" style="width: 100%">
+                    </Modal>
                 </FormItem>
 
                 <FormItem label="上传H5" prop="upLoad">
-                   
+                    <el-upload
+                        ref="H5Upload"
+                        name="upLoad"
+                        :action="actionUrl"
+                        :data="addData"
+                        :file-list="editFileList"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :on-change="onChangeH5"
+                        :show-file-list="false"
+                        :on-success="uploadSuccessH5"
+                        :on-error="uploadErrorH5"
+                        :on-exceed="uploadonExceedH5"
+                        :on-remove="handleRemoveH5"
+                        :limit="1"
+                    >
+                        <!-- <i class="el-qwe">上传H5</i> -->
+                        <span class="h5">{{ H5fileName ? H5fileName : "上传h5" }}</span>
+                    </el-upload>
+                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                        <!-- <img :src="imgUrl" v-if="visible" style="width: 100%"> -->
+                    </Modal>
                 </FormItem>
 
                 <FormItem label="第三方地址" prop="third_url">
-                    <Input v-model="formValidate.third_url" placeholder="请输入第三方地址"></Input>
+                    <Input v-model="editForm.third_url" placeholder="请输入第三方地址"></Input>
                 </FormItem>
 
                 <FormItem label="轮播顺序" prop="sort">
-                    <Input v-model="formValidate.sort" placeholder="请输入轮播顺序"></Input>
+                    <Input v-model="editForm.sort" placeholder="请输入轮播顺序"></Input>
                 </FormItem>
 
             </Form>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="edit('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button type="primary" @click="edit('editForm')" :loading="loading">确定</Button>
+                    <Button @click="ModalCancel('editForm')" style="margin-left: 8px">重置</Button>
                 </div>
-        </Modal> -->
+        </Modal>
 
     <!-- 删除提示框 -->
-    <!-- <Modal v-model="delDilaog" width="360">
+    <Modal v-model="delDilaog" width="360">
         <p slot="header" style="color:#f60;text-align:center">
             <Icon type="ios-information-circle"></Icon>
             <span>提示</span>
@@ -148,7 +191,7 @@
         <div slot="footer">
             <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
         </div>
-    </Modal> -->
+    </Modal>
     
     </div>
 </template>
@@ -184,14 +227,16 @@ export default {
         callback();
       }
     };
-    var emptyValidupLoad = (rule, value, callback) => {
-      // var dd = /^(.*\.html)$/
-      if(!value) {
-        return callback(new Error("banner图片不能为空"));
-      } else {
-        callback();
-      }
-    };
+    // var emptyValidupLoad = (rule, value, callback) => {
+    //   // var dd = /^(.*\.html)$/
+    //   console.log(value);
+      
+    //   if(!value) {
+    //     return callback(new Error("banner图片不能为空"));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     var emptyValidsort = (rule, value, callback) => {
       if(!value) {
         return callback(new Error("轮播排序不能为空"));
@@ -201,55 +246,47 @@ export default {
     };
 
     return {
-      fileList: [],
+      imgList: [],
+      h5List:[],
+      editFileList:[],
       formValidate: {
         // 定义新增表单的对象
         module: "",
         banner_title: "",
-        upLoad: "",
+        // upLoad: "",
+        sort: ""
+      },
+      editForm: {
+        module: "",
+        banner_title: "",
+        // upLoad: "",
         sort: ""
       },
       ruleValidate: {
         // 定义表单的校验规则
         banner_title: [
-          // {
-          //   required: true,
-          //   type: "string",
-          //   message: "请输入预订人",
-          //   trigger: "blur"
-          // }
-          { required: true,validator: emptyValidbanner_title, trigger:"blur" }
+          { required: true, validator: emptyValidbanner_title, trigger:"blur" }
         ],
-
         module: [
-          // {
-          //   required: true,
-          //   type: "string",
-          //   min: 1,
-          //   message: "所属模块选择",
-          //   trigger: "change"
-          // },
-          // { type: "string", max: 1, message: "至多选择一个", trigger: "change" }
           { required: true, validator: emptyValidmodule, trigger:"change" }
         ],
-        upLoad : [
-          { required: true,validator: emptyValidupLoad, trigger:"change" }
-        ],
+        // upLoad : [
+        //   { required: true,validator: emptyValidupLoad, trigger:"change" }
+        // ],
         sort: [
-          // { required: true, message: "请输入排序", trigger: "blur" },
-          // {
-          //   type: "string",
-          //   min: 1,
-          //   message: "Introduce no less than 20 words",
-          //   trigger: "blur"
-          // }
-          { required: true,validator: emptyValidsort, trigger:"blur" }
+          { required: true, validator: emptyValidsort, trigger:"blur" }
         ]
       },
       picSrc: "",
       file: null,
 
+      delbannerId: "",
+
       addData: {},
+
+      editData: {},
+
+      addFileList: [],
 
       addModal: false,
 
@@ -264,6 +301,8 @@ export default {
       currentPageIndex: 1, // 当前页
 
       imgUrl: "",
+
+      H5fileName:"",
 
       visible: false,
 
@@ -384,7 +423,7 @@ export default {
         cus_account: "",
         cus_nick_name: ""
       },
-
+      
       loading: false, // 定义loading为true
 
       currentPage: 1 // 定义当前页
@@ -397,35 +436,101 @@ export default {
       this.imgUrl = file.url;
       this.visible = true;
     },
+        handlePictureCardPreviewEdit(file) {
+      console.log(file);
+      this.imgUrl = file.url;
+      this.visible = true;
+    },
     // 图片上传之前的钩子
     onChange(file, fileList) {
       console.log(file,fileList);
-      this.fileList = fileList;
+      this.imgList = fileList;
+    },
+
+    onChangeEdit(file, fileList) {
+      console.log(file,fileList);
+      this.imgList = fileList;
     },
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
+      this.$Message.warning("数量超出最大限制");
+    },
+    uploadonExceedEdit() {
       this.$Message.warning("数量超出最大限制");
     },
 
     // 上传成功
     uploadSuccess(response, file, fileList) {
       console.log(response, file, fileList);
-      this.isUpload = true;
-      this.$Message.success("上传成功");
+      if(response === 1){
+        this.loading = false;
+        this.$Message.success("上传成功111111111");
+        this.addModal = false;
+        this.$refs.addForm.resetFields();
+        setTimeout(() => {
+          this.getUser();
+        }, 500);
+      } else if(response === 3){
+        this.$Message.error("banner顺序重复");
+        this.loading = false;
+      } else if(response === 4){
+        this.$Message.error("banner名称重复");
+        this.loading = false;
+      }
+    },
+        uploadSuccessEdit(response, file, fileList) {
+      console.log(response, file, fileList);
+      // if(response === 1){
+      //   this.loading = false;
+      //   this.$Message.success("上传成功");
+      //   this.addModal = false;
+      //   this.$refs.addForm.resetFields();
+      //   this.getUser();
+      // } else if(response === 3){
+      //   this.$Message.error("banner顺序重复");
+      //   this.loading = false;
+      // } else if(response === 4){
+      //   this.$Message.error("banner名称重复");
+      //   this.loading = false;
+      // }
+    },
+
+    uploadSuccessEdit(response, file, fileList) {
+      console.log(response, file, fileList);
+      if(response === 1){
+        this.loading = false;
+        this.$Message.success("上传成功");
+        this.addModal = false;
+        this.$refs.addForm.resetFields();
+        this.getUser();
+      } else if(response === 3){
+        this.$Message.error("banner顺序重复");
+        this.loading = false;
+      } else if(response === 4){
+        this.$Message.error("banner名称重复");
+        this.loading = false;
+      }
     },
     
     // 上传失败
     uploadError(err, file, fileList) {
       console.log(err, file, fileList);
+      
       this.$Message.error("上传失败");
     },
-
+    uploadErrorEdit(err, file, fileList) {
+      console.log(err, file, fileList);
+      
+      this.$Message.error("上传失败");
+    },
     // 删除图片钩子函数
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
 
-
+    handleRemoveEdit(file, fileList) {
+      console.log(file, fileList);
+    },
 
 
     handlePictureCardPreviewH5(file) {
@@ -434,9 +539,10 @@ export default {
     },
     // 图片上传之前的钩子
     onChangeH5(file, fileList) {
+      console.log(file);
       console.log(fileList);
-      
-      this.fileList = fileList;
+      this.H5fileName = file.name;
+      this.h5List = fileList;
     },
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceedH5() {
@@ -456,8 +562,16 @@ export default {
       this.$Message.error("上传失败");
     },
 
+    // 清除图片列表动作
+    handleResetFile() {
+      this.fileList = [];
+      this.editFileList = [];
+      this.addFileList = [];
+    },
+
     // 删除图片钩子函数
     handleRemoveH5(file, fileList) {
+      this.handleResetFile();
       console.log(file, fileList);
     },
 
@@ -472,10 +586,6 @@ export default {
       this.currentPage = 1;
       this.total = 1;
     },
-    resetTotal() {
-      this.currentPage = 1;
-      this.total = 1;
-    },
 
     // 执行新增的事件
     addClick() {
@@ -486,14 +596,26 @@ export default {
     add(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          if(!this.imgList.length) {
+            this.$Message.warning('请上传图片');
+            return
+          };
+          if(!this.h5List.length) {
+            this.$Message.warning('请上传H5');
+            return
+          };
+          this.addData = this[name];
           this.loading = true;
           setTimeout(() => {
-            this.$Message.success("Success!");
-            this.addModal = false;
-            this.loading = false;
-          }, 1000);
-        } else {
-          this.$Message.error("Fail!");
+            this.$refs.addUpload.submit();
+          }, 220);
+          // setTimeout(() => {
+          //   this.$Message.success("Success!");
+          //   this.addModal = false;
+          //   this.loading = false;
+          // }, 1000);
+        }else{
+          this.$Message.error('你能传上去个屁')
         }
       });
     },
@@ -528,22 +650,35 @@ export default {
     editClick(params) {
       this.editModal = true;
       console.log(params);
+      this.editForm = Object.assign(this.editForm, params.row);
+      this.editForm.third_url = this.imgUrlFormat(params.row.h5_path,params.row.h5_name);
+      const url = this.imgUrlFormat(params.row.banner_url,params.row.banner_name);
+      this.editFileList = [];
+      this.editFileList.push({ url, name: url });
     },
-
+    
     // 执行删除的事件
     delClick(params) {
       console.log(params);
       this.delDilaog = true;
+      this.delbannerId = params.row.banner_id;
     },
 
     // 删除确定按钮
-    delConfrmClick() {
+    async delConfrmClick() {
       this.delLoading = true;
-      setTimeout(() => {
+      const { data } = await bannerManagementDel({banner_id:this.delbannerId});
+      console.log(data);
+      if(data === 1){
         this.delDilaog = false;
+        this.delLoading = false;
         this.$Message.success("成功");
-        console.log("我滚了");
-      }, 1000);
+        this.getUser();
+      }else{
+        this.delDilaog = false;
+        this.$Message.error("失败");
+      }
+
     },
 
     // 获取时间
