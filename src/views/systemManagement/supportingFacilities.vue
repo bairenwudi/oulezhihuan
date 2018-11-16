@@ -164,10 +164,6 @@ export default {
 
       selection: [],   // 存放select选中的数组
 
-      addForm: {
-        facilities_name: ""
-      },
-
       addForm: {              // 定义编辑表单的对象
         facilities_name: ""
       },
