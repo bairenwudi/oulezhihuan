@@ -16,7 +16,8 @@
         <Modal v-model="addModal"
                 title="新增"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
+                :transfer="false"
+                @on-ok="add('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
@@ -30,7 +31,7 @@
                     </Select>
                 </FormItem>
 
-                <FormItem label="banner图" prop="upLoad" width='100'>
+                <FormItem label="banner图" prop="upLoad" width='50' class="bcd">
                     <el-upload
                         ref="addUpload"
                         name="upLoad"
@@ -48,13 +49,34 @@
                     >
                         <i class="el-icon-plus"></i>
                     </el-upload>
-                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                    <Modal :footer-hide="true" title="预览图片" v-model="visible">
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
 
-                <FormItem label="上传H5" prop="upLoad">
-                   
+                <FormItem label="上传H5" prop="upLoad" class="abc">
+                    <el-upload
+                        ref="H5Upload"
+                        name="upLoad"
+                        :action="actionUrl"
+                        :data="addData"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :on-change="onChangeH5"
+                        :on-preview="handlePictureCardPreviewH5"
+                        :on-success="uploadSuccessH5"
+                        :on-error="uploadErrorH5"
+                        :on-exceed="uploadonExceedH5"
+                        :on-remove="handleRemoveH5"
+                        :limit="1"
+                    >
+                        <!-- <i class="el-qwe">上传H5</i> -->
+                        <span class="h5">上传h5</span>
+                    </el-upload>
+                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                        <!-- <img :src="imgUrl" v-if="visible" style="width: 100%"> -->
+                        {{  }}
+                    </Modal>
                 </FormItem>
 
                 <FormItem label="第三方地址" prop="third_url">
@@ -67,7 +89,7 @@
 
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
+                    <Button type="primary" @click="add('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
         </Modal>
@@ -76,7 +98,7 @@
         <!-- <Modal v-model="editModal"
                 title="编辑"
                 :mask-closable="false"
-                @on-ok="ModalConfirm('formValidate')"
+                @on-ok="edit('formValidate')"
                 @on-cancel="ModalCancel('formValidate')"
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
@@ -109,7 +131,7 @@
             </Form>
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
+                    <Button type="primary" @click="edit('formValidate')" :loading="loading">确定</Button>
                     <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
                 </div>
         </Modal> -->
@@ -148,13 +170,35 @@ export default {
     TableM
   },
   data() {
-    // var DateValdate = (rule, value, callback) => {
-    //   if (value[0] === "") {
-    //     return callback(new Error("请填写完整"));
-    //   } else {
-    //     callback();
-    //   }
-    // };
+    var emptyValidbanner_title = (rule, value, callback) => {
+      if(!value) {
+        return callback(new Error("banner名称不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValidmodule = (rule, value, callback) => {
+      if(!value) {
+        return callback(new Error("所属模块不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValidupLoad = (rule, value, callback) => {
+      // var dd = /^(.*\.html)$/
+      if(!value) {
+        return callback(new Error("banner图片不能为空"));
+      } else {
+        callback();
+      }
+    };
+    var emptyValidsort = (rule, value, callback) => {
+      if(!value) {
+        return callback(new Error("轮播排序不能为空"));
+      } else {
+        callback();
+      }
+    };
 
     return {
       fileList: [],
@@ -168,33 +212,38 @@ export default {
       ruleValidate: {
         // 定义表单的校验规则
         banner_title: [
-          {
-            required: true,
-            type: "string",
-            message: "请输入预订人",
-            trigger: "blur"
-          }
+          // {
+          //   required: true,
+          //   type: "string",
+          //   message: "请输入预订人",
+          //   trigger: "blur"
+          // }
+          { required: true,validator: emptyValidbanner_title, trigger:"blur" }
         ],
 
         module: [
-          {
-            required: true,
-            type: "string",
-            min: 1,
-            message: "所属模块选择",
-            trigger: "change"
-          },
-          { type: "string", max: 1, message: "至多选择一个", trigger: "change" }
+          // {
+          //   required: true,
+          //   type: "string",
+          //   min: 1,
+          //   message: "所属模块选择",
+          //   trigger: "change"
+          // },
+          // { type: "string", max: 1, message: "至多选择一个", trigger: "change" }
+          { required: true, validator: emptyValidmodule, trigger:"change" }
         ],
-
+        upLoad : [
+          { required: true,validator: emptyValidupLoad, trigger:"change" }
+        ],
         sort: [
-          { required: true, message: "请输入排序", trigger: "blur" },
-          {
-            type: "string",
-            min: 1,
-            message: "Introduce no less than 20 words",
-            trigger: "blur"
-          }
+          // { required: true, message: "请输入排序", trigger: "blur" },
+          // {
+          //   type: "string",
+          //   min: 1,
+          //   message: "Introduce no less than 20 words",
+          //   trigger: "blur"
+          // }
+          { required: true,validator: emptyValidsort, trigger:"blur" }
         ]
       },
       picSrc: "",
@@ -344,11 +393,13 @@ export default {
 
   methods: {
     handlePictureCardPreview(file) {
+      console.log(file);
       this.imgUrl = file.url;
       this.visible = true;
     },
     // 图片上传之前的钩子
     onChange(file, fileList) {
+      console.log(file,fileList);
       this.fileList = fileList;
     },
     // 当图片数量超出规定的数量的钩子函数
@@ -374,37 +425,52 @@ export default {
       console.log(file, fileList);
     },
 
+
+
+
+    handlePictureCardPreviewH5(file) {
+      this.imgUrl = file.url;
+      this.visible = true;
+    },
+    // 图片上传之前的钩子
+    onChangeH5(file, fileList) {
+      console.log(fileList);
+      
+      this.fileList = fileList;
+    },
+    // 当图片数量超出规定的数量的钩子函数
+    uploadonExceedH5() {
+      this.$Message.warning("数量超出最大限制");
+    },
+
+    // 上传成功
+    uploadSuccessH5(response, file, fileList) {
+      console.log(response, file, fileList);
+      this.isUpload = true;
+      this.$Message.success("上传成功");
+    },
+    
+    // 上传失败
+    uploadErrorH5(err, file, fileList) {
+      console.log(err, file, fileList);
+      this.$Message.error("上传失败");
+    },
+
+    // 删除图片钩子函数
+    handleRemoveH5(file, fileList) {
+      console.log(file, fileList);
+    },
+
+
+
+
+
+
+
     // 重置页数
     resetTotal() {
       this.currentPage = 1;
       this.total = 1;
-    },
-
-    // getImgUrl
-    getObjectURL(file) {
-      var url = null;
-      // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
-      if (window.createObjectURL != undefined) {
-        // basic
-        url = window.createObjectURL(file);
-      } else if (window.URL != undefined) {
-        // mozilla(firefox)
-        url = window.URL.createObjectURL(file);
-      } else if (window.webkitURL != undefined) {
-        // webkit or chrome
-        url = window.webkitURL.createObjectURL(file);
-      }
-      return url;
-    },
-    //图片上传阻止默认上传
-    handleUpload(file) {
-      console.log(file);
-
-      this.file = file;
-      var dd = this.getObjectURL(file);
-      console.log(dd);
-      this.picSrc = dd + "/" + file.name;
-      return false;
     },
     resetTotal() {
       this.currentPage = 1;
@@ -417,7 +483,22 @@ export default {
     },
 
     // 点击确定按钮
-    ModalConfirm(name) {
+    add(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.loading = true;
+          setTimeout(() => {
+            this.$Message.success("Success!");
+            this.addModal = false;
+            this.loading = false;
+          }, 1000);
+        } else {
+          this.$Message.error("Fail!");
+        }
+      });
+    },
+
+    edit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.loading = true;
@@ -438,8 +519,6 @@ export default {
       this.$refs[name].resetFields();
     },
     imgFun(val) {
-      // console.log(val);
-      // console.log(this.base); //http://192.168.1.39:8080
       return this.imgUrlFormat(val.banner_url, val.banner_name);
     },
     h5fun(val) {
