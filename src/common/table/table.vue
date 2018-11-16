@@ -5,7 +5,12 @@
 <template>
     <div>
         <!-- table -->
-        <Table :columns="columns" :data="data" :loading="loading"></Table>
+        <Table 
+            :columns="columns"
+            :data="data"
+            :loading="loading"
+            @on-selection-change="selectChange"
+        ></Table>
         <!-- 分页 -->
         <div class="pageView">
             <Page @on-change="pageChange" :total="total" :current="current" show-total show-elevator/>
@@ -73,7 +78,12 @@
             // 点击页面触发的事件
             pageChange(currentPage) {
                 this.$emit('pageChange', currentPage);
-            }
+            },
+
+            // 单选select多选框触发的事件
+            selectChange(selection) {
+                this.$emit('selectChange', selection)
+            },
         }
     }
 </script>

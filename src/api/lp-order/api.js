@@ -14,62 +14,62 @@ const baseObj = {
 
 //App订单列表
 const appOrderList = params => {
-    return axios.post(`${baseUrl.base3}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 //App订单模糊查询
 const appOrderSearch = params => {
-    return axios.post(`${baseUrl.base3}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 // 机构设置-房间类型列表(App订单、退款单、退房单 模糊查询-房型下拉列表渲染)
 const roomtypeList = params => {
-    return axios.post(`${baseUrl.base3}/Zh_room_typeController/selectRoomType`, params);
+    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType`, params);
 };
 
 // App订单模糊查询-机构标题下拉列表渲染
 const AppInstitutionalTitleList = params => {
-    return axios.post(`${baseUrl.base3}/Orders_app/select_Orders_app`, params);
+    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app`, params);
 };
 
 //批量预定订单列表
 const batchReservationOrderList = params => {
-    return axios.post(`${baseUrl.base3}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 //批量预定订单模糊查询
 const batchReservationOrderSearch = params => {
-    return axios.post(`${baseUrl.base3}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 //退款单列表
 const refundList = params => {
-    return axios.post(`${baseUrl.base3}/Refund/select_refund?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Refund/select_refund?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 //退款单模糊查询
 const refundListSearch = params => {
-    return axios.post(`${baseUrl.base3}/Refund/select_refund?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Refund/select_refund?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 // 退款单模糊查询-机构标题下拉列表渲染
 const RefundInstitutionalTitleList = params => {
-    return axios.post(`${baseUrl.base3}/Refund/Select_org_name`, params);
+    return axios.post(`${baseUrl.base2}/Refund/Select_org_name`, params);
 };
 
 //退房单列表
 const checkoutList = params => {
-    return axios.post(`${baseUrl.base3}/check/select_check?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/check/select_check?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 //退房单模糊查询
 const checkoutListSearch = params => {
-    return axios.post(`${baseUrl.base3}/check/select_check?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/check/select_check?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 // 退房单模糊查询-机构标题下拉列表渲染
 const checkoutInstitutionalTitleList = params => {
-    return axios.post(`${baseUrl.base3}/check/Select_org_name`, params);
+    return axios.post(`${baseUrl.base2}/check/Select_org_name`, params);
 };
 
 export {

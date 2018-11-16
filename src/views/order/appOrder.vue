@@ -19,7 +19,7 @@
 
             <FormItem prop="ord_payment_status" label="支付状态" :label-width="60">
                <Select v-model="formInline.ord_payment_status" clearable style="width:200px">
-                 <Option v-for="item in payStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in payStatus" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -29,9 +29,15 @@
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.ord_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                 <Option v-for="item in orderStatus" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
+
+            <!-- <FormItem prop="org_name" label="机构标题" :label-width="60">
+               <Select v-model="formInline.org_name" clearable style="width:200px">
+                 <Option v-for="(item, index) in AppinstitutionTitle" :key="index" :value="item.ord_id" :label="item.org_name"></Option>
+               </Select>
+            </FormItem> -->
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="formInline.org_name" clearable style="width:200px">
@@ -50,11 +56,6 @@
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
-
-            <!-- <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem> -->
 
         </Form>
 
@@ -88,80 +89,83 @@ export default {
     return {
       payStatus: [
         {
-          value: "1",
+          value: 1,
           label: "已支付"
         },
         {
-          value: "0",
+          value: 0,
           label: "未支付"
         }
       ],
+
       orderStatus: [
         {
-          value: "0",
+          value: 0,
           label: "待付款"
         },
         {
-          value: "1",
+          value: 1,
           label: "待审核"
         },
         {
-          value: "2",
+          value: 2,
           label: "已付款"
         },
         {
-          value: "3",
+          value: 3,
           label: "已审核"
         },
         {
-          value: "4",
+          value: 4,
           label: "申请退款"
         },
         {
-          value: "5",
+          value: 5,
           label: "退款中"
         },
         {
-          value: "6",
+          value: 6,
           label: "退款成功"
         },
         {
-          value: "7",
+          value: 7,
           label: "退款失败"
         },
         {
-          value: "8",
+          value: 8,
           label: "已入住"
         },
         {
-          value: "9",
+          value: 9,
           label: "申请退房"
         },
         {
-          value: "10",
+          value: 10,
           label: "退房中"
         },
         {
-          value: "11",
+          value: 11,
           label: "退房成功"
         },
         {
-          value: "12",
+          value: 12,
           label: "退房失败"
         },
         {
-          value: "13",
+          value: 13,
           label: "订单取消"
         },
         {
-          value: "14",
+          value: 14,
           label: "订单完成"
         }
       ],
+      
       AppinstitutionTitle: [
         {
+          org_name: '',
           adm_user_type : 3
-        }
+        },
       ],
 
       roomType: [],
@@ -338,10 +342,12 @@ export default {
 
   methods: {
     // 进入详情
-    goToInfo(params) {
+    goToInfo({ row }) {
       this.$router.push({
         path: "/AppOrderinfoModel",
-        data: params
+        query: {
+          data: JSON.stringify(row)
+        }
       });
     },
 
@@ -426,8 +432,8 @@ export default {
     async AppInstitutionalTitleListFun() {
         const { data } = await AppInstitutionalTitleList();
         data.shift(0);
-        this.AppinstitutionTitle = data;
-        console.log(this.AppinstitutionTitle)
+        this.AppinstitutionTitle = Array.from(new Set(data));
+        // console.log(arr)
     },
 
     // 渲染房间类型下拉列表

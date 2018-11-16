@@ -52,7 +52,14 @@
 
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+        :columns="columns" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
     
     </div>
 </template>
@@ -83,63 +90,63 @@ export default {
     return {
         orderStatus: [
                     {
-                        value: '0',
+                        value: 0,
                         label: '待付款'
                     },
                     {
-                        value: '1',
+                        value: 1,
                         label: '待审核'
                     },
                     {
-                        value: '2',
+                        value: 2,
                         label: '已付款'
                     },
                     {
-                        value: '3',
+                        value: 3,
                         label: '已审核'
                     },
                     {
-                        value: '4',
+                        value: 4,
                         label: '申请退款'
                     },
                     {
-                        value: '5',
+                        value: 5,
                         label: '退款中'
                     },
                     {
-                        value: '6',
+                        value: 6,
                         label: '退款成功'
                     }, 
                     {
-                        value: '7',
+                        value: 7,
                         label: '退款失败'
                     },
                     {
-                        value: '8',
+                        value: 8,
                         label: '已入住'
                     },
                     {
-                        value: '9',
+                        value: 9,
                         label: '申请退房'
                     },
                     {
-                        value: '10',
+                        value: 10,
                         label: '退房中'
                     },  
                     {
-                        value: '11',
+                        value: 11,
                         label: '退房成功'
                     },
                     {
-                        value: '12',
+                        value: 12,
                         label: '退房失败'
                     },
                     {
-                        value: '13',
+                        value: 13,
                         label: '订单取消'
                     },
                     {
-                        value: '14',
+                        value: 14,
                         label: '订单完成'
                     }                            
                 ],

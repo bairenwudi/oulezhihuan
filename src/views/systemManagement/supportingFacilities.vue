@@ -15,7 +15,15 @@
             </FormItem>
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+          :columns="columns"
+          :data="userData"
+          :loading="loading"
+          :current.async="currentPageIndex"
+          :total="total"
+          @selectChange="watchSelectChange"
+          @pageChange="pageChange"
+        ></TableM>
         
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
@@ -25,6 +33,7 @@
                 @on-cancel="AddModalReset('addForm')"
             >
             <Form ref="addForm" :model="addForm" :rules="addRules" :label-width="80">
+                
                 <FormItem label="设施名称" prop="facilities_name">
                     <Input v-model="addForm.facilities_name" placeholder="请输入设施名称"></Input>
                 </FormItem>
@@ -129,7 +138,7 @@ import {
   supportingFacilitiesAdd, //配套设施管理添加
   supportingFacilitiesEdit, //配套设施管理编辑
   supportingFacilitiesDel, //配套设施管理删除
-  getBase, // 获取域名
+  getBase, // 获取域名  
 } from "../../api/lp-systemManagement/api.js";
 
 export default {
@@ -148,8 +157,16 @@ export default {
     };
 
     return {
-
+      
       fileList: [],
+
+      editFileList: [],  // 编辑默认图片列表
+
+      selection: [],   // 存放select选中的数组
+
+      addForm: {
+        facilities_name: ""
+      },
 
       addForm: {              // 定义编辑表单的对象
         facilities_name: ""
@@ -188,6 +205,8 @@ export default {
       delDilaog: false, // 控制删除弹出框
 
       delLoading: false, // 控制删除按钮loading
+
+      deletefacilities_id:"",//删除需要的facilities_id
 
       currentPageIndex: 1, // 当前页
 
@@ -232,7 +251,7 @@ export default {
                     height: "80px",
                     padding:"12px"
                   }
-                },
+                }
              );
           }
         },
@@ -259,7 +278,6 @@ export default {
                 {
                   props: {
                     type: "primary",
-                    size: "small"
                   },
                   style: {
                     marginRight: "5px"
@@ -271,13 +289,29 @@ export default {
                   }
                 },
                 "编辑"
-              )
+              ),
+            //   h(
+            //     "Button",
+            //     {
+            //     props: {
+            //         type: "primary",
+            //     },
+            //     on: {
+            //         click: () => {
+            //             this.delClick(params);
+            //         }
+            //     }
+            //     },
+            //     "删除"
+            // )
             ]);
           }
         }
       ],
 
       userData: [], // 内容数据
+
+      delArr:[],//删除 发送数组
 
       total: 0, // 总页数
 
@@ -338,10 +372,64 @@ export default {
       console.log(file, fileList);
     },
 
+    // 清空默认图片列表
+    resetFileList(fileList) {
+      this[fileList] = [];
+    },
+
     // 重置页数
     resetTotal() {
       this.currentPage = 1;
       this.total = 1;
+    },
+
+    // 监听select多选框触发事件
+    watchSelectChange(selection) {
+      this.selection = selection;
+    },
+
+    // 配套设施管理列表渲染
+    async getUser(filter, pageIndex = 1) {
+      let params = {
+        pageSize: 10,
+        startPos: filter ? pageIndex : this.currentPage
+      };
+
+      if (filter) {
+        params = Object.assign(params, filter);
+      }
+
+      this.loading = true;
+      let { data } = await supportingFacilitiesList(params);
+      this.total = data[0].count;
+      data.shift(0);
+      this.userData = data;
+      this.loading = false;
+    },
+
+    // 查询
+    searchClick(filter) {
+      this.resetTotal();
+      if (filter) {
+        for (let i in filter) {
+          if (filter[i] === undefined || filter[i] === "") {
+            delete filter[i];
+          }
+        }
+      }
+      this.getUser(filter);
+    },
+
+    // 改变分页触发的事件
+    pageChange(pageIndex) {
+      // 改变当前页
+      for (let i in this.formInline) {
+        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+          this.getUser(this.formInline, pageIndex);
+          return false;
+        }
+      }
+      this.getUser();
     },
 
     // 执行新增的事件
@@ -376,20 +464,23 @@ export default {
         });
     },
 
-    // 点击框取消按钮
+    // 点击新增框取消按钮
     AddModalReset(name) {
       this.$refs[name].resetFields();
       this.handleResetFile();
       this.addModal = false;
     },
 
-    // 编辑取消事件
-    EditModalReset(formName) {
-      this.$refs[formName].resetFields();
-      this.handleResetFile();
-      this.editModal = false;
+  
+     // 执行table编辑的事件
+    editClick(row) {
+      this.editForm = Object.assign({}, row);
+      const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      this.editFileList = [];
+      this.editFileList.push({ url, name: url });
+      this.editModal = true;
     },
-
+    
     // 编辑确定按钮
     EditModalConfirm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -415,64 +506,75 @@ export default {
       })
     },
 
-    // 处理带有盘符的img路径
-    imgFun(val) {
-      return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
+    // 编辑取消事件
+    EditModalReset(formName) {
+      this.$refs[formName].resetFields();
+      this.handleResetFile();
+      this.editModal = false;
     },
 
-    // 执行table编辑的事件
-    editClick(row) {
-      this.editForm = Object.assign({}, row);
-      const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
-      this.editFileList = [];
-      this.editFileList.push({ url, name: url });
-      this.editModal = true;
-    },
-
+    
     // 执行删除的事件
-    delClick(params) {
-      console.log(params);
+
+    //多删执行删除的事件
+    delClick({ row }) {
+      console.log(this.selection)
+      for(var i = 0;i<this.selection.length;i++){
+        this.delArr.push(this.selection[i].facilities_id)
+      }
+      if(!this.selection.length) {
+        this.$Message.warning('请选择');
+        return
+      };
       this.delDilaog = true;
     },
 
+    // 单删执行删除的事件
+    // delClick(params) {
+    //   this.deletefacilities_id = params.row.facilities_id;
+    //   this.delDilaog = true;
+    // },
+
     // 删除确定按钮
-    delConfrmClick() {
-      this.delLoading = true;
-      setTimeout(() => {
+
+    // 多删删除确定按钮
+    async delConfrmClick() {
+      // this.delLoading = true;
+      return
+      const { data } = await supportingFacilitiesDel({facilities_id: [...this.delArr]});
+      console.log(data);
+      if(data === 1){
+        this.$Message.success("删除成功!");
         this.delDilaog = false;
-        this.$Message.success("成功");
-        console.log("我滚了");
-      }, 1000);
-    },
-
-    // 获取时间
-    getFormatterTime(val) {
-      console.log(val);
-    },
-
-    // 改变分页触发的事件
-    pageChange(pageIndex) {
-      // 改变当前页
-      for (let i in this.formInline) {
-        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
-          this.getUser(this.formInline, pageIndex);
-          return false;
-        }
+        this.getUser();
+      }else{
+        this.$Message.error("删除失败!");
       }
-      this.getUser();
+      // this.delLoading = false;
     },
 
-    // 查询
-    searchClick(filter) {
-      this.resetTotal();
-      if (filter) {
-        for (let i in filter) {
-          if (filter[i] === undefined || filter[i] === "") {
-            delete filter[i];
-          }
-        }
-      }
-      this.getUser(filter);
+    // 单删删除确定按钮
+    // async delConfrmClick() {
+    //   this.delLoading = true;
+    //   let params = {
+    //     facilities_id:this.deletefacilities_id
+    //   }
+    //   const { data } = await supportingFacilitiesDel(params);
+    //   console.log(data);
+    //   if(data === 1){
+    //     this.$Message.success("删除成功!");
+    //     this.delDilaog = false;
+    //     this.getUser();
+    //   }else{
+    //     this.$Message.error("删除失败!");
+    //   }
+    //   this.delLoading = false;
+    // },
+ 
+
+    // 处理带有盘符的img路径
+    imgFun(val) {
+      return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
     },
 
     // 处理盘符
@@ -482,25 +584,7 @@ export default {
       return showUrl;
     },
 
-    // 配套设施管理列表
-    async getUser(filter, pageIndex = 1) {
-      let params = {
-        pageSize: 10,
-        startPos: filter ? pageIndex : this.currentPage
-      };
-
-      if (filter) {
-        params = Object.assign(params, filter);
-      }
-
-      this.loading = true;
-      let { data } = await supportingFacilitiesList(params);
-      this.total = data[0].count;
-      data.shift(0);
-      this.userData = data;
-      this.loading = false;
-    },
-
+    
     // 用来初始化一些变量值
     init() {
       this.base = getBase().base2;

@@ -9,17 +9,17 @@
             <Card class="TD-card">
                 <div class="TD-view">
                     <dd>订单号：</dd>
-                    <dt>201816556461654654</dt>
+                    <!-- <dt>{{ord_id}}</dt> -->
                 </div>
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>8080.80.80 80:80:80</dt>
+                    <!-- <dt>{{ord_time}}</dt> -->
                 </div>
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>支付宝</dt>
+                    <!-- <dt>{{支付宝}}</dt> -->
                 </div>
 
                 <div class="TD-view">
