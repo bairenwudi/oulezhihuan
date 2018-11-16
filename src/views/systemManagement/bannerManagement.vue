@@ -31,7 +31,7 @@
                     </Select>
                 </FormItem>
 
-                <FormItem label="banner图" prop="upLoad" width='50' class="bcd">
+                <FormItem label="banner图" prop="upLoad" width='50' class="uploadImg">
                     <el-upload
                         ref="addUpload"
                         name="upLoad"
@@ -54,7 +54,7 @@
                     </Modal>
                 </FormItem>
 
-                <FormItem label="上传H5" prop="upLoad" class="abc">
+                <FormItem label="上传H5" prop="upLoad" class="uploadH5">
                     <el-upload
                         ref="H5Upload"
                         name="upLoad"
@@ -63,7 +63,7 @@
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChangeH5"
-                        :on-preview="handlePictureCardPreviewH5"
+                        :show-file-list="false"
                         :on-success="uploadSuccessH5"
                         :on-error="uploadErrorH5"
                         :on-exceed="uploadonExceedH5"
@@ -71,11 +71,11 @@
                         :limit="1"
                     >
                         <!-- <i class="el-qwe">上传H5</i> -->
-                        <span class="h5">上传h5</span>
+                        <span class="h5">{{ H5fileName ? H5fileName : "上传h5" }}</span>
                     </el-upload>
                     <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
                         <!-- <img :src="imgUrl" v-if="visible" style="width: 100%"> -->
-                        {{  }}
+                        
                     </Modal>
                 </FormItem>
 
@@ -186,6 +186,8 @@ export default {
     };
     var emptyValidupLoad = (rule, value, callback) => {
       // var dd = /^(.*\.html)$/
+      console.log(value);
+      
       if(!value) {
         return callback(new Error("banner图片不能为空"));
       } else {
@@ -212,37 +214,15 @@ export default {
       ruleValidate: {
         // 定义表单的校验规则
         banner_title: [
-          // {
-          //   required: true,
-          //   type: "string",
-          //   message: "请输入预订人",
-          //   trigger: "blur"
-          // }
           { required: true,validator: emptyValidbanner_title, trigger:"blur" }
         ],
-
         module: [
-          // {
-          //   required: true,
-          //   type: "string",
-          //   min: 1,
-          //   message: "所属模块选择",
-          //   trigger: "change"
-          // },
-          // { type: "string", max: 1, message: "至多选择一个", trigger: "change" }
           { required: true, validator: emptyValidmodule, trigger:"change" }
         ],
         upLoad : [
           { required: true,validator: emptyValidupLoad, trigger:"change" }
         ],
         sort: [
-          // { required: true, message: "请输入排序", trigger: "blur" },
-          // {
-          //   type: "string",
-          //   min: 1,
-          //   message: "Introduce no less than 20 words",
-          //   trigger: "blur"
-          // }
           { required: true,validator: emptyValidsort, trigger:"blur" }
         ]
       },
@@ -264,6 +244,8 @@ export default {
       currentPageIndex: 1, // 当前页
 
       imgUrl: "",
+
+      H5fileName:"",
 
       visible: false,
 
@@ -384,7 +366,7 @@ export default {
         cus_account: "",
         cus_nick_name: ""
       },
-
+      
       loading: false, // 定义loading为true
 
       currentPage: 1 // 定义当前页
@@ -393,6 +375,7 @@ export default {
 
   methods: {
     handlePictureCardPreview(file) {
+
       console.log(file);
       this.imgUrl = file.url;
       this.visible = true;
@@ -434,8 +417,9 @@ export default {
     },
     // 图片上传之前的钩子
     onChangeH5(file, fileList) {
+      console.log(file);
       console.log(fileList);
-      
+      this.H5fileName = file.name;
       this.fileList = fileList;
     },
     // 当图片数量超出规定的数量的钩子函数
