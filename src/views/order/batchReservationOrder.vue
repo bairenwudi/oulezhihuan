@@ -38,14 +38,13 @@
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
-<!-- :data="userData"  -->
+
         </Form>
 
         <TableM 
-        :columns="columns7" 
+        :columns="columns" 
         class="Table" 
-        
-        :data="data6"
+        :data="userData" 
         :loading="loading" 
         :current.async="currentPageIndex" 
         :total="total" 
@@ -467,151 +466,151 @@ export default {
 
 
 
-columns7: [
-                    {
-                        title: 'Name',
-                        key: 'name',
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Icon', {
-                                    props: {
-                                        type: 'person'
-                                    }
-                                }),
-                                h('strong', params.row.name)
-                            ]);
-                        }
-                    },
-                    {
-                        title: 'Age',
-                        key: 'age'
-                    },
-                    {
-                        title: 'Address',
-                        key: 'address'
-                    },
-                    // 
-                    {
-                title: "操作",
-                width: 200,
-                key: "action",
-                align: "center",
-                render: (h, params) => {
-                    return h("div", [
+// columns7: [
+//                     {
+//                         title: 'Name',
+//                         key: 'name',
+//                         render: (h, params) => {
+//                             return h('div', [
+//                                 h('Icon', {
+//                                     props: {
+//                                         type: 'person'
+//                                     }
+//                                 }),
+//                                 h('strong', params.row.name)
+//                             ]);
+//                         }
+//                     },
+//                     {
+//                         title: 'Age',
+//                         key: 'age'
+//                     },
+//                     {
+//                         title: 'Address',
+//                         key: 'address'
+//                     },
+//                     // 
+//                     {
+//                 title: "操作",
+//                 width: 200,
+//                 key: "action",
+//                 align: "center",
+//                 render: (h, params) => {
+//                     return h("div", [
                    
-                   h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.bindingClick(params);
-                            }
-                        }
-                        },
-                        "绑定"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.editClick(params);
-                            }
-                        }
-                        },
-                        "编辑"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.submitClick(params);
-                            }
-                        }
-                        },
-                        "提交"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "删除"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.goToInfo(params);
-                            }
-                        }
-                        },
-                        "详情"
-                    )
-                    ]);
-                }
-            }
-                ],
-                data6: [
-                    {
-                        name: 'John Brown',
-                        age: 18,
-                        address: 'New York No. 1 Lake Park'
-                    },
-                    {
-                        name: 'Jim Green',
-                        age: 24,
-                        address: 'London No. 1 Lake Park'
-                    },
-                    {
-                        name: 'Joe Black',
-                        age: 30,
-                        address: 'Sydney No. 1 Lake Park'
-                    },
-                    {
-                        name: 'Jon Snow',
-                        age: 26,
-                        address: 'Ottawa No. 2 Lake Park'
-                    }
-                ],
+//                    h(
+//                         "Button",
+//                         {
+//                         props: {
+//                             type: "primary",
+//                             size: "small"
+//                         },
+//                         style: {
+//                             marginRight: "5px"
+//                         },
+//                         on: {
+//                             click: () => {
+//                                 this.bindingClick(params);
+//                             }
+//                         }
+//                         },
+//                         "绑定"
+//                     ),
+//                     h(
+//                         "Button",
+//                         {
+//                         props: {
+//                             type: "primary",
+//                             size: "small"
+//                         },
+//                         style: {
+//                             marginRight: "5px"
+//                         },
+//                         on: {
+//                             click: () => {
+//                                 this.editClick(params);
+//                             }
+//                         }
+//                         },
+//                         "编辑"
+//                     ),
+//                     h(
+//                         "Button",
+//                         {
+//                         props: {
+//                             type: "primary",
+//                             size: "small"
+//                         },
+//                         style: {
+//                             marginRight: "5px"
+//                         },
+//                         on: {
+//                             click: () => {
+//                                 this.submitClick(params);
+//                             }
+//                         }
+//                         },
+//                         "提交"
+//                     ),
+//                     h(
+//                         "Button",
+//                         {
+//                         props: {
+//                             type: "primary",
+//                             size: "small"
+//                         },
+//                         style: {
+//                             marginRight: "5px"
+//                         },
+//                         on: {
+//                             click: () => {
+//                                 this.delClick(params);
+//                             }
+//                         }
+//                         },
+//                         "删除"
+//                     ),
+//                     h(
+//                         "Button",
+//                         {
+//                         props: {
+//                             type: "primary",
+//                             size: "small"
+//                         },
+//                         on: {
+//                             click: () => {
+//                                 this.goToInfo(params);
+//                             }
+//                         }
+//                         },
+//                         "详情"
+//                     )
+//                     ]);
+//                 }
+//             }
+//                 ],
+//                 data6: [
+//                     {
+//                         name: 'John Brown',
+//                         age: 18,
+//                         address: 'New York No. 1 Lake Park'
+//                     },
+//                     {
+//                         name: 'Jim Green',
+//                         age: 24,
+//                         address: 'London No. 1 Lake Park'
+//                     },
+//                     {
+//                         name: 'Joe Black',
+//                         age: 30,
+//                         address: 'Sydney No. 1 Lake Park'
+//                     },
+//                     {
+//                         name: 'Jon Snow',
+//                         age: 26,
+//                         address: 'Ottawa No. 2 Lake Park'
+//                     }
+//                 ],
 
 
 
