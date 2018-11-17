@@ -162,17 +162,13 @@ export default {
 
       editFileList: [],  // 编辑默认图片列表
 
-      selection: [],   // 存放select选中的数组
+      selection: [],   // 存放select选中的数组,
 
-      addForm: {
+      addForm: {              // 定义新增表单的对象
         facilities_name: ""
       },
 
-      addForm: {              // 定义编辑表单的对象
-        facilities_name: ""
-      },
-
-      editForm: {             // 定义新增表单的对象
+      editForm: {             // 定义编辑表单的对象
         facilities_name: "",
       },
 
@@ -385,6 +381,7 @@ export default {
     // 监听select多选框触发事件
     watchSelectChange(selection) {
       this.selection = selection;
+      console.log(this.selection)
     },
 
     // 配套设施管理列表渲染
@@ -539,7 +536,7 @@ export default {
     // 多删删除确定按钮
     async delConfrmClick() {
       // this.delLoading = true;
-      return
+      // return
       const { data } = await supportingFacilitiesDel({facilities_id: [...this.delArr]});
       console.log(data);
       if(data === 1){
@@ -580,6 +577,8 @@ export default {
     imgUrlFormat(facilities_pic_url, facilities_pic_name) {
       const afterUpload = facilities_pic_url.split("static/")[1];
       var showUrl = this.base + "/" + afterUpload + "/" + facilities_pic_name;
+      console.log(this.base);
+      
       return showUrl;
     },
 

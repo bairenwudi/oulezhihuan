@@ -145,21 +145,21 @@ export const appRouter = [
         ]
     },
 
-    {
-        path: '/batchReservation',
-        icon: 'ios-pause-outline',
-        name: 'batchReservation',
-        title: '批量预定',
-        component: Main,
-        children: [
-            {
-                path: 'batchReservationModel',
-                name: 'batchReservationModel',
-                title: '批量预定',
-                component: resolve => { require(['@/views/batchReservation/batchReservation.vue'], resolve); }
-            }
-        ]
-    },
+    // {
+    //     path: '/batchReservation',
+    //     icon: 'ios-pause-outline',
+    //     name: 'batchReservation',
+    //     title: '批量预定',
+    //     component: Main,
+    //     children: [
+    //         {
+    //             path: 'batchReservationModel',
+    //             name: 'batchReservationModel',
+    //             title: '批量预定',
+    //             component: resolve => { require(['@/views/batchReservation/batchReservation.vue'], resolve); }
+    //         }
+    //     ]
+    // },
 
     
     {
@@ -180,6 +180,12 @@ export const appRouter = [
                 name: 'batchReservationOrderModel',
                 title: '批量预定订单',
                 component: resolve => { require(['@/views/order/batchReservationOrder.vue'], resolve); }
+            },
+            {
+                path: 'batchAuditModel',
+                name: 'batchAuditModel',
+                title: '批量审核',
+                component: resolve => { require(['@/views/order/batchAudit.vue'], resolve); }
             },
             {
                 path: 'refundListModel',

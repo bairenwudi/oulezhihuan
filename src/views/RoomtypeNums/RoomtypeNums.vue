@@ -6,14 +6,16 @@
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
 
-            <FormItem prop="room_name" label="房型名称" :label-width="60">
-               <Select v-model="model8" clearable style="width:200px">
-                 <Option v-for="item in roomStatus" :value="item.value" :key="item.value">{{ item.label }}</Option>
-               </Select>
+            <FormItem prop="room_type" label="房型名称" :label-width="60">
+                <Select v-model="formInline.room_type" clearable style="width:200px">
+                    <virtual-list :size="30" :remain="5">
+                        <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
+                    </virtual-list>
+                </Select>
             </FormItem>
 
             <FormItem prop="cus_nick_name" label="起止时间" :label-width="60">              
-             <DatePicker type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+             <DatePicker v-model="formInline.check_time" format="yyyy年MM月dd日" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem>
@@ -23,15 +25,17 @@
              <FormItem>
                 <Button type="primary" @click="addClick">批量增加</Button>
             </FormItem>
-
-            <!-- <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem> -->
-
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+        :columns="columns" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
+
          <!-- 新增提示框 -->
         <Modal v-model="addModal"
                 title="新增"
@@ -41,15 +45,15 @@
             >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                 <FormItem label="使用房型" prop="module"> 
-                    <CheckboxGroup v-model="room">
+                    <CheckboxGroup v-model="formValidate.room_type">
                         <Checkbox label="大床房"></Checkbox>
                         <Checkbox label="标准房"></Checkbox>
                         <Checkbox label="豪华房"></Checkbox>
                     </CheckboxGroup>
                 </FormItem>
 
-                <FormItem label="日期范围" prop="module"> 
-                    <DatePicker type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+                <FormItem prop="cus_nick_name" label="起止时间" :label-width="60">              
+                   <DatePicker v-model="formInline.check_time" format="yyyy年MM月dd日" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
                 </FormItem>
                 
                 <FormItem label="明细" prop="module"> 
@@ -59,7 +63,7 @@
             </Form>
                 <div slot="footer" align="center">
                     <Button type="primary" @click="ModalConfirm('formValidate')" :loading="loading">确定</Button>
-                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">重置</Button>
+                    <Button @click="ModalCancel('formValidate')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
     </div>
@@ -71,14 +75,19 @@ import TableM from "../../common/table/table.vue";
 import {
     roomtypeNumsList, //房型可预订数列表
     roomtypeNumsSearch, //房型可预订数模糊查询
+    roomtypeList,//房型可预订数-房间类型下拉框渲染
     
 } from '../../api/lp-RoomtypeNums/api.js'
+
+// 引入优化滚动插件
+import VirtualList from 'vue-virtual-scroll-list'
 
 export default {
   name: "RoomtypeNumsModel",
 
   components: {
-    TableM
+    TableM,
+    VirtualList
   }, 
   data() {
     return {
@@ -106,17 +115,7 @@ export default {
 
         addModal: false,
 
-        roomStatus:[
-                    {
-                        value: '乐满地',
-                        label: '乐满地'
-                    },
-                    {
-                        value: '海南',
-                        label: '海南'
-                    },                  
-                ],
-                model8:'',
+        roomType:[],
 
         currentPageIndex: 1,    // 当前页
 
@@ -125,7 +124,7 @@ export default {
                 title: "房型名称",
                render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_type ? row.room_type : `暂无${index}`)
                 }
             },
 
@@ -153,9 +152,8 @@ export default {
         total: 0,   // 总页数
 
         formInline: {   // 定义表单对象
-            cus_account: '', 
-            cus_nick_name: '',
-            p_system: ''
+            room_type: "",
+            check_time: ''
         },
 
         ruleInline: {   // 定义规则对象
@@ -204,8 +202,9 @@ export default {
 
         // 点击框取消按钮
         ModalCancel(name) {
-            this.$Message.info("Clicked ok");
+            // this.$Message.info("Clicked ok");
             this.$refs[name].resetFields();
+            this.addModal = false;
         },
 
     // 改变分页触发的事件
@@ -221,7 +220,18 @@ export default {
         this.getUser();
     },
 
+    // 渲染房间类型下拉列表
+    async roomtypeListFun() {
+        const { data } = await roomtypeList();
+        data.shift(0);
+        this.roomType = data;
+        console.log(this.roomType)
+    },
+
+    // 模糊查询
     searchClick(filter) {
+        console.log(filter);
+        
         this.resetTotal();
         if (filter) {
             for (let i in filter) {
@@ -257,6 +267,7 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.roomtypeListFun();
   }
 };
 </script>
