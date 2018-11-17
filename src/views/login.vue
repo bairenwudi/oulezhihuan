@@ -146,7 +146,7 @@ export default {
                                         this.loading = false;
                                     } else {
                                         // 存储用户的信息
-                                        sessionStorage.user = JSON.stringify(res3.data);
+                                        localStorage.user = JSON.stringify(res3.data);
                                         Cookies.set('user', this.form.adm_account);
                                         this.$Message.success('登陆成功');
                                         this.$router.push({

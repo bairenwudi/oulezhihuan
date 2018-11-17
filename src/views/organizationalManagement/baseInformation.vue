@@ -10,129 +10,132 @@
                 <Row>
                     <Col span="6">
                         <FormItem label="机构标题" prop="org_name" inline>
-                         
-                            <Select v-model="baseInfoForm.org_name" placeholder="请选择" style="width:150px">
-                                <Option value="乐满地">乐满地</Option>
-                                <Option value="黄山">黄山</Option>
-                                <Option value="山东">山东</Option>
+                            <Select v-model="baseInfoList.org_name" placeholder="请选择">
+                                <Option v-for="(item, index) in InstitutionalTitle" :value="item.org_name" :key="index">{{ item.org_name }}</Option>
                             </Select>
-                        
                         </FormItem>
                     </Col>
+
                     <Col span="6">
                         <FormItem label="省份" prop="province_name">
-                        
-                            <Select v-model="baseInfoForm.province_name" placeholder="请选择" style="width:150px">
-                                <Option value="乐满地">乐满地</Option>
-                                <Option value="黄山">黄山</Option>
-                                <Option value="山东">山东</Option>
+                            <Select v-model="baseInfoList.adm_province_code - 0" @on-change="provinceChange" clearable style="width:200px">
+                                <Option v-for="item in ProvinceTitle" :value="item.code" :key="item.id">{{ item.name }}</Option>
                             </Select>
-                        
                         </FormItem>
                     </Col>
+                    
                     <Col span="6">
                         <FormItem label="城市" prop="city_name">
-                            <Select v-model="baseInfoForm.city_name" placeholder="请选择" style="width:150px">
-                                <Option value="乐满地">乐满地</Option>
-                                <Option value="黄山">黄山</Option>
-                                <Option value="山东">山东</Option>
+                            <Select v-model="baseInfoList.adm_city_code - 0" clearable style="width:200px">
+                                <Option v-for="item in CityTitle" :value="item.code" :key="item.id">{{ item.name }}</Option>
                             </Select>
                         </FormItem>
-                    </Col>  
+                    </Col>
+
                     <Col span="4">  
                         <FormItem label="标签" prop="adm_user_type">
-                            <Input v-model="formValidate.adm_user_type" placeholder="" disabled style="width:150px"></Input>
+                            <Input v-model="baseInfoList.adm_user_type" placeholder="" disabled></Input>
                         </FormItem>
                     </Col>
                 </Row>
+
                 <Row>
                     <Col span="12"> 
                         <FormItem label="机构地址" prop="org_addr">
-                            <Input v-model="baseInfoForm.org_addr" placeholder="请输入机构地址" style="width:240px"></Input>
+                            <Input v-model="baseInfoList.org_addr" placeholder="请输入机构地址"></Input>
                         </FormItem>
                     </Col>
                     <Col span="10">
                         <FormItem label="手机号码" prop="adm_phonenum">
-                            <Input v-model="baseInfoForm.adm_phonenum" placeholder="" disabled style="width:150px"></Input>
+                            <Input v-model="baseInfoList.adm_phonenum" placeholder="" disabled></Input>
                         </FormItem>
                     </Col>
-                </Row>        
-                        <FormItem label="机构介绍" prop="org_introduction">
-                            <Card shadow >
-                                <textarea class='tinymce-textarea' id="tinymceEditer"></textarea>
-                            </Card>
-                            <Spin fix v-if="spinShow">
-                                <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
-                                <div>加载组件中...</div>
-                            </Spin>
-                        </FormItem>
+                </Row>
+                    <FormItem label="机构介绍" prop="org_introduction">
+                        <Card shadow >
+                            <textarea class='tinymce-textarea' id="tinymceEditer"></textarea>
+                        </Card>
+                        <Spin fix v-if="spinShow">
+                            <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
+                            <div>加载组件中...</div>
+                        </Spin>
+                    </FormItem>
 
-                        <FormItem label="机构设施" prop="org_facilities">
-                            <div class="institutionalFacilities">
-                                <img src="" width="50" height="50">
-                                <img src="" width="50" height="50">
-                                <img src="" width="50" height="50">
-                                <img src="" width="50" height="50">
+                    <FormItem label="机构设施" prop="org_facilities">
+                        <div class="institutionalFacilities">
+                            <div class="facilities-item" v-for="(item, index) in facilitiesList" :key="index">
+                                <img :src="item.url" width="120" height="120">
+                                <span>{{ item.facilities_name }}</span>
                             </div>
-                        </FormItem>
+                        </div>
+                    </FormItem>
 
-                        <FormItem label="其他设施" prop="org_other_facilities">
-                            <Input v-model="baseInfoForm.org_other_facilities" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入其他设施"></Input>
-                        </FormItem>
+                    <FormItem label="其他设施" prop="org_other_facilities">
+                        <Input v-model="baseInfoList.org_other_facilities" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入其他设施"></Input>
+                    </FormItem>
 
-                        <FormItem label="机构特色" prop="room_type_sort">
-                            <Card shadow>
-                                <textarea class='tinymce-textarea' id="tinymceEditer2"></textarea>
-                            </Card>
-                            <Spin fix v-if="spinShow">
-                                <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
-                                <div>加载组件中...</div>
-                            </Spin>
-                        </FormItem>
-                        
-                        <FormItem label="机构封面" prop="org_cover">
-                            <!-- <el-upload
-                                ref="addUpload"
-                                :action="actionUrl"
-                                :data="addData"
-                                list-type="picture-card"
-                                :auto-upload="false"
-                                :on-preview="handlePictureCardPreview"
-                                :on-success="uploadSuccess"
-                                :on-error="uploadError"
-                                :on-exceed="uploadonExceed"
-                                :on-remove="handleRemove"
-                                :limit="1"
-                            >
-                                <i class="el-icon-plus"></i>
-                            </el-upload>
+                    <FormItem label="机构特色" prop="room_type_sort">
+                        <Card shadow>
+                            <textarea class='tinymce-textarea' id="tinymceEditer2"></textarea>
+                        </Card>
+                        <Spin fix v-if="spinShow">
+                            <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
+                            <div>加载组件中...</div>
+                        </Spin>
+                    </FormItem>
+                    
+                    <FormItem label="机构封面" prop="org_cover">
+                        <el-upload
+                            ref="coverUpload"
+                            name="cover"
+                            :action="actionUrl"
+                            :data="baseInfoList"
+                            list-type="picture-card"
+                            :file-list="defaultImageList"
+                            :auto-upload="false"
+                            :on-preview="handlePictureCardPreview"
+                            :on-success="uploadSuccess"
+                            :on-error="uploadError"
+                            :on-exceed="uploadonExceed"
+                            :on-remove="handleRemove"
+                            :limit="1"
+                        >
+                            <i class="el-icon-plus"></i>
+                        </el-upload>
 
-                            <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
-                                <img :src="imgUrl" v-if="visible" style="width: 100%">
-                            </Modal> -->
-                            <div class="AgencyImage_div">
-                                <img src="http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg" alt="" width="120" height="120">
+                        <Modal :footer-hide="true" title="预览图片" v-model="visible">
+                            <img :src="imgUrl" v-if="visible" style="width: 100%">
+                        </Modal>
+                    </FormItem>
 
-                                <img src="http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg" alt="" width="120" height="120">
+                    <FormItem label="机构图片" prop="org_pic_name">
+                        <el-upload
+                            ref="imgsUpload"
+                            name="org_imags"
+                            :action="actionUrl"
+                            :data="baseInfoList"
+                            list-type="picture-card"
+                            :file-list="org_imags"
+                            :auto-upload="false"
+                            :on-preview="handlePictureCardPreview"
+                            :on-success="uploadSuccess"
+                            :on-error="uploadError"
+                            :on-exceed="uploadonExceed"
+                            :on-remove="handleRemove"
+                            :limit="9"
+                        >
+                            <i class="el-icon-plus"></i>
+                        </el-upload>
 
-                                <img src="http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg" alt="" width="120" height="120">
-                            </div>
-                        </FormItem>
+                        <Modal :footer-hide="true" title="预览图片" v-model="visible">
+                            <img :src="imgUrl" v-if="visible" style="width: 100%">
+                        </Modal>
+                    </FormItem>
 
-                        <FormItem label="机构图片" prop="org_pic_name">
-                            <div class="AgencyImage_div">
-                                <img src="http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg" alt="" width="120" height="120">
-
-                                <img src="http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg" alt="" width="120" height="120">
-
-                                <img src="http://pic.58pic.com/58pic/13/62/74/01G58PICgrV_1024.jpg" alt="" width="120" height="120">
-                            </div>
-                        </FormItem>
-
-                        <FormItem>
-                            <Button type="primary" @click="handleSubmit('baseInfoForm')">提交</Button>
-                            <Button @click="handleReset('baseInfoForm')" style="margin-left: 8px">取消</Button>
-                        </FormItem>
+                    <FormItem align="center">
+                        <Button type="primary" @click="handleSubmit('baseInfoForm')" :loading="loading">提交</Button>
+                        <Button @click="handleReset('baseInfoForm')" style="margin-left: 8px">取消</Button>
+                    </FormItem>
              </Form>
          
         </TabPane>
@@ -255,6 +258,17 @@
 <script>
 import tinymce from "tinymce";
 import TableM from "@/common/table/table.vue"
+// 引入api接口
+import {
+    baseInformationList,
+    selectOrgByObj,
+    InstitutionalTitleList,
+    ProvinceTitleList,
+    CityTitleList,
+    selectFacilitiesByArray,
+    getBase,
+} from '@/api/lp-organizational/api.js'
+
 export default {
   name: "baseInformation",
   
@@ -264,7 +278,7 @@ export default {
 
   data() {
     return {
-        formValidate: {}, 
+        baseInfoList: {},  // 基地信息
 
         baseInfoForm: {}, // 基地详情表单
 
@@ -283,6 +297,14 @@ export default {
         roomTypeAddModal: false, // 房间类型新增modal
 
         loading: false,  // 控制执行的loading
+
+        InstitutionalTitle: [], // 机构标题
+
+        ProvinceTitle: [],
+        
+        CityTitle: [],
+
+        defaultImageList: [],       // 默认图片列表
 
         roomTypeColumns: [
             {
@@ -318,6 +340,8 @@ export default {
                 }
             },
         ],  // 房间类型表头
+
+        visible: false,         // 控制放大图片的显示
         
         roomTypeUserData: [{}], // 房间类型数据
         
@@ -326,6 +350,18 @@ export default {
         roomTypeTotal: 0,  // 房间类型分页(总页数)
 
         delPromptDilaog: false,  // 删除提示dialog
+
+        facilitiesList: [],      // 机构设施列表
+
+        base: [],
+
+        org_imags: [],          // 机构图片
+
+        actionUrl: '',          // 提交表单的地址
+
+        baseInfoFormData: {},   // 上传需要冲入额外的参数
+
+        fileList: [],           // 上传列表
     };
   },
 
@@ -361,10 +397,10 @@ export default {
           },
           setup: function(editor) {
             editor.on("init", function(e) {
-              vm.spinShow = false;
-            //   if (localStorage.editorContent) {
-            //     tinymce.get($id).setContent(localStorage.editorContent);
-            //   }
+                vm.spinShow = false;
+                //   if (localStorage.editorContent) {
+                //     tinymce.get($id).setContent(localStorage.editorContent);
+                //   }
             });
             editor.on("keydown", function(e) {
                 setTimeout(() => {
@@ -376,10 +412,140 @@ export default {
       });
     },
 
+    // 处理盘符
+    handleDrive(base, facilities_pic_url, facilities_pic_name) {
+        return util.handleDrive(base, facilities_pic_url, facilities_pic_name);
+    },
+
     // 初始化多个富文本传值
     init() {
       this.InitEditerDom("#tinymceEditer");
       this.InitEditerDom("#tinymceEditer2");
+      this.base = getBase().base2;
+      this.actionUrl = `${this.base}/organ/updateById`;
+    },
+
+    //省下拉框 选择触发
+    provinceChange(p_code){
+        console.log(p_code)
+        this.CityTitle = [];
+        this.baseInfoList.adm_city_code = '';
+        this.CityTitleListFun(p_code);
+    },
+
+    typeFilter(type) {
+      switch(type){
+        case 1:
+            return '基地';
+            break;
+        case 2:
+            return '个人';
+            break;
+        case 3:
+            return '旅行社';
+            break;
+        default:
+            return '';
+            break;
+      }
+    },
+
+    // 获取基地设置列表
+    async selectOrgByObjFun() {
+        let local = JSON.parse(localStorage.user);
+        let params = {
+            org_id: local.org_id
+        };
+        const { data } = await selectOrgByObj(params);
+        this.baseInfoList = data;
+
+        let org_imags = JSON.parse(this.baseInfoList.org_imags);
+        this.org_imags = [];
+        for(let i of org_imags) {
+            this.org_imags.push({ url: i.images }) 
+        };
+        this.defaultImageList = [{ url: this.baseInfoList.cover }]
+        // 根据获取基地信息的机构设施字段来获取机构设施图片集合
+        let params2 = {
+            org_facilities: this.InstitutionalTitle.org_facilities
+        };
+        const res = await selectFacilitiesByArray({ org_facilities: this.baseInfoList.org_facilities });
+        this.facilitiesList = res.data;
+    },
+
+    // 渲染机构标题下拉列表
+    async InstitutionalTitleListFun() {
+        const { data } = await InstitutionalTitleList();
+        data.shift(0);
+        this.InstitutionalTitle = data;
+    },
+
+    // 渲染省份下拉列表
+    async ProvinceTitleListFun() {
+        const { data } = await ProvinceTitleList();
+        this.ProvinceTitle = data;
+    },
+
+    // 渲染城市下拉列表
+    async CityTitleListFun(p_code) {
+        const { data } = await CityTitleList({p_code});
+        this.CityTitle = data;
+    },
+
+    // 当图片数量超出规定的数量的钩子函数
+    uploadonExceed() {
+      this.$Message.warning('超出图片最大限制');
+    },
+
+    // 机构设置保存按钮
+    handleSubmit(formName) {
+        this.$refs[formName].validate(valid => {
+            if (valid) {
+                setTimeout(() => {
+                    console.log(this.baseInfoList)
+                  this.$refs.coverUpload.submit();
+                  this.$refs.imgsUpload.submit();
+                  this.$Message.success("保存成功!");
+                  this.loading = false;
+                },400);
+            }
+        });
+    },
+
+    // 上传成功
+    uploadSuccess(response, file, fileList) {
+        console.log(response, file, fileList);
+        // this.getUser();
+    },
+
+    // 上传时将图片赋到img上
+    handlePictureCardPreview(file) {
+        this.imgUrl = file.url;
+        this.visible = true;
+    },
+
+    // 图片上传之前的钩子
+    onChange(file, fileList) {
+      console.log(fileList)
+      console.log(this.fileList);
+      this.fileList = fileList;
+    },
+
+    // 清除图片列表动作
+    handleResetFile() {
+      this.fileList = [];
+    },
+
+    // 删除图片钩子函数
+    handleRemove(index) {
+        this.fileList.splice(index, 1);
+        console.log(this.fileList);
+    },
+
+    // 上传失败
+    uploadError(err, file, fileList) {
+        console.log(err, file, fileList);
+        this.$Message.error('上传失败');
     },
 
     /**
@@ -404,11 +570,18 @@ export default {
     // 删除确定
     delConfrmClick() {
 
-    }
+    },
+  },
+  
+  created() {
+    this.InstitutionalTitleListFun();
+    this.ProvinceTitleListFun();
+    this.CityTitleListFun();
   },
 
   mounted() {
     this.init();
+    this.selectOrgByObjFun();
   }
 };
 </script>

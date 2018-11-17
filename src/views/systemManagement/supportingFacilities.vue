@@ -138,7 +138,7 @@ import {
   supportingFacilitiesAdd, //配套设施管理添加
   supportingFacilitiesEdit, //配套设施管理编辑
   supportingFacilitiesDel, //配套设施管理删除
-  getBase, // 获取域名  
+  getBase, // 获取域名 
 } from "../../api/lp-systemManagement/api.js";
 
 export default {
@@ -349,7 +349,6 @@ export default {
     // 上传成功
     uploadSuccess(response, file, fileList) {
         console.log(response, file, fileList);
-        this.isUpload = true;
         this.getUser();
     },
 

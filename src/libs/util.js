@@ -266,4 +266,11 @@ util.checkUpdate = function (vm) {
     });
 };
 
+// 处理盘符
+util.handleDrive = function (base, facilities_pic_url, facilities_pic_name) {
+    const afterUpload = facilities_pic_url.split("static/")[1];
+    const showUrl = base + "/" + afterUpload + "/" + facilities_pic_name;
+    return showUrl;
+}
+
 export default util;
