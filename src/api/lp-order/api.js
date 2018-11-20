@@ -32,6 +32,8 @@ const AppInstitutionalTitleList = params => {
     return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app`, params);
 };
 
+
+
 //批量预定订单列表
 const batchReservationOrderList = params => {
     return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
@@ -41,6 +43,34 @@ const batchReservationOrderList = params => {
 const batchReservationOrderSearch = params => {
     return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
 };
+
+// 批量预定订单模糊查询-目的地下拉列表渲染
+const destinationTitleList = params => {
+    return axios.post(`${baseUrl.base2}/BatchReserveController/Select_des`, params);
+};
+
+
+//批量审核列表
+const batchAuditList = params => {
+    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
+};
+
+//批量审核模糊查询
+const batchAuditSearch = params => {
+    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
+};
+
+// 批量审核模糊查询-预定机构下拉列表渲染
+const batchinstitutionTitleList = params => {
+    return axios.post(`${baseUrl.base2}/Admin_userController/selectOrg_name`, params);
+};
+
+// 批量审核模糊查询-获取登录的id(adm_id)
+const batchIdList = params => {
+    return axios.post(`${baseUrl.base2}/Admin_userController/getSessionAdminUser`, params);
+};
+
+
 
 //退款单列表
 const refundList = params => {
@@ -56,6 +86,8 @@ const refundListSearch = params => {
 const RefundInstitutionalTitleList = params => {
     return axios.post(`${baseUrl.base2}/Refund/Select_org_name`, params);
 };
+
+
 
 //退房单列表
 const checkoutList = params => {
@@ -79,6 +111,11 @@ export {
     AppInstitutionalTitleList, //App订单-机构标题下拉框渲染
     batchReservationOrderList, //批量预定订单列表
     batchReservationOrderSearch, //批量预定订单模糊查询
+    destinationTitleList,// 批量预定订单模糊查询-目的地下拉列表渲染
+    batchAuditList,//批量审核列表
+    batchAuditSearch,//批量审核模糊查询
+    batchinstitutionTitleList,// 批量审核模糊查询-预定机构下拉列表渲染
+    batchIdList,//批量审核模糊查询-获取登录的id(adm_id)
     refundList, //退款单列表
     refundListSearch, //退款单模糊查询
     RefundInstitutionalTitleList, //退款单-机构标题下拉框渲染

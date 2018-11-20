@@ -24,7 +24,8 @@
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-             <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+             <!-- <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker> -->
+              <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
@@ -59,7 +60,14 @@
 
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+        :columns="columns" 
+        :data="userData" 
+        :loading="loading" 
+        :current.async="currentPageIndex" 
+        :total="total" 
+        @pageChange="pageChange">
+        </TableM>
     
     </div>
 </template>

@@ -136,7 +136,7 @@ export default {
                             }
                             selectAdmin(params).then(res2 => {
                                 // 存储token请求用户信息接口
-                                sessionStorage.token = res2.data.token;
+                                localStorage.token = res2.data.token;
                                 getSessionAdminUser({ token: res2.data.token })
                                 .then(res3 => {
                                     if (res3.data === "") {
@@ -146,7 +146,7 @@ export default {
                                         this.loading = false;
                                     } else {
                                         // 存储用户的信息
-                                        sessionStorage.user = JSON.stringify(res3.data);
+                                        localStorage.user = JSON.stringify(res3.data);
                                         Cookies.set('user', this.form.adm_account);
                                         this.$Message.success('登陆成功');
                                         this.$router.push({

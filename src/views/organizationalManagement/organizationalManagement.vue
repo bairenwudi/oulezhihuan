@@ -45,13 +45,11 @@
             </FormItem>
             
             <FormItem prop="org_status" label="更改状态" :label-width="60">
-               <Select v-model="OrganizationManagementForm.org_status" clearable style="width:200px">
-                 <Option v-for="item in statusTitle" :value="item.value" :key="item.value">{{ item.label }}</Option>
+               <Select v-model="changeStatus" clearable style="width:200px; padding-right: 10px">
+                 <Option v-for="item in statusTitle" :value="item.value" :key="item.value" :label="item.label"></Option>
                </Select>
-            </FormItem>
 
-            <FormItem>
-                <Button type="primary" @click.stop="handleStatusClick">确定</Button>
+               <Button type="primary" @click.stop="handleStatusClick">确定</Button>
             </FormItem>
 
         </Form>
@@ -63,6 +61,7 @@
           :current.async="currentPageIndex"
           :total="total"
           @pageChange="pageChange"
+          @selectChange="selectChange"
           >
         </TableM>
 
@@ -90,7 +89,8 @@ import {
   organizationalManagementDel, //机构管理删除
   InstitutionalTitleList, //机构管理-机构标题下拉框渲染 
   ProvinceTitleList, //机构管理-省份下拉列表渲染
-  CityTitleList, //机构管理-城市下拉列表渲染      
+  CityTitleList, //机构管理-城市下拉列表渲染
+  changeOnlineType,   // 多选修改上下线状态
 } from "../../api/lp-organizational/api.js";
 
 export default {
@@ -101,6 +101,8 @@ export default {
   },
   data() {
     return {
+      changeStatus: -1,    // 更改状态
+
       InstitutionalTitle: [],
 
       ProvinceTitle: [],
@@ -220,7 +222,7 @@ export default {
           title: "操作",
           key: "action",
           align: "center",
-          render: (h, params) => {
+          render: (h, { row }) => {
             return h("div", [
               h(
                 "Button",
@@ -234,7 +236,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.goToInfo(params);
+                      this.goToEditInfo(row);
                     }
                   }
                 },
@@ -252,7 +254,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.onlineClick(params);
+                      this.onlineClick(row);
                     }
                   }
                 },
@@ -266,25 +268,20 @@ export default {
       data: [], // 内容数据
 
       total: 1, // 总页数
-            //       org_id,
-            // startPos: page || 1, //起始页或当前页
-            // pageSize: 10, //每页条数
-            // org_status: org_status,
-            // adm_user_type: adm_user_type,
-            // adm_city_code: adm_city_code,
-            // adm_province_code: adm_province_code,
-            // org_name: org_name   
+
       OrganizationManagementForm: {
-          org_name:'',
-          adm_province_code:"",
-          adm_city_code:"",
-          org_status:"",
-          adm_user_type:"",
+        org_name:'',
+        adm_province_code:"",
+        adm_city_code:"",
+        org_status:"",
+        adm_user_type:"",
       },
 
       loading: false, // 定义loading为true
 
-      currentPage: 1 // 定义当前页
+      currentPage: 1, // 定义当前页
+
+      selection: []   // 当前已选择的多选对象
     };
   },
 
@@ -320,10 +317,15 @@ export default {
       }
     },
 
+    // 选择select事件
+    selectChange(selection) {
+      this.selection = selection;
+    },
+
     // 进入编辑详情
     goToEditInfo(params) {
       this.$router.push({
-        path: "/infoModel",
+        path: "/organizationalManagement/baseInformationModel",
         data: params
       });
     },
@@ -339,9 +341,46 @@ export default {
       console.log(params);
     },
 
+    // 封装更改上下线状态
+    changeOnlineTypeStatusFun(params) {
+      changeOnlineType(params).then(res => {
+        console.log(res)
+        if(res.data.code === 'error') {
+          this.$Message.error(`${res.data.content.msg}`);
+        } else {
+          this.$Message.success(`${res.data.content.data}`)
+        }
+      })
+    },
+
     // 执行更改状态确定按钮
     handleStatusClick() {
-      
+      if(this.selection.length) {
+        let org_ids = [];
+        for(let i of this.selection) {
+          org_ids.push(i.org_id);
+        }
+        let params = {
+          org_ids,
+          org_status: this.changeStatus
+        };
+        this.changeOnlineTypeStatusFun(params);
+      } else if(this.changeStatus === -1) {
+        this.$Message.warning('请选择一个状态');
+      } else {
+        this.$Message.warning('请选择一个机构');
+      }
+    },
+
+    // 对单个对象更改上下线状态
+    onlineClick(row) {
+      let inverseValue = 0;
+      row.org_status === 0 ? inverseValue = 1 : inverseValue = 0;
+      let params = {
+        org_ids: row.org_id,
+        org_status: inverseValue
+      };
+      this.changeOnlineTypeStatusFun(params);
     },
 
     // 执行删除的事件
@@ -373,10 +412,9 @@ export default {
       this.getUser();
     },
 
+    // 查询
     searchClick(filter) {
       console.log(filter);
-      
-
       this.resetTotal();
       if (filter) {
         for (let i in filter) {
@@ -399,7 +437,6 @@ export default {
 
     // 渲染省份下拉列表
     async ProvinceTitleListFun() {
-
         console.log(this.ProvinceTitleListFun)
         const { data } = await ProvinceTitleList();
         this.ProvinceTitle = data;
