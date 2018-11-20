@@ -7,17 +7,25 @@
          <h2>
             预订信息
         </h2>
+        <Form ref="formInline" :model="formInline" inline>
+             <FormItem>
+                <Button type="primary" @click="addClick">新增</Button>
+            </FormItem>
+        </Form>
 
+
+            <Modal v-model="addModal"
+                title="新增"
+                :mask-closable="false"
+                @on-ok="add('formValidate')"
+                @on-cancel="addModalCancel('formValidate')"
+            >
 
         <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="90" class="inputBox"> 
 
                 <FormItem label="预订人" prop="adm_user_type">
                     <Input v-model="formValidate.adm_user_type" placeholder="请输入预订人"></Input>
                 </FormItem>
-        
-                <FormItem>
-                  <Button type="primary" @click="goToInfo">入住人信息</Button>
-                </FormItem>  
 
                 <FormItem label="预订人手机" prop="org_addr">
                     <Input v-model="formValidate.org_addr" placeholder="请输入预订人手机"></Input>
@@ -32,36 +40,32 @@
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="org_name" inline>
-                    
                     <Select v-model="formValidate.org_name" placeholder="请选择" style="width:300px" >
-                        <Option value="乐满地">乐满地</Option>
-                        <Option value="黄山">黄山</Option>
-                        <Option value="山东">山东</Option>
+                        <Option v-for="(item, index) in destinationSel" :value="item.org_id" :label="item.org_name" :key="`c_name_${index}`"></Option>
                     </Select>
-                
                 </FormItem>
                 
                 <FormItem prop="check_in_time" label="入离时间">              
-                    <DatePicker type="datetimerange" placeholder="请选择日期"></DatePicker>
+                    <DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
                 </FormItem>
 
                 <FormItem label="入住天数" prop="org_cover">
-                    <Input v-model="formValidate.adm_phonenum" placeholder="12" disabled ></Input>
+                    <Input v-model="formValidate.jiday" disabled ></Input>
                 </FormItem>
 
                 <FormItem label="选择房型" prop="org_cover">
                     <CheckboxGroup v-model="room">
-                       <Row>
+                      <Row>
                         <col>
-                         <Checkbox label="大床房"></Checkbox>
+                          <Checkbox label="大床房"></Checkbox>
                         </col>
                         <col>
-                        <Input v-model="formValidate.adm_phonenum" placeholder="12" ></Input>间
+                          <Input v-model="formValidate.adm_phonenum" placeholder="12" ></Input>间
                         </col>
-                       </Row>
+                      </Row>
                         <Checkbox label="标准间"></Checkbox>
-                        <Input v-model="formValidate.adm_phonenum" placeholder="12" ></Input>间
-                        <Checkbox label="单人间"></Checkbox>
+                          <Input v-model="formValidate.adm_phonenum" placeholder="12" ></Input>间
+                          <Checkbox label="单人间"></Checkbox>
                         <Input v-model="formValidate.adm_phonenum" placeholder="12" ></Input>间
                     </CheckboxGroup>
                 </FormItem>
@@ -79,6 +83,7 @@
                     <Button @click="handleReset('formValidate')" style="margin-left: 8px">取消</Button>
                 </FormItem>
              </Form>
+          </Modal>
     
     </div>
 </template>
@@ -86,7 +91,8 @@
 <script>
 import TableM from "../../common/table/table.vue";
 import {
-  batchReservationList //批量预定列表
+  batchReservationList, //批量预定列表
+  destinationSel, //批量预定   目的地名称下拉框渲染
 } from "../../api/lp-batchReservation/api.js";
 
 export default {
@@ -113,6 +119,8 @@ export default {
 
       visible: false,
 
+      destinationSel:[],
+
       formValidate: {
         // 定义新增表单的对象
         name: "",
@@ -125,6 +133,8 @@ export default {
         cus_nick_name: "",
         reserve_persion_phone: "",
         org_name: "",
+        selectTime:"",
+        jiday:"",
         reserve_destination: "",
         getFormatterTime: ""
       },
@@ -245,7 +255,7 @@ export default {
           label: "Ottawa"
         }
       ],
-      model8: "",
+
       delDilaog: false, // 控制删除弹出框
 
       delLoading: false, // 控制删除按钮loading
@@ -412,18 +422,38 @@ export default {
       this.addModal = true;
     },
 
-    // 点击确定按钮
-    ModalConfirm(name) {
+    add(name) {
+
       this.$refs[name].validate(valid => {
+        console.log(valid);
+        if(this.flag === 2){
+          this.currentPageIndex++;
+        }
         if (valid) {
           this.loading = true;
-          setTimeout(() => {
-            this.$Message.success("Success!");
-            this.Modal = false;
+          let params = {
+            hcm_provice_code:this.formValidate.p_name,
+            hcm_city_code:this.formValidate.c_name,
+            hcm_sort:this.formValidate.hcm_sort,
+          }
+          hotCityManagementAdd(params).then(res => {
+            console.log(res);
+            if(res.data === 1){
+              this.$Message.success("新增成功");
+              this.getUser();
+              this.addModal = false;
+            }else if(res.data === 2){
+              this.$Message.error("省市重复");
+            }else if(res.data === 3){
+              this.$Message.error("排序重复");
+            }
             this.loading = false;
-          }, 1000);
-        } else {
-          this.$Message.error("Fail!");
+          })
+          console.log(data);
+          
+          // setTimeout(() => {
+          
+          // }, 1000);
         }
       });
     },
@@ -455,7 +485,20 @@ export default {
         console.log("我滚了");
       }, 1000);
     },
+    dateChange(val){
+      var d = new Date(val[0]);
+      var D = new Date(val[1]);
+      var cha = D.getTime() - d.getTime();
+      console.log(cha);
+      
+      if(cha){
+        this.formValidate.jiday = cha/86400000;
 
+      }else{
+        this.formValidate.jiday = 0;
+      }
+
+    },
     // 执行上传的事件
     uploadClick() {},
 
@@ -491,13 +534,25 @@ export default {
       }
       this.getUser(filter);
     },
+    //批量预定 目的地下拉框渲染
+    async getDestinationSel(){
+      var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+      console.log(adm_user_id);
+      const { data } = await destinationSel({adm_user_id});
+      
+      console.log(data);
+      this.destinationSel = data
+    },
 
     //批量预定列表
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
+      // console.log(localstorage.user);
+      
       let params = {
         pageSize: 10,
-        startPos: filter ? pageIndex : this.currentPage
+        startPos: filter ? pageIndex : this.currentPage,
+        // reserve_id:"123"
       };
 
       if (filter) {
@@ -517,6 +572,7 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.getDestinationSel();
   }
 };
 </script>

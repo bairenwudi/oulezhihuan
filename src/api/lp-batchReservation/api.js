@@ -49,6 +49,12 @@ const roomtypeDel = params => {
 }
 
 
+//批量预定   目的地名称下拉框渲染
+const destinationSel = params => {
+    return axios.post(`${baseUrl.base2}/BatchReserveController/Select_des`, params);
+}
+
+
 export {
     batchReservationList, //批量预定列表
     batchReservationSearch,//批量预定模糊查询
@@ -57,6 +63,7 @@ export {
     roomtypeAdd, //机构设置-房间类型添加
     roomtypeEdit, //机构设置-房间类型编辑
     roomtypeDel, //机构设置-房间类型删除
+    destinationSel,//批量预定   目的地名称下拉框渲染
 };
 
 // 组件中获取base地址
