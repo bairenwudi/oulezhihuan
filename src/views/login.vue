@@ -136,7 +136,7 @@ export default {
                             }
                             selectAdmin(params).then(res2 => {
                                 // 存储token请求用户信息接口
-                                sessionStorage.token = res2.data.token;
+                                localStorage.token = res2.data.token;
                                 getSessionAdminUser({ token: res2.data.token })
                                 .then(res3 => {
                                     if (res3.data === "") {
