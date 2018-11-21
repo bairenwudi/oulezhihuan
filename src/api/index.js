@@ -1,6 +1,6 @@
 
 export const CorrectpathObj = {
-  // // 生产环境(测试)
+  // 生产环境(测试)
   // Correctpath: {
   //   base1: 'http://xyo.zkjiashijie.com:8080',
 

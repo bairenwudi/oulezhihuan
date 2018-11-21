@@ -88,10 +88,12 @@
             <span>提示</span>
         </p>
         <div style="text-align:center">
-            <p>确定要删除吗？</p>
+            <p>确定删除 {{ delPname }}  {{ delCname }} 吗？</p>
         </div>
         <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
+            <Button type="error" :loading="delLoading" @click="delConfrmClick">删除</Button>
+            <Button @click="delModalCancel" style="margin-left: 8px">取消</Button>
+
         </div>
     </Modal>
 
@@ -127,9 +129,9 @@ export default {
     
     var emptyValidP_name = (rule, value, callback) => {
       if(value === ''){
-        return callback(new Error("请填写完整"));
+        return callback(new Error("省份不能为空"));
       } else if(!value) {
-        return callback(new Error("请填写完整1"));
+        return callback(new Error("省份不能为空"));
       } else {
         callback();
       }
@@ -139,11 +141,11 @@ export default {
       console.log(value);
       console.log(callback);
       if(!value){
-        return callback(new Error("请填写完整"));
+        return callback(new Error("地市不能为空"));
 
       }
       if(value === '') {
-        return callback(new Error("请填写完整2"));
+        return callback(new Error("地市不能为空"));
       } else {
         callback();
       }
@@ -152,7 +154,7 @@ export default {
       console.log(value);
 
       if(!value) {
-        return callback(new Error("请填写完整"));
+        return callback(new Error("排序不能为空"));
       } else {
         callback();
       }
@@ -195,6 +197,7 @@ export default {
           // { required: true, message:"请选择序号" , trigger:"blur" }
         ]
       },
+      flag:3,//flag 用于判断本页面有几条数据 如果只有一条为1 点击删除时 this.currentPageIndex - 1    如果有十条为2 点击新增时 this.currentPageIndex + 1    其他情况时 为 0
 
       addModal: false,
 
@@ -203,6 +206,10 @@ export default {
       visible: false,
 
       deleteHcm_id:"",//删除需要的hcm_id
+
+      delPname:"",//删除 显示在弹框上的省名
+
+      delCname:"",//删除 显示在弹框上的城市名
 
       delDilaog: false, // 控制删除弹出框
 
@@ -346,7 +353,9 @@ export default {
 
       this.$refs[name].validate(valid => {
         console.log(valid);
-        
+        if(this.flag === 2){
+          this.currentPageIndex++;
+        }
         if (valid) {
           this.loading = true;
           let params = {
@@ -357,13 +366,13 @@ export default {
           hotCityManagementAdd(params).then(res => {
             console.log(res);
             if(res.data === 1){
-
-              this.$Message.success("Success!");
+              this.$Message.success("新增成功");
               this.getUser();
               this.addModal = false;
-
-            }else{
-              this.$Message.error("Fail!");
+            }else if(res.data === 2){
+              this.$Message.error("省市重复");
+            }else if(res.data === 3){
+              this.$Message.error("排序重复");
             }
             this.loading = false;
           })
@@ -390,11 +399,13 @@ export default {
           hotCityManagementEdit(params).then(res => {
             console.log(res);
             if(res.data === 1){
-              this.$Message.success("Success!");
+              this.$Message.success("修改成功");
               this.editModal = false;
               this.getUser();
-            }else{
-              this.$Message.error("Fail!");
+            }else if(res.data === 2){
+              this.$Message.error("省市重复");
+            }else if(res.data === 3){
+              this.$Message.error("排序重复")
             }
             this.loading = false;
           })
@@ -407,6 +418,9 @@ export default {
       this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
       this.editModal = false;
+    },
+    delModalCancel(){
+      this.delDilaog = false;
     },
     addModalCancel(name) {
       this.$Message.info("Clicked ok");
@@ -421,7 +435,6 @@ export default {
       const { data } = await hotCityGetEditMessage({hcm_id:this.deleteHcm_id});
       console.log(data);
       this.editFormValidate.p_name = data.hcm_provice_code - 0 // hcm_provice_code 是字符串类型 - 0  转化为数字类型
-      // alert(this.editFormValidate.p_name)
       this.getClist(this.editFormValidate.p_name)
       this.editFormValidate.c_name = data.hcm_city_code - 0
       this.editFormValidate.hcm_sort = data.hcm_sort;
@@ -429,12 +442,18 @@ export default {
 
     // 执行删除的事件
     delClick(params) {
+      console.log(params);
+      this.delPname = params.row.p_name;
+      this.delCname = params.row.c_name;
       this.deleteHcm_id = params.row.hcm_id;
       this.delDilaog = true;
     },
 
     // 删除确定按钮
     async delConfrmClick() {
+      if(this.flag === 1){
+        this.currentPageIndex--;
+      }
       this.delLoading = true;
       let params = {
         hcm_id:this.deleteHcm_id
@@ -442,11 +461,12 @@ export default {
       const { data } = await hotCityManagementDel(params);
       console.log(data);
       if(data === 1){
-        this.$Message.success("Success!");
+        this.$Message.success("删除成功");
         this.delDilaog = false;
-        this.getUser();
+        
+        this.getUser(null,this.currentPageIndex);
       }else{
-        this.$Message.error("fail!");
+        this.$Message.error("删除失败");
       }
       this.delLoading = false;
     },
@@ -459,7 +479,7 @@ export default {
     // 改变分页触发的事件
     pageChange(pageIndex) {
       // 改变当前页
-      // this.currentPage = pageIndex;
+      this.currentPageIndex = pageIndex;
       for (let i in this.formInline) {
         if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
           this.getUser(this.formInline, pageIndex);
@@ -469,17 +489,17 @@ export default {
       this.getUser();
     },
 
-    searchClick(filter) {
-      this.resetTotal();
-      if (filter) {
-        for (let i in filter) {
-          if (filter[i] === undefined || filter[i] === "") {
-            delete filter[i];
-          }
-        }
-      }
-      this.getUser(filter);
-    },
+    // searchClick(filter) {
+    //   this.resetTotal();
+    //   if (filter) {
+    //     for (let i in filter) {
+    //       if (filter[i] === undefined || filter[i] === "") {
+    //         delete filter[i];
+    //       }
+    //     }
+    //   }
+    //   this.getUser(filter);
+    // },
     async getPlist() {
       let params = {};
       let { data } = await hotCityPList(); 
@@ -499,9 +519,11 @@ export default {
     //热门城市管理列表
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
+      console.log(pageIndex);
+      
       let params = {
         pageSize: 10,
-        startPos: filter ? pageIndex : this.currentPage
+        startPos: filter ? pageIndex : this.currentPageIndex
       };
 
       if (filter) {
@@ -510,7 +532,17 @@ export default {
 
       this.loading = true;
       let { data } = await hotCityManagementList(params);
+      
       console.log(data);
+      console.log(data.length);
+      if(data.length === 2){
+        this.flag = 1;
+      }else if(data.length === 11){
+        this.flag = 2;
+      }else{
+        this.flag = 3;
+      }
+      // if(data.length)
       this.total = data[0].count;
       console.log(this.total);
       data.shift(0);
