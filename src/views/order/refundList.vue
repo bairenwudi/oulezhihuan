@@ -293,24 +293,24 @@ export default {
                 align: "center",
                 render: (h, params) => {
                     return h("div", [
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.delClick(params);
-                            }
-                        }
-                        },
-                        "同意"
-                    ),
+                    // h(
+                    //     "Button",
+                    //     {
+                    //     props: {
+                    //         type: "primary",
+                    //         size: "small"
+                    //     },
+                    //     style: {
+                    //         marginRight: "5px"
+                    //     },
+                    //     on: {
+                    //         click: () => {
+                    //             this.delClick(params);
+                    //         }
+                    //     }
+                    //     },
+                    //     "同意"
+                    // ),
                     h(
                         "Button",
                         {
@@ -353,12 +353,18 @@ export default {
 
   methods: {
     // 进入详情
-    goToInfo(params) {
+    goToInfo({ row }) {
+        console.log(row);
         this.$router.push({
             path: '/RefundListinfoModel',
-            data: params 
+            query: {
+                data: JSON.stringify(row)
+            }
         })
     },
+
+
+
 
     // 转化时间
     dataFormat(time) {

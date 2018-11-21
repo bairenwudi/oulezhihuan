@@ -355,10 +355,13 @@ export default {
 
   methods: {
     // 进入详情
-    goToInfo(params) {
+    goToInfo({ row }) {
         this.$router.push({
             path: '/CheckoutListinfoModel',
-            data: params 
+            query:{
+               data: JSON.stringify(row)
+            }
+            
         })
     },
 
