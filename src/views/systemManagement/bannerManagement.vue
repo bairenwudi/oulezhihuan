@@ -45,7 +45,7 @@
                         :on-error="uploadError"
                         :on-exceed="uploadonExceed"
                         :on-remove="handleRemove"
-                        :limit="1"
+                        :limit="3"
                     >
                         <i class="el-icon-plus"></i>
                     </el-upload>
@@ -69,7 +69,7 @@
                         :on-error="uploadErrorH5"
                         :on-exceed="uploadonExceedH5"
                         :on-remove="handleRemoveH5"
-                        :limit="1"
+                        :limit="3"
                     >
                         <!-- <i class="el-qwe">上传H5</i> -->
                         <span class="h5">{{ H5fileName ? H5fileName : "上传h5" }}</span>
@@ -102,18 +102,18 @@
                 @on-ok="edit('editForm')"
                 @on-cancel="ModalCancel('editForm')"
             >
-            <Form ref="editForm" :model="editForm" :rules="ruleValidate" :label-width="80">
+            <Form ref="editForm" :model="editForm" :rules="ruleValidate" :label-width="100">
                 <FormItem label="banner名称" prop="banner_title">
                     <Input v-model="editForm.banner_title" placeholder="请输入banner名称"></Input>
                 </FormItem>
 
-                <FormItem label="所属模块选择" prop="module" :label-width="85">
+                <FormItem label="所属模块选择" prop="module" :label-width="100">
                     <Select v-model="editForm.module" placeholder="请选择">
                        <Option value="zhfw">置换-房屋</Option>
                     </Select>
                 </FormItem>
 
-                <FormItem label="banner图" prop="upLoad" width='100'>
+                <FormItem label="banner图" prop="upLoad" width='100' class="uploadImg">
                     <el-upload
                         ref="editUpload"
                         name="upLoad"
@@ -122,7 +122,7 @@
                         list-type="picture-card"
                         :auto-upload="false"
                         :file-list="editFileList"
-
+                        accept="image"
                         :on-change="onChangeEdit"
                         :on-preview="handlePictureCardPreviewEdit"
                         :on-success="uploadSuccessEdit"
@@ -138,7 +138,7 @@
                     </Modal>
                 </FormItem>
 
-                <FormItem label="上传H5" prop="upLoad">
+                <FormItem label="上传H5" prop="upLoad" class="uploadH5">
                     <el-upload
                         ref="H5Upload"
                         name="upLoad"
@@ -443,7 +443,9 @@ export default {
     },
     // 图片上传之前的钩子
     onChange(file, fileList) {
+      this.fileList = [];
       console.log(file,fileList);
+      this.imgList = [];
       this.imgList = fileList;
     },
 
@@ -464,7 +466,7 @@ export default {
       console.log(response, file, fileList);
       if(response === 1){
         this.loading = false;
-        this.$Message.success("上传成功111111111");
+        this.$Message.success("上传成功dd");
         this.addModal = false;
         this.$refs.addForm.resetFields();
         setTimeout(() => {
@@ -478,7 +480,7 @@ export default {
         this.loading = false;
       }
     },
-        uploadSuccessEdit(response, file, fileList) {
+    uploadSuccessEdit(response, file, fileList) {
       console.log(response, file, fileList);
       // if(response === 1){
       //   this.loading = false;
@@ -515,12 +517,10 @@ export default {
     // 上传失败
     uploadError(err, file, fileList) {
       console.log(err, file, fileList);
-      
       this.$Message.error("上传失败");
     },
     uploadErrorEdit(err, file, fileList) {
       console.log(err, file, fileList);
-      
       this.$Message.error("上传失败");
     },
     // 删除图片钩子函数
@@ -531,7 +531,6 @@ export default {
     handleRemoveEdit(file, fileList) {
       console.log(file, fileList);
     },
-
 
     handlePictureCardPreviewH5(file) {
       this.imgUrl = file.url;
@@ -651,12 +650,13 @@ export default {
       this.editModal = true;
       console.log(params);
       this.editForm = Object.assign(this.editForm, params.row);
+      this.H5fileName = params.row.h5_name;
       this.editForm.third_url = this.imgUrlFormat(params.row.h5_path,params.row.h5_name);
       const url = this.imgUrlFormat(params.row.banner_url,params.row.banner_name);
       this.editFileList = [];
       this.editFileList.push({ url, name: url });
     },
-    
+
     // 执行删除的事件
     delClick(params) {
       console.log(params);
@@ -678,7 +678,6 @@ export default {
         this.delDilaog = false;
         this.$Message.error("失败");
       }
-
     },
 
     // 获取时间

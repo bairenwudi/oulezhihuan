@@ -78,7 +78,7 @@ export const selectOrgByObj = params => {
     return axios.post(`${baseUrl.base3}/organ/selectOrgByObj`, params);
 }
 
-// 获取机构设置的默认信息
+// 编辑机构设置的默认信息
 export const updateById = params => {
     return axios.post(`${baseUrl.base3}/organ/updateById`, params);
 }
