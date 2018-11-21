@@ -55,7 +55,6 @@ export const otherRouter = {
         { path: 'AppOrderinfoModel', title: 'App详情', name: 'AppOrderinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/AppOrderinfo.vue'], resolve); } },
         { path: 'RefundListinfoModel', title: '退款单详情', name: 'RefundListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/RefundListinfo.vue'], resolve); } },
         { path: 'CheckoutListinfoModel', title: '退房单详情', name: 'CheckoutListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/CheckoutListinfo.vue'], resolve); } },        
-        { path: 'batchReservationModel', title: '入住人信息', name: 'batchReservationModel', meta: { notCache: true }, component: resolve => { require(['@/views/batchReservation/batchReservation.vue'], resolve); } },
     ]
 };
 

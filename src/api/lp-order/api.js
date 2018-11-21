@@ -161,12 +161,9 @@ export {
     checkoutList, //退房单列表
     checkoutListSearch, //退房单模糊查询
     checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
-<<<<<<< HEAD
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
-=======
     destinationCheckbox
->>>>>>> cec8f5c777c0d731a3d46fbd396b90370b431c4b
     
 };
 
