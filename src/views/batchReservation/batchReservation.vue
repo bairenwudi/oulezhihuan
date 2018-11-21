@@ -459,9 +459,10 @@ export default {
     },
 
     // 点击框取消按钮
-    ModalCancel(name) {
+    addModalCancel(name) {
       this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
+      this.addModal = false;
     },
 
     // 执行table编辑的事件
@@ -537,10 +538,7 @@ export default {
     //批量预定 目的地下拉框渲染
     async getDestinationSel(){
       var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
-      console.log(adm_user_id);
       const { data } = await destinationSel({adm_user_id});
-      
-      console.log(data);
       this.destinationSel = data
     },
 
@@ -548,11 +546,14 @@ export default {
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
       // console.log(localstorage.user);
+      var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+      console.log(adm_user_id);
       
       let params = {
         pageSize: 10,
         startPos: filter ? pageIndex : this.currentPage,
         // reserve_id:"123"
+        adm_user_id
       };
 
       if (filter) {
@@ -562,7 +563,7 @@ export default {
       this.loading = true;
       let { data } = await batchReservationList(params);
       console.log(data);
-      this.total = data[0];
+      this.total = data["pages"];
       console.log(this.total);
       // data.shift(0);
       this.userData = data;
