@@ -60,7 +60,6 @@ const destinationTitleList = params => {
     return axios.post(`${baseUrl.base2}/BatchReserveController/Select_des`, params);
 };
 
-
 //批量审核列表
 const batchAuditList = params => {
     return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
@@ -109,6 +108,7 @@ const RefundListCustomerinfo = params => {
 };
 
 
+
 //退房单列表/详情
 const checkoutList = params => {
     return axios.post(`${baseUrl.base2}/check/select_check?startPos=${params.startPos}&pageSize=10`, params);
@@ -134,6 +134,11 @@ const checkoutListCustomerinfo = params => {
     return axios.post(`${baseUrl.base2}/check/customerList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
+//批量预定   新增弹框中的checkboxGroup渲染 房间类型
+const destinationCheckbox = params => {
+    return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/showRoomPriceList`, params);
+}
+
 export {
     appOrderList, //App订单列表
     appOrderSearch, //App订单模糊查询
@@ -156,8 +161,12 @@ export {
     checkoutList, //退房单列表
     checkoutListSearch, //退房单模糊查询
     checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
+<<<<<<< HEAD
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
+=======
+    destinationCheckbox
+>>>>>>> cec8f5c777c0d731a3d46fbd396b90370b431c4b
     
 };
 
