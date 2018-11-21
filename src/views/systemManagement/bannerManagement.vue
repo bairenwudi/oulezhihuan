@@ -432,23 +432,20 @@ export default {
 
   methods: {
     handlePictureCardPreview(file) {
-      console.log(file);
       this.imgUrl = file.url;
       this.visible = true;
     },
-        handlePictureCardPreviewEdit(file) {
-      console.log(file);
+
+    handlePictureCardPreviewEdit(file) {
       this.imgUrl = file.url;
       this.visible = true;
     },
     // 图片上传之前的钩子
     onChange(file, fileList) {
-      console.log(file,fileList);
       this.imgList = fileList;
     },
 
     onChangeEdit(file, fileList) {
-      console.log(file,fileList);
       this.imgList = fileList;
     },
     // 当图片数量超出规定的数量的钩子函数
@@ -461,7 +458,6 @@ export default {
 
     // 上传成功
     uploadSuccess(response, file, fileList) {
-      console.log(response, file, fileList);
       if(response === 1){
         this.loading = false;
         this.$Message.success("上传成功111111111");
@@ -478,8 +474,8 @@ export default {
         this.loading = false;
       }
     },
-        uploadSuccessEdit(response, file, fileList) {
-      console.log(response, file, fileList);
+
+    uploadSuccessEdit(response, file, fileList) {
       // if(response === 1){
       //   this.loading = false;
       //   this.$Message.success("上传成功");
@@ -496,7 +492,6 @@ export default {
     },
 
     uploadSuccessEdit(response, file, fileList) {
-      console.log(response, file, fileList);
       if(response === 1){
         this.loading = false;
         this.$Message.success("上传成功");
@@ -514,22 +509,18 @@ export default {
     
     // 上传失败
     uploadError(err, file, fileList) {
-      console.log(err, file, fileList);
-      
       this.$Message.error("上传失败");
     },
     uploadErrorEdit(err, file, fileList) {
-      console.log(err, file, fileList);
-      
       this.$Message.error("上传失败");
     },
     // 删除图片钩子函数
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
     },
 
     handleRemoveEdit(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
     },
 
 
@@ -539,8 +530,6 @@ export default {
     },
     // 图片上传之前的钩子
     onChangeH5(file, fileList) {
-      console.log(file);
-      console.log(fileList);
       this.H5fileName = file.name;
       this.h5List = fileList;
     },
@@ -551,14 +540,12 @@ export default {
 
     // 上传成功
     uploadSuccessH5(response, file, fileList) {
-      console.log(response, file, fileList);
       this.isUpload = true;
       this.$Message.success("上传成功");
     },
     
     // 上传失败
     uploadErrorH5(err, file, fileList) {
-      console.log(err, file, fileList);
       this.$Message.error("上传失败");
     },
 
@@ -572,14 +559,7 @@ export default {
     // 删除图片钩子函数
     handleRemoveH5(file, fileList) {
       this.handleResetFile();
-      console.log(file, fileList);
     },
-
-
-
-
-
-
 
     // 重置页数
     resetTotal() {
@@ -649,7 +629,6 @@ export default {
     // 执行table编辑的事件
     editClick(params) {
       this.editModal = true;
-      console.log(params);
       this.editForm = Object.assign(this.editForm, params.row);
       this.editForm.third_url = this.imgUrlFormat(params.row.h5_path,params.row.h5_name);
       const url = this.imgUrlFormat(params.row.banner_url,params.row.banner_name);
@@ -659,7 +638,6 @@ export default {
     
     // 执行删除的事件
     delClick(params) {
-      console.log(params);
       this.delDilaog = true;
       this.delbannerId = params.row.banner_id;
     },
@@ -668,7 +646,6 @@ export default {
     async delConfrmClick() {
       this.delLoading = true;
       const { data } = await bannerManagementDel({banner_id:this.delbannerId});
-      console.log(data);
       if(data === 1){
         this.delDilaog = false;
         this.delLoading = false;
@@ -678,12 +655,6 @@ export default {
         this.delDilaog = false;
         this.$Message.error("失败");
       }
-
-    },
-
-    // 获取时间
-    getFormatterTime(val) {
-      console.log(val);
     },
 
     // 改变分页触发的事件
@@ -732,13 +703,10 @@ export default {
 
       this.loading = true;
       let { data } = await bannerManagementList(params);
-      console.log(data);
       this.total = data[0].count;
-      console.log(this.total);
       data.shift(0);
       this.userData = data;
       this.loading = false;
-      console.log(data);
     }
   },
   mounted() {
