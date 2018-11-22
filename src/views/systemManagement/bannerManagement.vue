@@ -542,10 +542,7 @@ export default {
     },
     // 图片上传之前的钩子
     onChangeH5(file, fileList) {
-<<<<<<< HEAD
       this.h5List = [];
-=======
->>>>>>> 64dec45a49a2904ad9252c010f5f6211ffc57539
       this.H5fileName = file.name;
       this.h5List.push(fileList[fileList.length - 1]);
     },

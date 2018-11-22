@@ -205,7 +205,7 @@
         :data="customerData" 
         ref="selection"
         :loading="loading"
-        @on-select="ddd"
+        @selectChange="ddd"
         :current.async="currentPageIndex"
         :total="customerTotal"
         @pageChange="pageChange">
@@ -290,7 +290,7 @@
 
         </div>
         <div slot="footer" align="center">
-          <Button type="primary" @click="BindingModalConfirm('bindingForm')" :loading="loading">提交</Button>
+          <Button type="primary" @click="BindingModalConfirm('bindingForm')" :loading="loading">保存</Button>
           <Button @click="BindingModalReset('bindingForm')" style="margin-left: 8px">取消</Button>
         </div>
       </template>
@@ -323,7 +323,7 @@ import {
   addCustomer, //批量预定   点击绑定
   addOccupant, //批量预定   新增入住人
   editOccupant,
-  delOccupant,
+  delOccupant
 } from "../../api/lp-order/api.js";
 
 export default {
@@ -390,7 +390,7 @@ export default {
         certificate_type: "身份证",
         identity_card_number: "",
         contact_number: "",
-        bindingEditId:""
+        bindingEditId: ""
       },
 
       orderStatus: [
@@ -733,7 +733,7 @@ export default {
         {
           type: "selection",
           width: 60,
-          align: "center",
+          align: "center"
         },
         {
           title: "姓名",
@@ -810,8 +810,8 @@ export default {
           }
         }
       ],
-      canBindingOrNot:"",//看入住人能否 点提交  如果数据中是
-       userData: [], // 内容数据
+      canBindingOrNot: "", //看入住人能否 点提交  如果数据中是
+      userData: [], // 内容数据
       customerData: [], // 内容数据
 
       total: 0, // 总页数
@@ -894,14 +894,17 @@ export default {
       this.addModal = true;
       this.getCheckbox();
     },
-    ddd(val){
+    ddd(val) {
       console.log(val);
-      
     },
-    BindingModalConfirm(){
-      // if()
-      this.$Message.success('绑定成功');
+    BindingModalConfirm() {
+      // if (this.customerTotal === 0) {
+      //   this.$Message.error("入住人信息为空，不可提交");
+      //   return;
+      // }
+      // this.$Message.success("订单提交成功");
     },
+
     // 点击确定按钮
     AddModalConfirm(name) {
       this.$refs[name].validate(valid => {
@@ -937,7 +940,14 @@ export default {
       this.handleResetFile();
       this.editModal = false;
     },
-
+    //列表 提交按钮
+    submitClick(){
+      if (this.customerTotal === 0) {
+        this.$Message.error("入住人信息为空，不可提交");
+        return;
+      }
+      this.$Message.success("订单提交成功");
+    },
     // 执行删除的事件
     delClick(params) {
       console.log(params);
@@ -956,12 +966,12 @@ export default {
 
     // 绑定-执行的事件
     bindingClick(row) {
-      if(row){
+      if (row) {
         var reserve_id = row.row.reserve_id;
         this.reserve_id = reserve_id;
       }
       this.loading = true;
-      addCustomer({ reserve_id:this.reserve_id }).then(res => {
+      addCustomer({ reserve_id: this.reserve_id }).then(res => {
         this.loading = false;
         console.log(res);
         this.customerTotal = res.data.content.total;
@@ -1022,9 +1032,8 @@ export default {
               this.bindingClick();
               this.bindingaddModal = false;
               this.loading = false;
-            }else{
+            } else {
               this.$Message.success("新增失败");
-
             }
           });
         } else {
@@ -1051,9 +1060,8 @@ export default {
               this.bindingClick();
               this.bindingeditModal = false;
               this.loading = false;
-            }else{
+            } else {
               this.$Message.success("新增失败");
-
             }
           });
         } else {
@@ -1075,7 +1083,8 @@ export default {
       console.log(params);
       this.bindingEditForm.name = params.row.name;
       this.bindingEditForm.bindingEditId = params.row.occu_id;
-      this.bindingEditForm.identity_card_number = params.row.identity_card_number;
+      this.bindingEditForm.identity_card_number =
+        params.row.identity_card_number;
       this.bindingEditForm.contact_number = params.row.contact_number;
     },
 
