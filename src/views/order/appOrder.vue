@@ -313,9 +313,51 @@ export default {
                     type: "primary",
                     size: "small"
                   },
+                  style: {
+                    marginRight: "5px",
+                    display:(params.row.order_status === 15) ? "none":"inline-block"
+                      },
                   on: {
                     click: () => {
                       this.goToInfo(params);
+                    }
+                  }
+                },
+                "详情"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px",
+                    display:(params.row.order_status === 5) ? "inline-block":"none"
+                      },
+                  on: {
+                    click: () => {
+                      this.goToRefundInfo(params);
+                    }
+                  }
+                },
+                "详情"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px",
+                    display:(params.row.order_status === 10) ? "inline-block":"none"
+                      },
+                  on: {
+                    click: () => {
+                      this.goToCheckoutInfo(params);
                     }
                   }
                 },
@@ -349,10 +391,30 @@ export default {
   },
 
   methods: {
-    // 进入详情
+    // 进入App详情
     goToInfo({ row }) {
       this.$router.push({
         path: "/AppOrderinfoModel",
+        query: {
+          data: JSON.stringify(row)
+        }
+      });
+    },
+
+    // 进入退款单详情
+    goToRefundInfo({ row }) {
+      this.$router.push({
+        path: "/RefundListinfoModel",
+        query: {
+          data: JSON.stringify(row)
+        }
+      });
+    },
+
+    // 进入退房单详情
+    goToCheckoutInfo({ row }) {
+      this.$router.push({
+        path: "/CheckoutListinfoModel",
         query: {
           data: JSON.stringify(row)
         }
@@ -401,7 +463,7 @@ export default {
                 return '退房中';
                 break;
             case 11:
-                return '退房中';
+                return '退房成功';
                 break;
             case 12:
                 return '退房失败';

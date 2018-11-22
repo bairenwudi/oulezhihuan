@@ -257,11 +257,10 @@ export default {
                 }
             },
 
-            {
+             {
                 title: "订单状态",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
                 }
             },
 
@@ -303,7 +302,8 @@ export default {
                             size: "small"
                         },
                         style: {
-                            marginRight: "5px"
+                            marginRight: "5px",
+                            display:(params.row.order_status === 15) ? "inline-block":"none"
                         },
                         on: {
                             click: () => {
@@ -320,6 +320,10 @@ export default {
                             type: "primary",
                             size: "small"
                         },
+                        style: {
+                            marginRight: "5px",
+                            display:(params.row.order_status === 15) ? "none":"inline-block"
+                            },
                         on: {
                             click: () => {
                                 this.goToInfo(params);
@@ -355,10 +359,13 @@ export default {
 
   methods: {
     // 进入详情
-    goToInfo(params) {
+    goToInfo({ row }) {
         this.$router.push({
             path: '/CheckoutListinfoModel',
-            data: params 
+            query:{
+               data: JSON.stringify(row)
+            }
+            
         })
     },
 
@@ -404,7 +411,7 @@ export default {
                 return '退房中';
                 break;
             case 11:
-                return '退房中';
+                return '退房成功';
                 break;
             case 12:
                 return '退房失败';

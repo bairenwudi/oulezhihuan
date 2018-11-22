@@ -3,128 +3,146 @@
 </style>
 <!-- 退款单详情 -->
 <template>
-    <div class="formView">
+    <div class="formView" >
         <h2>订单信息</h2>
         <Row>
-            <Card class="TD-card">
+            <Card class="TD-card" ref="refundInfoForm" :model="refundInfoForm">
                 <div class="TD-view">
                     <dd>订单号：</dd>
-                    <dt>201816556461654654</dt>
+                    <dt>{{refundInfoForm.ord_id}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>8080.80.80 80:80:80</dt>
+                    <dt>{{refundInfoForm.ord_payment_time}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>支付宝</dt>
+                    <dt>{{refundInfoForm.ord_payment}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>房间数量：</dd>
-                    <dt>12</dt>
+                    <dt>{{refundInfoForm.ord_room_numbers}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>机构标题：</dd>
-                    <dt>桂林乐满地</dt>
+                    <dt>{{refundInfoForm.org_name}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>8080.80.80</dt>
+                    <dt>{{refundInfoForm.ord_time}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>8080.80.80</dt>
+                    <dt>{{refundInfoForm.check_in_time}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>预定天数：</dd>
-                    <dt>3</dt>
+                    <dt>{{refundInfoForm.ord_days}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>订单完成</dt>
+                    <dt>{{refundInfoForm.ord_status}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>支付状态：</dd>
-                    <dt>已付款</dt>
+                    <dt>{{refundInfoForm.ord_payment}}</dt>
                 </div>
 
                 <div class="TD-view">
-                    <dd>离店日期：</dd>
-                    <dt>8080.80.80</dt>
+                    <dd>离开日期：</dd>
+                    <dt>{{refundInfoForm.check_out_time}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单金额：</dd>
-                    <dt>888.888元</dt>
+                    <dt>{{refundInfoForm.payment_status}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>房型名称：</dd>
-                    <dt>大床房</dt>
+                    <dt>{{refundInfoForm.room_type}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>申请退款日期：</dd>
-                    <dt>8080.80.80 80:80</dt>
+                    <dt>{{refundInfoForm.refund_time}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退款金额：</dd>
-                    <dt>8080.88元</dt>
+                    <dt>{{refundInfoForm.refund_amount}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退款手续费：</dd>
-                    <dt>8080.88元</dt>
+                    <dt>{{refundInfoForm.refund_formalities}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退款滞纳金：</dd>
-                    <dt>8080.88元</dt>
+                    <dt>{{refundInfoForm.refunds}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退款原因：</dd>
-                    <dt>又是上不去了</dt>
+                    <dt>{{refundInfoForm.refund_reason}}</dt>
                 </div>
 
             </Card>
         </Row>
         <h2>订单明细</h2><br/>
-          <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+          <TableM 
+            :columns="columns" 
+            :data="userData" 
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total"
+            @pageChange="pageChange">
+          </TableM>
         <br/>
         <h2>预订人信息</h2>
           <Row>
-            <Card class="TD-card">
+            <Card class="TD-card" ref="refundInfoForm" :model="refundInfoForm">
                 <div class="TD-view">
                     <dd>预订人姓名：</dd>
-                    <dt>哈哈哈哈哈</dt>
+                    <dt>{{refundInfoForm.ord_customer}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>预订人手机：</dd>
-                    <dt>13588556699</dt>
+                    <dt>{{refundInfoForm.ord_phone_number}}</dt>
                 </div>
 
             </Card>
         </Row>
         <h2>入住人信息</h2><br/>
-          <TableM :columns="columns1" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+          <TableM 
+            :columns="columns1" 
+            :data="userData" 
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total" 
+            @pageChange="pageChange">
+          </TableM>
 
     </div>
 </template>
 
 <script>
-import TableM from '@/common/table/table.vue'
+import TableM from '@/common/table/table.vue';
+import {
+    RefundListinfo, //退款单详情列表-订单信息、订单明细、预订人信息
+    RefundListCustomerinfo, // 退款单详情列表-入住人
+}from '../../api/lp-order/api.js'
 export default {
   name: "RefundListinfoModel",
   components: {
@@ -132,6 +150,10 @@ export default {
   },
   data() {
     return {
+        refundInfoForm:{
+          
+        },
+
         currentPageIndex: 1,    // 当前页
 
         columns: [    // 订单明细表头信息
@@ -139,7 +161,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.ord_date ? row.ord_date : `暂无${index}`)
                 }
             },
   
@@ -147,7 +169,7 @@ export default {
                 title: "数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
                 }
             },
 
@@ -155,7 +177,7 @@ export default {
                 title: "价格",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.ord_room_price ? row.ord_room_price : `暂无${index}`)
                 }
             },
 
@@ -163,7 +185,7 @@ export default {
                 title: "退款手续费",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
                 }
             },
 
@@ -171,7 +193,7 @@ export default {
                 title: "退款滞纳金",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.refunds ? row.refunds : `暂无${index}`)
                 }
             },
 
@@ -179,7 +201,7 @@ export default {
                 title: "退款金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
                 }
             }
 
@@ -190,7 +212,7 @@ export default {
                 title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.acc_realname ? row.acc_realname : `暂无${index}`)
                 }
             },
   
@@ -198,7 +220,7 @@ export default {
                 title: "证件类型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, `身份证${index}`)
                 }
             },
 
@@ -206,7 +228,7 @@ export default {
                 title: "证件号码",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.acc_id_cardno ? row.acc_id_cardno : `暂无${index}`)
                 }
             },
 
@@ -214,7 +236,7 @@ export default {
                 title: "联系电话",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.acc_phonenum ? row.acc_phonenum : `暂无${index}`)
                 }
             }
 
@@ -241,7 +263,11 @@ export default {
         };
         this.getUser();
     },
-        }
+        },
+    mounted() {
+        console.log(this.refundInfoForm = JSON.parse(this.$route.query.data));
+        this.refundInfoForm = JSON.parse(this.$route.query.data)
+   }
 };
 </script>
 

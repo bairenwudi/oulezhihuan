@@ -52,6 +52,8 @@ export default {
   }, 
   data() {
     return {
+        adm_id: "adm_user_id",
+
         financialinstitutionTitle:[
                     {
                         adm_user_type : 3
@@ -237,9 +239,11 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
+        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage
+            startPos: filter ? pageIndex : this.currentPage,
+            adm_user_id
         };
 
         if (filter) {
