@@ -83,42 +83,42 @@ export default {
   data() {
     return {
         orderStatus: [
-                    {
-                        value: '0',
-                        label: '待付款'
-                    },
-                    {
-                        value: '1',
-                        label: '待审核'
-                    },
-                    {
-                        value: '2',
-                        label: '已付款'
-                    },
-                    {
-                        value: '3',
-                        label: '已审核'
-                    },
-                    {
-                        value: '4',
-                        label: '申请退款'
-                    },
-                    {
-                        value: '5',
-                        label: '退款中'
-                    },
-                    {
-                        value: '6',
-                        label: '退款成功'
-                    }, 
-                    {
-                        value: '7',
-                        label: '退款失败'
-                    },
-                    {
-                        value: '8',
-                        label: '已入住'
-                    },
+                    // {
+                    //     value: '0',
+                    //     label: '待付款'
+                    // },
+                    // {
+                    //     value: '1',
+                    //     label: '待审核'
+                    // },
+                    // {
+                    //     value: '2',
+                    //     label: '已付款'
+                    // },
+                    // {
+                    //     value: '3',
+                    //     label: '已审核'
+                    // },
+                    // {
+                    //     value: '4',
+                    //     label: '申请退款'
+                    // },
+                    // {
+                    //     value: '5',
+                    //     label: '退款中'
+                    // },
+                    // {
+                    //     value: '6',
+                    //     label: '退款成功'
+                    // }, 
+                    // {
+                    //     value: '7',
+                    //     label: '退款失败'
+                    // },
+                    // {
+                    //     value: '8',
+                    //     label: '已入住'
+                    // },
                     {
                         value: '9',
                         label: '申请退房'
@@ -135,14 +135,14 @@ export default {
                         value: '12',
                         label: '退房失败'
                     },
-                    {
-                        value: '13',
-                        label: '订单取消'
-                    },
-                    {
-                        value: '14',
-                        label: '订单完成'
-                    }                                 
+                    // {
+                    //     value: '13',
+                    //     label: '订单取消'
+                    // },
+                    // {
+                    //     value: '14',
+                    //     label: '订单完成'
+                    // }                                 
                 ],
         checkoutinstitutionTitle:[
                     {
@@ -303,11 +303,12 @@ export default {
                         },
                         style: {
                             marginRight: "5px",
-                            display:(params.row.order_status === 15) ? "inline-block":"none"
+                            display:(params.row.order_status === 9) ? "inline-block":"none"
                         },
                         on: {
                             click: () => {
-                                this.delClick(params);
+                                // console.log(params.row.order_status === 9);
+                                this.agreeClick(params);
                             }
                         }
                         },
@@ -322,7 +323,7 @@ export default {
                         },
                         style: {
                             marginRight: "5px",
-                            display:(params.row.order_status === 15) ? "none":"inline-block"
+                            display:(params.row.order_status === 9) ? "none":"inline-block"
                             },
                         on: {
                             click: () => {
@@ -369,6 +370,10 @@ export default {
         })
     },
 
+    agreeClick(){
+
+    },
+
      // 转化时间
     dataFormat(time) {
         return formatTime(time);
@@ -377,33 +382,33 @@ export default {
     // 过滤订单状态
     SetStatusFilter(status) {
         switch(status) {
-            case 0:
-                return '待付款';
-                break;
-            case 1:
-                return '待审核';
-                break;
-            case 2:
-                return '已付款';
-                break;
-            case 3:
-                return '已审核';
-                break;
-            case 4:
-                return '申请退款';
-                break;
-            case 5:
-                return '退款中';
-                break;
-            case 6:
-                return '退款成功';
-                break;
-            case 7:
-                return '退款失败';
-                break;
-            case 8:
-                return '已入住';
-                break;
+            // case 0:
+            //     return '待付款';
+            //     break;
+            // case 1:
+            //     return '待审核';
+            //     break;
+            // case 2:
+            //     return '已付款';
+            //     break;
+            // case 3:
+            //     return '已审核';
+            //     break;
+            // case 4:
+            //     return '申请退款';
+            //     break;
+            // case 5:
+            //     return '退款中';
+            //     break;
+            // case 6:
+            //     return '退款成功';
+            //     break;
+            // case 7:
+            //     return '退款失败';
+            //     break;
+            // case 8:
+            //     return '已入住';
+            //     break;
             case 9:
                 return '申请退房';
                 break;
@@ -416,12 +421,12 @@ export default {
             case 12:
                 return '退房失败';
                 break;
-            case 13:
-                return '订单取消';
-                break;
-            case 14:
-                return '订单完成';
-                break;
+            // case 13:
+            //     return '订单取消';
+            //     break;
+            // case 14:
+            //     return '订单完成';
+            //     break;
             default:
                 return '';
                 break;
@@ -490,7 +495,7 @@ export default {
         console.log(data)
         this.total = data[0].count;
         console.log(this.total)
-        // data.shift(0);
+        data.shift(0);
         this.userData = data;
         this.loading = false;
         console.log(data);

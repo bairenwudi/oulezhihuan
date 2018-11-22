@@ -89,30 +89,30 @@ export default {
   data() {
     return {
         orderStatus: [
-                    {
-                        value: 0,
-                        label: '待付款'
-                    },
-                    {
-                        value: 1,
-                        label: '待审核'
-                    },
-                    {
-                        value: 2,
-                        label: '已付款'
-                    },
-                    {
-                        value: 3,
-                        label: '已审核'
-                    },
-                    {
-                        value: 4,
-                        label: '申请退款'
-                    },
-                    {
-                        value: 5,
-                        label: '退款中'
-                    },
+                    // {
+                    //     value: 0,
+                    //     label: '待付款'
+                    // },
+                    // {
+                    //     value: 1,
+                    //     label: '待审核'
+                    // },
+                    // {
+                    //     value: 2,
+                    //     label: '已付款'
+                    // },
+                    // {
+                    //     value: 3,
+                    //     label: '已审核'
+                    // },
+                    // {
+                    //     value: 4,
+                    //     label: '申请退款'
+                    // },
+                    // {
+                    //     value: 5,
+                    //     label: '退款中'
+                    // },
                     {
                         value: 6,
                         label: '退款成功'
@@ -121,34 +121,34 @@ export default {
                         value: 7,
                         label: '退款失败'
                     },
-                    {
-                        value: 8,
-                        label: '已入住'
-                    },
-                    {
-                        value: 9,
-                        label: '申请退房'
-                    },
-                    {
-                        value: 10,
-                        label: '退房中'
-                    },  
-                    {
-                        value: 11,
-                        label: '退房成功'
-                    },
-                    {
-                        value: 12,
-                        label: '退房失败'
-                    },
-                    {
-                        value: 13,
-                        label: '订单取消'
-                    },
-                    {
-                        value: 14,
-                        label: '订单完成'
-                    }                            
+                    // {
+                    //     value: 8,
+                    //     label: '已入住'
+                    // },
+                    // {
+                    //     value: 9,
+                    //     label: '申请退房'
+                    // },
+                    // {
+                    //     value: 10,
+                    //     label: '退房中'
+                    // },  
+                    // {
+                    //     value: 11,
+                    //     label: '退房成功'
+                    // },
+                    // {
+                    //     value: 12,
+                    //     label: '退房失败'
+                    // },
+                    // {
+                    //     value: 13,
+                    //     label: '订单取消'
+                    // },
+                    // {
+                    //     value: 14,
+                    //     label: '订单完成'
+                    // }                            
                 ],
         RefundinstitutionTitle:[
                     {
@@ -374,51 +374,51 @@ export default {
     // 过滤订单状态
     SetStatusFilter(status) {
         switch(status) {
-            case 0:
-                return '待付款';
-                break;
-            case 1:
-                return '待审核';
-                break;
-            case 2:
-                return '已付款';
-                break;
-            case 3:
-                return '已审核';
-                break;
-            case 4:
-                return '申请退款';
-                break;
-            case 5:
-                return '退款中';
-                break;
+            // case 0:
+            //     return '待付款';
+            //     break;
+            // case 1:
+            //     return '待审核';
+            //     break;
+            // case 2:
+            //     return '已付款';
+            //     break;
+            // case 3:
+            //     return '已审核';
+            //     break;
+            // case 4:
+            //     return '申请退款';
+            //     break;
+            // case 5:
+            //     return '退款中';
+            //     break;
             case 6:
                 return '退款成功';
                 break;
             case 7:
                 return '退款失败';
                 break;
-            case 8:
-                return '已入住';
-                break;
-            case 9:
-                return '申请退房';
-                break;
-            case 10:
-                return '退房中';
-                break;
-            case 11:
-                return '退房成功';
-                break;
-            case 12:
-                return '退房失败';
-                break;
-            case 13:
-                return '订单取消';
-                break;
-            case 14:
-                return '订单完成';
-                break;
+            // case 8:
+            //     return '已入住';
+            //     break;
+            // case 9:
+            //     return '申请退房';
+            //     break;
+            // case 10:
+            //     return '退房中';
+            //     break;
+            // case 11:
+            //     return '退房成功';
+            //     break;
+            // case 12:
+            //     return '退房失败';
+            //     break;
+            // case 13:
+            //     return '订单取消';
+            //     break;
+            // case 14:
+            //     return '订单完成';
+            //     break;
             default:
                 return '';
                 break;
