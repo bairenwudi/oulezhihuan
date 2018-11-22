@@ -138,7 +138,22 @@ const checkoutListCustomerinfo = params => {
 const destinationCheckbox = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/showRoomPriceList`, params);
 }
-
+//批量预定   点击绑定 
+const addCustomer = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/occupantList`, params);
+}
+//批量预定   新增入住人 
+const addOccupant = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/saveOccupant`, params);
+}
+//批量预定   编辑入住人 
+const editOccupant = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/updateOccupant`, params);
+}
+//批量预定   删除入住人 
+const delOccupant = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/deleteBatchOccupant`, params);
+}
 export {
     appOrderList, //App订单列表
     appOrderSearch, //App订单模糊查询

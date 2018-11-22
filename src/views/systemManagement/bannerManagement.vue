@@ -24,6 +24,9 @@
                 <FormItem label="banner名称" prop="banner_title">
                     <Input v-model="formValidate.banner_title" placeholder="请输入banner名称"></Input>
                 </FormItem>
+                <form :action="actionUrl" id="addForm" method="post" target="posthere" enctype="multipart/form-data"></form>
+                <iframe name="posthere" height="0" width="0"></iframe>
+
 
                 <FormItem label="所属模块选择" prop="module" :label-width="100">
                     <Select v-model="formValidate.module" placeholder="请选择">
@@ -37,6 +40,7 @@
                         name="upLoad"
                         :action="actionUrl"
                         :data="addData"
+                        :file-list="imgList"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChange"
@@ -45,7 +49,7 @@
                         :on-error="uploadError"
                         :on-exceed="uploadonExceed"
                         :on-remove="handleRemove"
-                        :limit="3"
+                        :limit="1"
                     >
                         <i class="el-icon-plus"></i>
                     </el-upload>
@@ -60,7 +64,7 @@
                         name="upLoad"
                         :action="actionUrl"
                         :data="addData"
-                        :file-list="addFileList"
+                        :file-list="h5List"
                         list-type="picture-card"
                         :auto-upload="false"
                         :on-change="onChangeH5"
@@ -69,7 +73,6 @@
                         :on-error="uploadErrorH5"
                         :on-exceed="uploadonExceedH5"
                         :on-remove="handleRemoveH5"
-                        :limit="3"
                     >
                         <!-- <i class="el-qwe">上传H5</i> -->
                         <span class="h5">{{ H5fileName ? H5fileName : "上传h5" }}</span>
@@ -112,12 +115,13 @@
                        <Option value="zhfw">置换-房屋</Option>
                     </Select>
                 </FormItem>
-
+                <form :action="editUrl" id="editForm" method="post" target="posthere" enctype="multipart/form-data"></form>
+                <iframe name="posthere" height="0" width="0"></iframe>
                 <FormItem label="banner图" prop="upLoad" width='100' class="uploadImg">
                     <el-upload
                         ref="editUpload"
                         name="upLoad"
-                        :action="actionUrl"
+                        :action="editUrl"
                         :data="editData"
                         list-type="picture-card"
                         :auto-upload="false"
@@ -142,7 +146,7 @@
                     <el-upload
                         ref="H5Upload"
                         name="upLoad"
-                        :action="actionUrl"
+                        :action="editUrl"
                         :data="addData"
                         :file-list="editFileList"
                         list-type="picture-card"
@@ -286,7 +290,9 @@ export default {
 
       editData: {},
 
-      addFileList: [],
+      h5List: [],
+
+      imgList:[],
 
       addModal: false,
 
@@ -307,6 +313,7 @@ export default {
       visible: false,
 
       actionUrl: "",
+      editUrl:"",
 
       columns: [
         // banner管理表头信息
@@ -535,8 +542,9 @@ export default {
     },
     // 图片上传之前的钩子
     onChangeH5(file, fileList) {
+      this.h5List = [];
       this.H5fileName = file.name;
-      this.h5List = fileList;
+      this.h5List.push(fileList[fileList.length - 1]);
     },
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceedH5() {
@@ -558,7 +566,8 @@ export default {
     handleResetFile() {
       this.fileList = [];
       this.editFileList = [];
-      this.addFileList = [];
+      this.h5List = [];
+      this.imgList = [];
     },
 
     // 删除图片钩子函数
@@ -581,6 +590,7 @@ export default {
     add(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          
           if(!this.imgList.length) {
             this.$Message.warning('请上传图片');
             return
@@ -589,10 +599,36 @@ export default {
             this.$Message.warning('请上传H5');
             return
           };
+          const _this = this;
+          let formData = new FormData($("addForm")[0]);
+
+          for(let i in this.formValidate){
+            formData.append(i,this.formValidate[i]);
+          }
+
+          formData.append("upLoad", this.imgList[0].raw);
+          
+          formData.append("upLoad", this.h5List[0].raw);
           this.addData = this[name];
           this.loading = true;
           setTimeout(() => {
-            this.$refs.addUpload.submit();
+            $.ajax({
+              type: "POST",
+              url: `${_this.actionUrl}`,
+              data: formData,
+              dataType: "JSON",
+              cache: false, // 不缓存
+              processData: false, // jQuery不要去处理发送的数据
+              contentType: false
+            }).success(function(res) {
+                if(res === 1) {
+                    _this.$Message.success('成功');
+                } else {
+                    _this.$Message.error('失败');
+                }
+            }).error(function(err) {
+                console.log(err);
+            });
           }, 220);
           // setTimeout(() => {
           //   this.$Message.success("Success!");
@@ -608,14 +644,58 @@ export default {
     edit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          
+          // if(!this.imgList.length) {
+          //   this.$Message.warning('请上传图片');
+          //   return
+          // };
+          // if(!this.h5List.length) {
+          //   this.$Message.warning('请上传H5');
+          //   return
+          // };
+          const _this = this;
+          let formData = new FormData($("editForm")[0]);
+
+          for(let i in this.editForm){
+            formData.append(i,this.editForm[i]);
+          }
+          console.log(this.imgList[0]);
+          console.log(this.h5List[0]);
+          
+          formData.append("upLoad", this.imgList[0].raw);
+          
+          // formData.append("upLoad", this.h5List[0].raw);
+
+          formData.append("banner_id",this.delbannerId);
+
+          this.addData = this[name];
           this.loading = true;
           setTimeout(() => {
-            this.$Message.success("Success!");
-            this.addModal = false;
-            this.loading = false;
-          }, 1000);
-        } else {
-          this.$Message.error("Fail!");
+            $.ajax({
+              type: "POST",
+              url: `${_this.editUrl}`,
+              data: formData,
+              dataType: "JSON",
+              cache: false, // 不缓存
+              processData: false, // jQuery不要去处理发送的数据
+              contentType: false
+            }).success(function(res) {
+                if(res === 1) {
+                    _this.$Message.success('成功');
+                } else {
+                    _this.$Message.error('失败');
+                }
+            }).error(function(err) {
+                console.log(err);
+            });
+          }, 220);
+          // setTimeout(() => {
+          //   this.$Message.success("Success!");
+          //   this.addModal = false;
+          //   this.loading = false;
+          // }, 1000);
+        }else{
+          this.$Message.error('你能传上去个屁')
         }
       });
     },
@@ -640,6 +720,7 @@ export default {
       const url = this.imgUrlFormat(params.row.banner_url,params.row.banner_name);
       this.editFileList = [];
       this.editFileList.push({ url, name: url });
+      this.delbannerId = params.row.banner_id;
     },
 
     // 执行删除的事件
@@ -724,6 +805,7 @@ export default {
     this.getUser();
     this.base = getBase().base2;
     this.actionUrl = `${this.base}/Banner_managementController/save`;
+    this.editUrl = `${this.base}/Banner_managementController/updateById`;
   }
 };
 </script>
