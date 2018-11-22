@@ -154,6 +154,15 @@ const editOccupant = params => {
 const delOccupant = params => {
     return axios.post(`${baseUrl.base2}/Occupant_infoController/deleteBatchOccupant`, params);
 }
+//批量预定   提交按钮 
+const submit = params => {
+    return axios.post(`${baseUrl.base2}/BatchReserveController/submit`, params);
+}
+//批量预定   新增 
+const addReserve = params => {
+    return axios.post(`${baseUrl.base2}/BatchReserveController/saveBatchReserve`, params);
+}
+
 export {
     appOrderList, //App订单列表
     appOrderSearch, //App订单模糊查询
@@ -178,7 +187,13 @@ export {
     checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
-    destinationCheckbox
+    destinationCheckbox,
+    addCustomer,
+    addOccupant,
+    editOccupant,
+    delOccupant,
+    submit,
+    addReserve,
     
 };
 

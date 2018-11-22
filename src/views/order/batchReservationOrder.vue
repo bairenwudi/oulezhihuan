@@ -76,9 +76,9 @@
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="addForm.reserve_destination" clearable style="width:200px">
-                 <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
-               </Select>
+                  <Select v-model="addForm.reserve_destination" clearable style="width:200px">
+                    <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
+                  </Select>
                 </FormItem>
 
                 <FormItem prop="check_time" label="入离时间">              
@@ -104,8 +104,8 @@
                     <Input v-model="addForm.ord_amount" placeholder=""></Input>
                 </FormItem>
 
-                <FormItem label="备注" prop="desc">
-                    <Input v-model="addForm.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+                <FormItem label="备注" prop="comments">
+                    <Input v-model="addForm.comments" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
                 </FormItem>
             </Form>
                 <div slot="footer" align="center">
@@ -115,7 +115,8 @@
         </Modal>
 
      <!--  编辑提示框 -->
-        <Modal v-model="editModal"
+        <Modal v-model="editModal"   org_id:"123",
+                                    
                 title="编辑"
                 :mask-closable="false"
                 @on-ok="EditModalConfirm('editForm')"
@@ -162,8 +163,8 @@
                     <Input v-model="editForm.ord_amount" placeholder=""></Input>
                 </FormItem>
 
-                <FormItem label="备注" prop="desc">
-                    <Input v-model="editForm.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+                <FormItem label="备注" prop="comments">
+                    <Input v-model="editForm.comments" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
                 </FormItem>
             </Form>
                 <div slot="footer" align="center">
@@ -205,7 +206,7 @@
         :data="customerData" 
         ref="selection"
         :loading="loading"
-        @selectChange="ddd"
+        @selectChange="tableChange"
         :current.async="currentPageIndex"
         :total="customerTotal"
         @pageChange="pageChange">
@@ -275,7 +276,8 @@
         </Modal>
 
         <!-- 绑定-删除提示框 -->
-        <Modal v-model="bindingdelDilaog" width="360">
+								
+        <Modal v-model="bindingdelDilaog" :transfer="false" width="360">
           <p slot="header" style="color:#f60;text-align:center">
               <Icon type="ios-information-circle"></Icon>
               <span>提示</span>
@@ -284,7 +286,7 @@
               <p>确定要删除吗？</p>
           </div>
           <div slot="footer">
-              <Button type="error" size="large" long :loading="delLoading" @click="bindingdelConfrmClick">删除</Button>
+            <Button type="error" size="large" long :loading="delLoading" @click="bindingdelConfrmClick">删除</Button>
           </div>
         </Modal>
 
@@ -320,10 +322,12 @@ import {
   batchReservationOrderSearch, //批量预定订单模糊查询
   destinationTitleList, // 批量预定订单模糊查询-目的地下拉列表渲染
   destinationCheckbox,
-  addCustomer, //批量预定   点击绑定
-  addOccupant, //批量预定   新增入住人
+  addCustomer,       //批量预定   点击绑定
+  addOccupant,       //批量预定   新增入住人
   editOccupant,
-  delOccupant
+  delOccupant,
+  submit,            //批量预定   提交按钮 
+  addReserve,
 } from "../../api/lp-order/api.js";
 
 export default {
@@ -424,41 +428,35 @@ export default {
         ],
 
         interest: [
-          {
-            required: true,
-            type: "array",
-            min: 1,
-            message: "请选择房型",
-            trigger: "change"
-          },
-          { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
+          // {
+          //   required: true,
+          //   type: "array",
+          //   min: 1,
+          //   message: "请选择房型",
+          //   trigger: "change"
+          // },
+          // { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
         ],
 
         reserve_destination: [
           {
             required: true,
-            type: "array",
+            type: "string",
             min: 1,
             message: "请选择目的地",
-            trigger: "change"
-          },
-          {
-            type: "array",
-            max: 2,
-            message: "Choose two hobbies at best",
             trigger: "change"
           }
         ],
 
         interest: [
-          {
-            required: true,
-            type: "array",
-            min: 1,
-            message: "请选择房型",
-            trigger: "change"
-          },
-          { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
+          // {
+          //   required: true,
+          //   type: "array",
+          //   min: 1,
+          //   message: "请选择房型",
+          //   trigger: "change"
+          // },
+          // { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
         ],
 
         time: [
@@ -470,7 +468,7 @@ export default {
           }
         ],
 
-        desc: [
+        comments: [
           { required: true, message: "请输入备注", trigger: "blur" },
           {
             type: "string",
@@ -497,6 +495,8 @@ export default {
       delLoading: false, // 控制删除按钮loading
 
       currentPageIndex: 1, // 当前页
+
+      delArr:[],//绑定入住人 删除数组
 
       reserve_id: "",
 
@@ -894,10 +894,16 @@ export default {
       this.addModal = true;
       this.getCheckbox();
     },
-    ddd(val) {
+    tableChange(val) {
       console.log(val);
+      this.delArr = [];
+      for(var i = 0;i<val.length;i++){
+        this.delArr.push(val[i].occu_id)
+      }
+      console.log(this.delArr);
     },
     BindingModalConfirm() {
+      this.$Message.success("绑定成功");
       // if (this.customerTotal === 0) {
       //   this.$Message.error("入住人信息为空，不可提交");
       //   return;
@@ -908,13 +914,17 @@ export default {
     // 点击确定按钮
     AddModalConfirm(name) {
       this.$refs[name].validate(valid => {
+        console.log(valid);
+        
         if (valid) {
+
           this.loading = true;
-          setTimeout(() => {
-            this.$Message.success("Success!");
-            this.Modal = false;
-            this.loading = false;
-          }, 1000);
+          addReserve(this[name]).then(res => {
+            console.log(res);
+            
+          })
+          this.addModal = false;
+          this.loading = false;
         } else {
           this.$Message.error("Fail!");
         }
@@ -941,12 +951,41 @@ export default {
       this.editModal = false;
     },
     //列表 提交按钮
-    submitClick(){
-      if (this.customerTotal === 0) {
-        this.$Message.error("入住人信息为空，不可提交");
-        return;
+    submitClick(row){
+      console.log(row);
+      if (row) {
+        var reserve_id = row.row.reserve_id;
+        this.reserve_id = reserve_id;
       }
-      this.$Message.success("订单提交成功");
+      this.loading = true;
+          addCustomer({ reserve_id: this.reserve_id }).then(res => {
+          this.loading = false;
+          console.log(res);
+
+          this.customerTotal = res.data.content.total;
+          console.log(this.customerTotal);
+                  console.log(this.customerTotal);
+
+          if (this.customerTotal === 0) {
+            this.$Message.error("入住人信息为空，不可提交");
+            return;
+          }
+          var order_status = row.row.order_status;
+          submit({ reserve_id: this.reserve_id,order_status }).then(res => {
+            this.loading = false;
+            console.log(res);
+            if(res.data.code==="success"){
+              this.$Message.success("订单提交成功");
+              this.getUser();
+
+            }
+          });
+        });
+
+
+
+
+
     },
     // 执行删除的事件
     delClick(params) {
@@ -1097,18 +1136,22 @@ export default {
 
     // 绑定- 执行删除的事件
     delClickBinding(params) {
-      console.log(params);
       this.bindingdelDilaog = true;
     },
 
     // 绑定- 删除确定按钮
     bindingdelConfrmClick() {
       this.delLoading = true;
-      setTimeout(() => {
-        this.bindingdelDilaog = false;
-        this.$Message.success("成功");
-        console.log("我滚了");
-      }, 1000);
+      delOccupant({occids:this.delArr}).then(res =>{
+        console.log(res);
+        if(res.data.success === "批量删除成功"){
+          this.$Message.success("删除成功");
+          this.bindingdelDilaog = false;
+          this.bindingClick()
+        }else{
+          this.$Message.success("删除失败");
+        }
+      })
     },
 
     downloadClick() {},
@@ -1145,6 +1188,8 @@ export default {
     async destinationTitleFun() {
       var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
       const { data } = await destinationTitleList({ adm_user_id });
+      console.log(data);
+      
       //   this.destinationTitle = Array.from(new Set(data));
       this.destinationTitle = data;
     },

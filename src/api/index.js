@@ -19,7 +19,7 @@ export const CorrectpathObj = {
   Correctpath: {
     base1:'http://192.168.1.6:8848',//刘天杨
 
-    base2:'http://192.168.1.39:8080',//常猛
+    base2:'http://192.168.1.11:8080',//常猛
     
     base3:'http://192.168.1.39:8080',//杨胜男
     

@@ -241,6 +241,7 @@ export default {
     //     callback();
     //   }
     // };
+
     var emptyValidsort = (rule, value, callback) => {
       if(!value) {
         return callback(new Error("轮播排序不能为空"));
