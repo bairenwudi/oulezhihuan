@@ -474,6 +474,7 @@ export default {
 
           let social = [];
           for (let i of this.social) {
+            
             social.push(
               this.facilitiesList.find(item => item.facilities_name === i)
             );

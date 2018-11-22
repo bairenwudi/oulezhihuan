@@ -21,18 +21,18 @@
                </Select>
             </FormItem>
 
-             <FormItem prop="reserve_destination" label="目的地" :label-width="60">
-               <Select v-model="formInline.reserve_destination" clearable style="width:200px">
-                 <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
-               </Select>
+            <FormItem prop="reserve_destination" label="目的地" :label-width="60">
+              <Select v-model="formInline.reserve_destination" clearable style="width:200px">
+                <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
+              </Select>
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-            <DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
+            	<DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
 
             </FormItem>
 
-             <FormItem>
+            <FormItem>
                 <Button type="primary" @click="addClick">新增</Button>
             </FormItem>
 
@@ -55,7 +55,6 @@
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
                 title="新增"
-                :mask-closable="false"
                 @on-ok="AddModalConfirm('addForm')"
                 @on-cancel="AddModalReset('addForm')"
             >
@@ -123,8 +122,8 @@
                 @on-cancel="EditModalReset('editForm')"
             >
             <Form ref="editForm" :model="editForm" :rules="ruleValidate" :label-width="100">
-                <FormItem label="预订人" prop="cus_nick_name">
-                    <Input v-model="editForm.cus_nick_name"　size:default placeholder="请输入预订人"></Input>
+                <FormItem label="预订人" prop="name">
+                    <Input v-model="editForm.name"　size:default placeholder="请输入预订人"></Input>
                 </FormItem>
 
                 <FormItem label="预订人手机" prop="reserve_persion_phone" width='100'>
@@ -175,12 +174,12 @@
 
         <!--  绑定提示框 -->
         <Modal v-model="bindingModal"
-                title="绑定入住人"
-                :mask-closable="false"
-                @on-ok="BindingModalConfirm('bindingForm')"
-                @on-cancel="BindingModalReset('bindingForm')"
-            >
-            <template>
+					title="绑定入住人"
+					@on-ok="BindingModalConfirm('bindingForm')"
+					@on-cancel="BindingModalReset('bindingForm')"
+					class-name="bindingModal"
+				>
+					<template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline class="ClickButton">
             <FormItem>
@@ -203,35 +202,38 @@
         <TableM 
         :columns="columns1" 
         class="Table" 
-        :data="userData1" 
-        :loading="loading" 
-        :current.async="currentPageIndex" 
-        :total="total"
+        :data="customerData" 
+        ref="selection"
+        :loading="loading"
+        @on-select="ddd"
+        :current.async="currentPageIndex"
+        :total="customerTotal"
         @pageChange="pageChange">
         </TableM>
         <!-- 绑定-新增提示框 -->
         <Modal v-model="bindingaddModal"
                 title="新增入住人"
-                :mask-closable="false"
+								:width="700"
+								:transfer="false"
                 @on-ok="bindingAddModalConfirm('bindingAddForm')"
                 @on-cancel="bindingAddModalCancel('bindingAddForm')"
-                class="addCheckIn"
+                class-name="addCustomerModal"
             >
             <Form ref="bindingAddForm" :model="bindingAddForm" :rules="ruleValidate1" :label-width="90">
-                <FormItem label="姓名" prop="cus_nick_name">
-                    <Input v-model="bindingAddForm.cus_nick_name" placeholder="请输入姓名"></Input>
+                <FormItem label="姓名" prop="name">
+                    <Input v-model="bindingAddForm.name" placeholder="请输入姓名"></Input>
                 </FormItem>
 
-                <FormItem label="身份证号码" prop="reserve_persion_phone" :label-width="190">
-                    <Input v-model="bindingAddForm.reserve_persion_phone" placeholder="请输入身份证号码"></Input>
+                <FormItem label="身份证号码" prop="identity_card_number">
+                    <Input v-model="bindingAddForm.identity_card_number" placeholder="请输入身份证号码"></Input>
                 </FormItem>
 
-                <FormItem label="证件类型" prop="reserve_persion_phone">
-                    <Input v-model="bindingAddForm.reserve_persion_phone" placeholder="请输入证件类型" disabled></Input>
+                <FormItem label="证件类型" prop="certificate_type">
+                    <Input v-model="bindingAddForm.certificate_type" disabled></Input>
                 </FormItem>
 
-                <FormItem label="联系电话" prop="org_name">
-                    <Input v-model="bindingAddForm.org_name" placeholder="请输入联系电话"></Input>
+                <FormItem label="联系电话" prop="contact_number">
+                    <Input v-model="bindingAddForm.contact_number" placeholder="请输入联系电话"></Input>
                 </FormItem>
 
             </Form>
@@ -244,25 +246,25 @@
      <!--  绑定-编辑提示框 -->
         <Modal v-model="bindingeditModal"
                 title="编辑"
-                :mask-closable="false"
+								:transfer="false"
                 @on-ok="bindingEditModalConfirm('bindingEditForm')"
                 @on-cancel="bindingEditModalCancel('bindingEditForm')"
             >
             <Form ref="bindingEditForm" :model="bindingEditForm" :rules="ruleValidate1" :label-width="90">
-                <FormItem label="姓名" prop="cus_nick_name">
-                    <Input v-model="bindingEditForm.cus_nick_name" placeholder="请输入姓名"></Input>
+                <FormItem label="姓名" prop="name">
+                    <Input v-model="bindingEditForm.name" placeholder="请输入姓名"></Input>
                 </FormItem>
 
-                <FormItem label="身份证号码" prop="reserve_persion_phone">
-                    <Input v-model="bindingEditForm.reserve_persion_phone" placeholder="请输入身份证号码"></Input>
+                <FormItem label="身份证号码" prop="identity_card_number">
+                    <Input v-model="bindingEditForm.identity_card_number" placeholder="请输入身份证号码"></Input>
                 </FormItem>
 
-                <FormItem label="证件类型" prop="reserve_persion_phone">
-                    <Input v-model="bindingEditForm.reserve_persion_phone" placeholder="请输入证件类型" disabled></Input>
+                <FormItem label="证件类型" prop="certificate_type">
+                    <Input v-model="bindingEditForm.certificate_type" placeholder="请输入证件类型" disabled></Input>
                 </FormItem>
 
-                <FormItem label="联系电话" prop="org_name">
-                    <Input v-model="bindingEditForm.org_name" placeholder="请输入联系电话"></Input>
+                <FormItem label="联系电话" prop="contact_number">
+                    <Input v-model="bindingEditForm.contact_number" placeholder="请输入联系电话"></Input>
                 </FormItem>
 
             </Form>
@@ -272,40 +274,40 @@
                 </div>
         </Modal>
 
-    <!-- 绑定-删除提示框 -->
-    <Modal v-model="bindingdelDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="bindingdelConfrmClick">删除</Button>
-        </div>
-    </Modal>
+        <!-- 绑定-删除提示框 -->
+        <Modal v-model="bindingdelDilaog" width="360">
+          <p slot="header" style="color:#f60;text-align:center">
+              <Icon type="ios-information-circle"></Icon>
+              <span>提示</span>
+          </p>
+          <div style="text-align:center">
+              <p>确定要删除吗？</p>
+          </div>
+          <div slot="footer">
+              <Button type="error" size="large" long :loading="delLoading" @click="bindingdelConfrmClick">删除</Button>
+          </div>
+        </Modal>
 
-    </div>
-    <div slot="footer" align="center">
-        <Button type="primary" @click="BindingModalConfirm('bindingForm')" :loading="loading">提交</Button>
-        <Button @click="BindingModalReset('bindingForm')" style="margin-left: 8px">取消</Button>
-    </div>
-</template>
+        </div>
+        <div slot="footer" align="center">
+          <Button type="primary" @click="BindingModalConfirm('bindingForm')" :loading="loading">提交</Button>
+          <Button @click="BindingModalReset('bindingForm')" style="margin-left: 8px">取消</Button>
+        </div>
+      </template>
         </Modal>
 
     <!-- 删除提示框 -->
     <Modal v-model="delDilaog" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>提示</span>
-        </p>
-        <div style="text-align:center">
-            <p>确定要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
-        </div>
+      <p slot="header" style="color:#f60;text-align:center">
+          <Icon type="ios-information-circle"></Icon>
+          <span>提示</span>
+      </p>
+      <div style="text-align:center">
+          <p>确定要删除吗？</p>
+      </div>
+      <div slot="footer">
+          <Button type="error" size="large" long :loading="delLoading" @click="delConfrmClick">删除</Button>
+      </div>
     </Modal>
     
     </div>
@@ -317,7 +319,11 @@ import {
   batchReservationOrderList, //批量预定订单列表
   batchReservationOrderSearch, //批量预定订单模糊查询
   destinationTitleList, // 批量预定订单模糊查询-目的地下拉列表渲染
-  destinationCheckbox
+  destinationCheckbox,
+  addCustomer, //批量预定   点击绑定
+  addOccupant, //批量预定   新增入住人
+  editOccupant,
+  delOccupant,
 } from "../../api/lp-order/api.js";
 
 export default {
@@ -327,17 +333,21 @@ export default {
     TableM
   },
   data() {
-    var DateValdate = (rule, value, callback) => {
-      if (value[0] === "") {
-        return callback(new Error("请填写完整"));
+    const valiContact_number = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("联系电话不能为空"));
       } else {
-        callback();
+        var ph = /^1[3|5|7|8|][0-9]{9}$/; //手机号正则
+        if (!ph.test(value)) {
+          this.$Message.error("您输入手机号码有误");
+          return false;
+        } else {
+          callback();
+        }
       }
     };
 
     return {
-      adm_id: "adm_user_id",
-
       addModal: false,
 
       editModal: false,
@@ -363,23 +373,25 @@ export default {
         jiday: ""
       },
 
-      bindingAddForm: {
-        reserve_persion_name: "",
-        reserve_persion_phone: "",
-        ord_status: "",
-        reserve_destination: "",
-        org_name: "",
-        check_time: ""
-      },
-
       editForm: {
         // 定义编辑表单的对象
         facilities_name: ""
       },
 
-      bindingEditForm: {},
+      bindingAddForm: {
+        name: "",
+        certificate_type: "身份证",
+        identity_card_number: "",
+        contact_number: ""
+      },
 
-      visible: false,
+      bindingEditForm: {
+        name: "",
+        certificate_type: "身份证",
+        identity_card_number: "",
+        contact_number: "",
+        bindingEditId:""
+      },
 
       orderStatus: [
         {
@@ -399,8 +411,6 @@ export default {
       destinationTitle: [],
 
       ruleValidate: {
-        // 定义表单的校验规则
-
         reserve_persion_name: [
           { required: true, message: "请输入预订人", trigger: "blur" }
         ],
@@ -422,22 +432,6 @@ export default {
             trigger: "change"
           },
           { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
-        ]
-      },
-
-      ruleValidate1: {
-        // 定义表单的校验规则
-
-        reserve_persion_name: [
-          { required: true, message: "请输入预订人", trigger: "blur" }
-        ],
-
-        reserve_persion_phone: [
-          { required: true, message: "请输入预订人手机", trigger: "blur" }
-        ],
-
-        org_name: [
-          { required: true, message: "请输入预定机构", trigger: "blur" }
         ],
 
         reserve_destination: [
@@ -467,8 +461,6 @@ export default {
           { type: "array", max: 1, message: "至多选择一个", trigger: "change" }
         ],
 
-        Date: [{ validator: DateValdate, trigger: "change" }],
-
         time: [
           {
             required: true,
@@ -489,157 +481,24 @@ export default {
         ]
       },
 
+      ruleValidate1: {
+        // 定义表单的校验规则
+        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+
+        identity_card_number: [
+          { required: true, message: "请输入身份证号码", trigger: "blur" }
+        ],
+
+        contact_number: [{ validator: valiContact_number, trigger: "blur" }]
+      },
+
       destination: [],
 
       delLoading: false, // 控制删除按钮loading
 
       currentPageIndex: 1, // 当前页
 
-      // columns7: [
-      //                     {
-      //                         title: 'Name',
-      //                         key: 'name',
-      //                         render: (h, params) => {
-      //                             return h('div', [
-      //                                 h('Icon', {
-      //                                     props: {
-      //                                         type: 'person'
-      //                                     }
-      //                                 }),
-      //                                 h('strong', params.row.name)
-      //                             ]);
-      //                         }
-      //                     },
-      //                     {
-      //                         title: 'Age',
-      //                         key: 'age'
-      //                     },
-      //                     {
-      //                         title: 'Address',
-      //                         key: 'address'
-      //                     },
-      //                     //
-      //                     {
-      //                 title: "操作",
-      //                 width: 200,
-      //                 key: "action",
-      //                 align: "center",
-      //                 render: (h, params) => {
-      //                     return h("div", [
-
-      //                    h(
-      //                         "Button",
-      //                         {
-      //                         props: {
-      //                             type: "primary",
-      //                             size: "small"
-      //                         },
-      //                         style: {
-      //                             marginRight: "5px"
-      //                         },
-      //                         on: {
-      //                             click: () => {
-      //                                 this.bindingClick(params);
-      //                             }
-      //                         }
-      //                         },
-      //                         "绑定"
-      //                     ),
-      //                     h(
-      //                         "Button",
-      //                         {
-      //                         props: {
-      //                             type: "primary",
-      //                             size: "small"
-      //                         },
-      //                         style: {
-      //                             marginRight: "5px"
-      //                         },
-      //                         on: {
-      //                             click: () => {
-      //                                 this.editClick(params);
-      //                             }
-      //                         }
-      //                         },
-      //                         "编辑"
-      //                     ),
-      //                     h(
-      //                         "Button",
-      //                         {
-      //                         props: {
-      //                             type: "primary",
-      //                             size: "small"
-      //                         },
-      //                         style: {
-      //                             marginRight: "5px"
-      //                         },
-      //                         on: {
-      //                             click: () => {
-      //                                 this.submitClick(params);
-      //                             }
-      //                         }
-      //                         },
-      //                         "提交"
-      //                     ),
-      //                     h(
-      //                         "Button",
-      //                         {
-      //                         props: {
-      //                             type: "primary",
-      //                             size: "small"
-      //                         },
-      //                         style: {
-      //                             marginRight: "5px"
-      //                         },
-      //                         on: {
-      //                             click: () => {
-      //                                 this.delClick(params);
-      //                             }
-      //                         }
-      //                         },
-      //                         "删除"
-      //                     ),
-      //                     h(
-      //                         "Button",
-      //                         {
-      //                         props: {
-      //                             type: "primary",
-      //                             size: "small"
-      //                         },
-      //                         on: {
-      //                             click: () => {
-      //                                 this.goToInfo(params);
-      //                             }
-      //                         }
-      //                         },
-      //                         "详情"
-      //                     )
-      //                     ]);
-      //                 }
-      //             }
-      //                 ],
-      //                 data6: [
-      //                     {
-      //                         name: 'John Brown',
-      //                         age: 18,
-      //                         address: 'New York No. 1 Lake Park'
-      //                     },
-      //                     {
-      //                         name: 'Jim Green',
-      //                         age: 24,
-      //                         address: 'London No. 1 Lake Park'
-      //                     },
-      //                     {
-      //                         name: 'Joe Black',
-      //                         age: 30,
-      //                         address: 'Sydney No. 1 Lake Park'
-      //                     },
-      //                     {
-      //                         name: 'Jon Snow',
-      //                         age: 26,
-      //                         address: 'Ottawa No. 2 Lake Park'
-      //                     }
-      //                 ],
+      reserve_id: "",
 
       columns: [
         // 表头信息
@@ -651,6 +510,7 @@ export default {
 
         {
           title: "预订人",
+          width: 100,
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -662,7 +522,7 @@ export default {
 
         {
           title: "预订人手机",
-          width: 110,
+          width: 157,
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -676,6 +536,7 @@ export default {
 
         {
           title: "预定机构",
+          width: 110,
           render: (h, { row, index }) => {
             return h("span", {}, row.org_name ? row.org_name : `暂无${index}`);
           }
@@ -683,6 +544,8 @@ export default {
 
         {
           title: "目的地名称",
+          width: 130,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -694,6 +557,8 @@ export default {
 
         {
           title: "申请日期",
+          width: 130,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -705,6 +570,8 @@ export default {
 
         {
           title: "入住日期",
+          width: 130,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -716,6 +583,8 @@ export default {
 
         {
           title: "离开日期",
+          width: 130,
+
           render: (h, { row, index }) => {
             return h("span", {}, row.end_time ? row.end_time : `暂无${index}`);
           }
@@ -723,6 +592,8 @@ export default {
 
         {
           title: "订单金额",
+          width: 130,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -734,6 +605,8 @@ export default {
 
         {
           title: "订单状态",
+          width: 130,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -758,8 +631,9 @@ export default {
                     size: "small"
                   },
                   style: {
-										marginRight: "5px",
-										display:(params.row.order_status === 15) ? "inline-block":"none"
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 15 ? "inline-block" : "none"
                   },
                   on: {
                     click: () => {
@@ -777,8 +651,9 @@ export default {
                     size: "small"
                   },
                   style: {
-										marginRight: "5px",
-										display:(params.row.order_status === 15) ? "inline-block":"none"
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 15 ? "inline-block" : "none"
                   },
                   on: {
                     click: () => {
@@ -796,8 +671,9 @@ export default {
                     size: "small"
                   },
                   style: {
-										marginRight: "5px",
-										display:(params.row.order_status === 15) ? "inline-block":"none"
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 15 ? "inline-block" : "none"
                   },
                   on: {
                     click: () => {
@@ -815,8 +691,9 @@ export default {
                     size: "small"
                   },
                   style: {
-										marginRight: "5px",
-										display:(params.row.order_status === 15) ? "inline-block":"none"
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 15 ? "inline-block" : "none"
                   },
                   on: {
                     click: () => {
@@ -832,10 +709,11 @@ export default {
                   props: {
                     type: "primary",
                     size: "small"
-									},
-									style: {
-										marginRight: "5px",
-										display:(params.row.order_status === 15) ? "none":"inline-block"
+                  },
+                  style: {
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 15 ? "none" : "inline-block"
                   },
                   on: {
                     click: () => {
@@ -855,55 +733,57 @@ export default {
         {
           type: "selection",
           width: 60,
-          align: "center"
+          align: "center",
         },
-
         {
           title: "姓名",
+          width: 85,
           render: (h, { row, index }) => {
-            return h(
-              "span",
-              {},
-              row.reserve_person_name ? row.reserve_person_name : `暂无${index}`
-            );
+            return h("span", {}, row.name ? row.name : `暂无${index}`);
           }
         },
 
         {
           title: "证件类型",
-          width: 100,
+          width: 120,
           render: (h, { row, index }) => {
             return h(
               "span",
               {},
-              row.reserve_persion_phone
-                ? row.reserve_persion_phone
-                : `暂无${index}`
+              row.certificate_type ? row.certificate_type : `暂无${index}`
             );
           }
         },
 
         {
           title: "身份证号码",
+          width: 160,
           render: (h, { row, index }) => {
-            return h("span", {}, row.org_name ? row.org_name : `暂无${index}`);
+            return h(
+              "span",
+              {},
+              row.identity_card_number
+                ? row.identity_card_number
+                : `暂无${index}`
+            );
           }
         },
 
         {
           title: "联系电话",
+          width: 140,
           render: (h, { row, index }) => {
             return h(
               "span",
               {},
-              row.reserve_destination ? row.reserve_destination : `暂无${index}`
+              row.contact_number ? row.contact_number : `暂无${index}`
             );
           }
         },
 
         {
           title: "操作",
-          width: 200,
+          width: 100,
           key: "action",
           align: "center",
           render: (h, params) => {
@@ -930,11 +810,12 @@ export default {
           }
         }
       ],
-
-      userData: [], // 内容数据
-      userData1: [], // 内容数据
+      canBindingOrNot:"",//看入住人能否 点提交  如果数据中是
+       userData: [], // 内容数据
+      customerData: [], // 内容数据
 
       total: 0, // 总页数
+      customerTotal: 0,
       roomName: [], //checkbox房间名称
       roomCheckBox: [],
       formInline: {
@@ -945,17 +826,6 @@ export default {
         reserve_destination: "",
         org_name: "",
         check_time: ""
-      },
-
-      ruleInline: {
-        // 定义规则对象
-        cus_account: [
-          { required: true, message: "请输入账号", trigger: "blur" }
-        ],
-        cus_nick_name: [
-          { required: true, message: "请输入昵称", trigger: "blur" }
-          // { type: 'string', min: 11, message: '电话最多为11位', trigger: 'blur' }
-        ]
       },
 
       loading: false, // 定义loading为true
@@ -998,8 +868,8 @@ export default {
           break;
         case 13:
           return "订单取消";
-					break;
-				case 15:
+          break;
+        case 15:
           return "预订单";
           break;
         default:
@@ -1024,7 +894,14 @@ export default {
       this.addModal = true;
       this.getCheckbox();
     },
-
+    ddd(val){
+      console.log(val);
+      
+    },
+    BindingModalConfirm(){
+      // if()
+      this.$Message.success('绑定成功');
+    },
     // 点击确定按钮
     AddModalConfirm(name) {
       this.$refs[name].validate(valid => {
@@ -1078,7 +955,18 @@ export default {
     },
 
     // 绑定-执行的事件
-    bindingClick() {
+    bindingClick(row) {
+      if(row){
+        var reserve_id = row.row.reserve_id;
+        this.reserve_id = reserve_id;
+      }
+      this.loading = true;
+      addCustomer({ reserve_id:this.reserve_id }).then(res => {
+        this.loading = false;
+        console.log(res);
+        this.customerTotal = res.data.content.total;
+        this.customerData = res.data.content.list;
+      });
       if (this.$refs["bindingAddForm"]) {
         this.$refs["bindingAddForm"].resetFields(); //清除diglog弹窗内数据
       }
@@ -1121,11 +1009,53 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.loading = true;
-          setTimeout(() => {
-            this.$Message.success("Success!");
-            this.bindingaddModal = false;
-            this.loading = false;
-          }, 1000);
+          let params = {
+            name: this.bindingAddForm.name,
+            identity_card_number: this.bindingAddForm.identity_card_number,
+            contact_number: this.bindingAddForm.contact_number,
+            reserve_id: this.reserve_id
+          };
+          addOccupant(params).then(res => {
+            console.log(res);
+            if (res.data === 1) {
+              this.$Message.success("新增成功");
+              this.bindingClick();
+              this.bindingaddModal = false;
+              this.loading = false;
+            }else{
+              this.$Message.success("新增失败");
+
+            }
+          });
+        } else {
+          this.$Message.error("Fail!");
+        }
+      });
+    },
+
+    // 绑定- 点击编辑确定按钮
+    bindingEditModalConfirm(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.loading = true;
+          let params = {
+            name: this.bindingEditForm.name,
+            identity_card_number: this.bindingEditForm.identity_card_number,
+            contact_number: this.bindingEditForm.contact_number,
+            occu_id: this.bindingEditForm.bindingEditId
+          };
+          editOccupant(params).then(res => {
+            console.log(res);
+            if (res.data === 1) {
+              this.$Message.success("编辑成功");
+              this.bindingClick();
+              this.bindingeditModal = false;
+              this.loading = false;
+            }else{
+              this.$Message.success("新增失败");
+
+            }
+          });
         } else {
           this.$Message.error("Fail!");
         }
@@ -1143,6 +1073,10 @@ export default {
     editClickBinding(params) {
       this.bindingeditModal = true;
       console.log(params);
+      this.bindingEditForm.name = params.row.name;
+      this.bindingEditForm.bindingEditId = params.row.occu_id;
+      this.bindingEditForm.identity_card_number = params.row.identity_card_number;
+      this.bindingEditForm.contact_number = params.row.contact_number;
     },
 
     // 绑定- 编辑取消事件
@@ -1179,8 +1113,8 @@ export default {
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
-			console.log(pageIndex);
-			
+      console.log(pageIndex);
+
       // 改变当前页
       this.currentPage = pageIndex;
       for (let i in this.formInline) {
@@ -1208,6 +1142,8 @@ export default {
 
     searchClick(filter) {
       this.resetTotal();
+      console.log(filter);
+
       if (filter) {
         for (let i in filter) {
           if (filter[i] === undefined || filter[i] === "") {

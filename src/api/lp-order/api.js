@@ -104,11 +104,28 @@ const checkoutInstitutionalTitleList = params => {
     return axios.post(`${baseUrl.base2}/check/Select_org_name`, params);
 };
 
+
+
 //批量预定   新增弹框中的checkboxGroup渲染 房间类型
 const destinationCheckbox = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/showRoomPriceList`, params);
 }
-
+//批量预定   点击绑定 
+const addCustomer = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/occupantList`, params);
+}
+//批量预定   新增入住人 
+const addOccupant = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/saveOccupant`, params);
+}
+//批量预定   编辑入住人 
+const editOccupant = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/updateOccupant`, params);
+}
+//批量预定   删除入住人 
+const delOccupant = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/deleteBatchOccupant`, params);
+}
 export {
     appOrderList, //App订单列表
     appOrderSearch, //App订单模糊查询
@@ -127,8 +144,11 @@ export {
     checkoutList, //退房单列表
     checkoutListSearch, //退房单模糊查询
     checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
-    destinationCheckbox
-    
+    destinationCheckbox,
+    addCustomer,//批量预定   点击绑定 
+    addOccupant,//批量预定  新增入住人
+    editOccupant,
+    delOccupant,
 };
 
 // 组件中获取base地址
