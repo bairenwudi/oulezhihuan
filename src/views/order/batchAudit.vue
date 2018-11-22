@@ -205,11 +205,12 @@ export default {
                             size: "small"
                         },
                         style: {
-                            marginRight: "5px"
+                            marginRight: "5px",
+                            display:(params.row.order_status === 1) ? "inline-block":"none"
                         },
                         on: {
                             click: () => {
-                                this.dealingClick(params);
+                                this.goToDealingInfo(params);
                             }
                         }
                         },
@@ -222,9 +223,14 @@ export default {
                             type: "primary",
                             size: "small"
                         },
+                        style:{
+                            marginRight: "5px",
+                            display:(params.row.order_status === 1) ? "none":"inline-block"
+                        },
                         on: {
                             click: () => {
                                 this.goToInfo(params);
+                                
                             }
                         }
                         },
@@ -272,10 +278,12 @@ export default {
             case 13:
               return '订单取消';
               break;
+            case 15:
+              return "预订单";
+              break;
             default:
               return '';
               break;
-
         }
     },
 
@@ -331,32 +339,44 @@ export default {
         this.getUser(filter);
     },
      
-    //批量预定订单列表 
+    //批量审核订单列表 
     // 为了解决异步问题
     async getUser(filter) {
-        let params = {
-            pageSize: 10,
-            startPos: filter ? 1 : this.currentPage,
-            adm_user_id: this.adm_id
-        };
+      var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+      let params = {
+        pageSize: 10,
+        startPos: filter ? 1 : this.currentPage,
+        adm_user_id
+      };
 
-        if (filter) {
-            params = Object.assign(params, filter);
-            if(filter.check_time[0] !== '') {
-                params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-                params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
-            }
+      if (filter) {
+        params = Object.assign(params, filter);
+        if (filter.check_time[0] !== "") {
+          params.check_in_time = this.dataFormat(
+            filter.check_time[0].getTime()
+          );
+          params.check_out_time = this.dataFormat(
+            filter.check_time[1].getTime()
+          );
         }
+      }
 
-        // this.loading = true;
-        let { data } = await batchAuditList(params);
-        console.log(data)
-        this.total = data[0].count;
-        console.log(this.total)
-        // data.shift(0);
-        this.userData = data;
-        this.loading = false;
-        console.log(data);
+      // this.loading = true;
+      let { data } = await batchAuditList(params);
+      this.total = data[0].count;
+      var org_id = "";
+      var org_name = "新郑";
+
+      let param = {
+        pageSize: 10,
+        startPos: filter ? 1 : this.currentPage,
+        org_name
+      };
+      let res = await batchAuditList(param);
+      this.total = res.data[0].count;
+      res.data.shift(0);
+      this.userData = res.data;
+      this.loading = false;
     }
   },
   mounted() {

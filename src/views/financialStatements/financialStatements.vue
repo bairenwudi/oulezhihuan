@@ -128,8 +128,7 @@ export default {
             {
                 title: "订单状态",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
                 }
             },
 
@@ -164,7 +163,14 @@ export default {
                         },
                         on: {
                             click: () => {
-                                this.goToInfo(params);
+                                if (params.row.ord_status === 6) {
+                                    this.goToRefundInfo(params)
+                                } else
+                                if (params.row.ord_status === 11) {
+                                    this.goToCheckoutInfo(params)
+                                } else {
+                                    this.goToInfo(params)
+                                }
                             }
                         }
                         },
@@ -191,12 +197,58 @@ export default {
   },
 
   methods: {
-    // 进入详情
-    goToInfo(params) {
+    // 进入App详情
+    goToInfo({ row }) {
         this.$router.push({
             path: '/AppOrderinfoModel',
-            data: params 
-        })
+            qyery:{
+              data: JSON.stringify(row)
+            }
+             
+        });
+    },
+
+    // 进入退款单详情
+    goToRefundInfo({ row }){
+        this.$router.push({
+           path : './RefundListinfoModel',
+           query:{
+               data:JSON.stringify(row)
+           }
+       });  
+    },
+
+    //进入退房单详情
+    goToCheckoutInfo({ row }){
+       this.$router.push({
+           path: '/CheckoutListinfoModel',
+           query:{
+               data:JSON.stringify(row)
+           }
+       })
+    },
+
+    // 转化时间
+    dataFormat(time) {
+        return formatTime(time);
+    },
+
+    // 过滤订单状态
+    SetStatusFilter(status) {
+        switch(status) {
+            case 6:
+                return '退款成功';
+                break;
+            case 11:
+                return '退房成功';
+                break;
+            case 14:
+                return '订单完成';
+                break;
+            default:
+                return '';
+                break;
+        }
     },
 
     resetTotal() {
@@ -243,11 +295,15 @@ export default {
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
-            adm_user_id
+            // adm_user_id
         };
 
         if (filter) {
             params = Object.assign(params, filter);
+            if(filter.check_time[0] !== '') {
+                params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+                params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+        }
         };
 
         this.loading = true;

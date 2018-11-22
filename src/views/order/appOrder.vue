@@ -24,7 +24,6 @@
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-             <!-- <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker> -->
               <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
@@ -33,12 +32,6 @@
                  <Option v-for="item in orderStatus" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
-
-            <!-- <FormItem prop="org_name" label="机构标题" :label-width="60">
-               <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="(item, index) in AppinstitutionTitle" :key="index" :value="item.ord_id" :label="item.org_name"></Option>
-               </Select>
-            </FormItem> -->
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="formInline.org_name" clearable style="width:200px">
@@ -274,9 +267,7 @@ export default {
           render: (h, { row, index }) => {
             return h(
               "span",
-              {
-                // }, row.ord_payment_status ? row.ord_payment_status : `暂无${index}`)
-              },
+              {},
               row.ord_payment_status === "1" ? `已支付` : `未支付`
             );
           }
@@ -315,54 +306,22 @@ export default {
                   },
                   style: {
                     marginRight: "5px",
-                    display:(params.row.order_status === 15) ? "none":"inline-block"
                       },
                   on: {
                     click: () => {
-                      this.goToInfo(params);
+                      if (params.row.ord_status === 4 || params.row.ord_status === 5 || params.row.ord_status === 6 || params.row.ord_status === 7) {
+                        this.goToRefundInfo(params)
+                      } else
+                      if (params.row.ord_status === 9 || params.row.ord_status === 10 || params.row.ord_status === 11 || params.row.ord_status === 12) {
+                        this.goToCheckoutInfo(params)
+                      } else {
+                        this.goToInfo(params)
+                      }
                     }
                   }
                 },
                 "详情"
               ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px",
-                    display:(params.row.order_status === 5) ? "inline-block":"none"
-                      },
-                  on: {
-                    click: () => {
-                      this.goToRefundInfo(params);
-                    }
-                  }
-                },
-                "详情"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px",
-                    display:(params.row.order_status === 10) ? "inline-block":"none"
-                      },
-                  on: {
-                    click: () => {
-                      this.goToCheckoutInfo(params);
-                    }
-                  }
-                },
-                "详情"
-              )
             ]);
           }
         }
@@ -420,6 +379,7 @@ export default {
         }
       });
     },
+
 
     // 转化时间
     dataFormat(time) {

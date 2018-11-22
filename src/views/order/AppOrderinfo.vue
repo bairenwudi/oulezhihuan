@@ -49,12 +49,12 @@
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>{{appOrderInfoForm.ord_status}}</dt>
+                    <dt>{{this.SetStatusFilter(appOrderInfoForm.ord_status)}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>支付状态：</dd>
-                    <dt>{{appOrderInfoForm.ord_payment}}</dt>
+                    <dt>{{appOrderInfoForm.ord_payment_status === "1" ? `已支付` : `未支付`}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -201,6 +201,64 @@ export default {
     }
   },
   methods:{
+
+   // 过滤订单状态
+    SetStatusFilter(status) {
+        switch(status) {
+            case 0:
+                return '待付款';
+                break;
+            case 1:
+                return '待审核';
+                break;
+            case 2:
+                return '已付款';
+                break;
+            case 3:
+                return '已审核';
+                break;
+            case 4:
+                return '申请退款';
+                break;
+            case 5:
+                return '退款中';
+                break;
+            case 6:
+                return '退款成功';
+                break;
+            case 7:
+                return '退款失败';
+                break;
+            case 8:
+                return '已入住';
+                break;
+            case 9:
+                return '申请退房';
+                break;
+            case 10:
+                return '退房中';
+                break;
+            case 11:
+                return '退房成功';
+                break;
+            case 12:
+                return '退房失败';
+                break;
+            case 13:
+                return '订单取消';
+                break;
+            case 14:
+                return '订单完成';
+                break;
+            case 15:
+                return '预订单';
+                break;
+            default:
+                return '';
+                break;
+        }
+    },
+
             // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
