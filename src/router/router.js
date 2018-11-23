@@ -160,7 +160,7 @@ export const appRouter = [
             {
                 path: 'batchReservationOrderModel',
                 name: 'batchReservationOrderModel',
-                title: '批量预定订单',
+                title: '批量预定',
                 component: resolve => { require(['@/views/order/batchReservationOrder.vue'], resolve); }
             },
             {
