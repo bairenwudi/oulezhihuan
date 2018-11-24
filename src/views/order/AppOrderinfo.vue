@@ -68,8 +68,8 @@
                 </div>
 
                 <div class="TD-view">
-                    <dd>房型名称：</dd>
-                    <dt>{{appOrderInfoForm.room_type}}</dt>
+                    <dd>房间名称：</dd>
+                    <dt>{{appOrderInfoForm.room_name}}</dt>
                 </div>
 
             </Card>
@@ -101,7 +101,7 @@
         <h2>入住人信息</h2><br/>
           <TableM 
             :columns="columns1" 
-            :data="userData" 
+            :data="userData1" 
             :loading="loading" 
             :current.async="currentPageIndex" 
             :total="total" 
@@ -135,7 +135,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_date ? row.ord_date : `暂无${index}`)
+                    }, this.dataFormat(row.ord_date) || `暂无${index}`)
                 }
             },
   
@@ -170,7 +170,7 @@ export default {
                 title: "证件类型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, `身份证${index}`)
+                    }, `身份证`)
                 }
             },
 
@@ -193,6 +193,8 @@ export default {
         ],
 
         userData: [],   // 内容数据
+
+        userData1: [],   // 内容数据
 
         loading: false,  // 定义loading为true
         
@@ -271,8 +273,52 @@ export default {
         };
         this.getUser();
     },
+
+    // 为了解决异步问题
+    async getUser(filter, pageIndex = 1) {
+        var ord_id = localStorage.getItem('App_ord_id')
+        console.log(ord_id);
+   
+        let params = {
+            pageSize: 10,
+            startPos: filter ? pageIndex : this.currentPage,
+            ord_id
+        };
+
+         if (filter) {
+        params = Object.assign(params, filter);
+        if(filter.check_time[0] !== '') {
+            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+        }
+      }
+
+        this.loading = true;
+        let { data } = await appOrderListinfo(params);
+        console.log(data)
+        // this.total = data[0].count;
+        // console.log(this.total)
+        // data.shift(0);
+        this.userData = data.detail;
+        console.log(this.userData);
+        this.loading = false;
+
+        appOrderListCustomerinfo(params).then(res => {
+        console.log(res)
+        this.userData1 = res.data.content.list;
+        });
+        // // this.total = data[0].count;
+        // // console.log(this.total)
+        // // data.shift(0);
+        // this.userData1 = data;
+        // console.log(this.userData1);
+        // this.loading = false;
+        // console.log(data);
+    }
+
         },
     mounted(){
+        this.getUser();
         console.log(this.appOrderInfoForm = JSON.parse(this.$route.query.data));
         this.appOrderInfoForm = JSON.parse(this.$route.query.data)
     }

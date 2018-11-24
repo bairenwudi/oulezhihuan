@@ -20,11 +20,22 @@
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
 
+            <FormItem>
+                <Button type="primary" @click.stop="downLoadClick(formInline)">下载</Button>
+            </FormItem>
+
             
 
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+            :columns="columns" 
+            :data="userData" 
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total" 
+            @pageChange="pageChange">
+        </TableM>
 
     </div>
 </template>
@@ -277,6 +288,10 @@ export default {
         console.log(this.financialinstitutionTitle)
     },
 
+    downLoadClick(){
+
+    },
+
     searchClick(filter) {
         this.resetTotal();
         if (filter) {
@@ -291,7 +306,7 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
-        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
@@ -306,7 +321,7 @@ export default {
         }
         };
 
-        this.loading = true;
+        // this.loading = true;
         let { data } = await financialStatementsList(params);
         console.log(data)
         this.total = data[0].count;
