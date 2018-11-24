@@ -318,7 +318,7 @@ export default {
                         var App_ord_id = $(params.row).attr('ord_id')
                         localStorage.setItem('App_ord_id',App_ord_id)
                         console.log($(params.row).attr('ord_id'));
-                        this.goToInfo(params)
+                        this.goToAppInfo(params)
                       }
                     }
                   }
@@ -354,7 +354,7 @@ export default {
 
   methods: {
     // 进入App详情
-    goToInfo({ row }) {
+    goToAppInfo({ row }) {
       this.$router.push({
         path: "/AppOrderinfoModel",
         query: {

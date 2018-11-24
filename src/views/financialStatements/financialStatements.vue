@@ -21,7 +21,9 @@
             </FormItem>
 
             <FormItem>
-                <Button type="primary" @click.stop="downLoadClick(formInline)">下载</Button>
+                <Button type="primary">
+                    <a href="http://192.168.1.11:8080/FinanceController/downloadAllExcelData" class="downloadfont">下载Excel</a>
+                </Button>
             </FormItem>
 
             
@@ -46,7 +48,8 @@ import TableM from "../../common/table/table.vue";
 import {
     financialStatementsList, //财务报表列表
     financialStatementsSearch, //财务报表模糊查询
-    financialInstitutionalTitleList //财务报表-机构标题下拉框渲染
+    financialInstitutionalTitleList, //财务报表-机构标题下拉框渲染
+    financialInstitutionalDownload //财务报表下载
 } from '../../api/lp-financialStatements/api.js'
 
 // 补充时间格式 不够10 补充 0
@@ -175,12 +178,16 @@ export default {
                         on: {
                             click: () => {
                                 if (params.row.ord_status === 6) {
+                                    // console.log(params.row.ord_status);
+                                    // var financial_id = $(params.row).attr('ord_id')
+                                    // localStorage.setItem('financial_id',financial_id)
+                                    // console.log(financial_id); 
                                     this.goToRefundInfo(params)
                                 } else
                                 if (params.row.ord_status === 11) {
                                     this.goToCheckoutInfo(params)
                                 } else {
-                                    this.goToInfo(params)
+                                    this.goToAppInfo(params)
                                 }
                             }
                         }
@@ -209,7 +216,7 @@ export default {
 
   methods: {
     // 进入App详情
-    goToInfo({ row }) {
+    goToAppInfo({ row }) {
         this.$router.push({
             path: '/AppOrderinfoModel',
             qyery:{
@@ -222,7 +229,7 @@ export default {
     // 进入退款单详情
     goToRefundInfo({ row }){
         this.$router.push({
-           path : './RefundListinfoModel',
+           path : '/RefundListinfoModel',
            query:{
                data:JSON.stringify(row)
            }
@@ -288,9 +295,11 @@ export default {
         console.log(this.financialinstitutionTitle)
     },
 
-    downLoadClick(){
-
-    },
+    // async downLoadClick(){
+    //     let { data } = await financialInstitutionalDownload();
+    //     console.log(data);
+        
+    // },
 
     searchClick(filter) {
         this.resetTotal();
@@ -324,10 +333,10 @@ export default {
         // this.loading = true;
         let { data } = await financialStatementsList(params);
         console.log(data)
-        this.total = data[0].count;
+        this.total = data.content.count;
         console.log(this.total)
-        data.shift(0);
-        this.userData = data;
+        // data.shift(0);
+        this.userData = data.content.list;
         this.loading = false;
         console.log(data);
     }

@@ -66,7 +66,9 @@ import {
     checkoutList, //退房单列表
     checkoutListSearch, //退房单模糊查询
     roomnameList, // 退房单-房间名称下拉框渲染
-    checkoutInstitutionalTitleList //退房单-机构标题下拉框渲染
+    checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
+    checkoutListAgree, //退房单列表-操作-同意按钮
+    AliPay, // 支付宝微信接口
 } from '../../api/lp-order/api.js'
 
 // 补充时间格式 不够10 补充 0
@@ -342,7 +344,7 @@ export default {
                                 var Checkout_ord_id = $(params.row).attr('ord_id')
                                 localStorage.setItem('Checkout_ord_id',Checkout_ord_id)
                                 // console.log($(params.row).attr('ord_id'));
-                                this.goToInfo(params);
+                                this.goToCheckoutInfo(params);
                             }
                         }
                         },
@@ -373,9 +375,10 @@ export default {
     };
   },
 
+
   methods: {
     // 进入详情
-    goToInfo({ row }) {
+    goToCheckoutInfo({ row }) {
         this.$router.push({
             path: '/CheckoutListinfoModel',
             query:{
@@ -385,9 +388,6 @@ export default {
         })
     },
 
-    agreeClick(){
-
-    },
 
      // 转化时间
     dataFormat(time) {
@@ -491,6 +491,20 @@ export default {
         console.log(this.checkoutinstitutionTitle)
     },
 
+    // 操作同意按钮
+    agreeClick(row){
+        console.log(row);
+        
+        let inverseValue = 9;
+        row.org_status === 9 ? inverseValue = 10 : inverseValue = 9;
+        let params = {
+            org_id,
+            org_status: inverseValue
+        };
+      this.checkoutListAgree(params);
+    },
+
+
     // 渲染房间名称下拉列表
     async roomnameListFun() {
         const { data } = await roomnameList();
@@ -499,6 +513,8 @@ export default {
         console.log(this.roomName)
     },
 
+    
+    // 模糊查询
     searchClick(filter) {
         this.resetTotal();
         if (filter) {
