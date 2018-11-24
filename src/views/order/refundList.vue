@@ -324,7 +324,7 @@ export default {
                                 localStorage.setItem('Refund_ord_id',Refund_ord_id)
                                 // console.log($(params.row).attr('ord_id'));
                                 // alert($(params.row).attr('ord_id'))
-                                this.goToInfo(params);
+                                this.goToRefundInfo(params);
                             }
                         }
                         },
@@ -357,7 +357,7 @@ export default {
 
   methods: {
     // 进入详情
-    goToInfo({ row }) {
+    goToRefundInfo({ row }) {
         console.log(row);
         this.$router.push({
             path: '/RefundListinfoModel',

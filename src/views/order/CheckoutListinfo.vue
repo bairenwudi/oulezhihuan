@@ -64,7 +64,7 @@
 
                 <div class="TD-view">
                     <dd>订单金额：</dd>
-                    <dt>{{checkoutInfoForm.payment_status}}</dt>
+                    <dt>{{checkoutInfoForm.ord_amount}}</dt>
                 </div>
 
 
@@ -156,18 +156,18 @@ export default {
   },
   data() {
     return {
-        checkoutInfoForm:{
-          
-        },
+        checkoutInfoForm:{ },
 
         currentPageIndex: 1,    // 当前页
+
+        totalPrice: 0,
 
         columns: [    // 订单明细表头信息
             {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, this.dataFormat(row.ord_date) || `暂无`)
+                    }, index === this.userData.length - 1 ? '总计' : this.dataFormat(row.ord_date) || `暂无`)
                 }
             },
   
@@ -175,7 +175,7 @@ export default {
                 title: "数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
                 }
             },
 
@@ -183,7 +183,7 @@ export default {
                 title: "价格",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_price ? row.ord_room_price : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.ord_room_price ? row.ord_room_price : `暂无${index}`)
                 }
             },
 
@@ -191,7 +191,7 @@ export default {
                 title: "退房手续费",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.refund_formalities ? row.refund_formalities : `暂无${index}`)
                 }
             },
 
@@ -199,7 +199,7 @@ export default {
                 title: "退房滞纳金",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refunds ? row.refunds : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.refunds ? row.refunds : `暂无${index}`)
                 }
             },
 
@@ -207,7 +207,7 @@ export default {
                 title: "退房金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? this.totalPrice : row.refund_amount ? row.refund_amount : `暂无${index}`)
                 }
             }
 
@@ -258,6 +258,14 @@ export default {
 
     }
   },
+
+  
+  computed: {            
+    // countNum:function(){
+    //     return Number(this.oneNum) ++        
+    //    }
+  },
+
   methods:{
     
      // 转化时间
@@ -372,7 +380,13 @@ export default {
         // console.log(this.total)
         // data.shift(0);
         this.userData = data.detail;
-        console.log(this.userData);
+        let total = 0;
+        for(let i of this.userData) {
+            total = total + (i.refund_amount - 0)
+        }
+        this.userData.push({});
+        this.totalPrice = total;
+        this.formInline = data.info;
         this.loading = false;
 
         checkoutListCustomerinfo(params).then(res => {

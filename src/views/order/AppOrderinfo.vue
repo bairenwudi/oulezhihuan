@@ -19,7 +19,7 @@
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>{{appOrderInfoForm.ord_payment}}</dt>
+                    <dt>{{appOrderInfoForm.ord_payment === "1" ? `支付宝` : `微信`}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -64,7 +64,7 @@
 
                 <div class="TD-view">
                     <dd>订单金额：</dd>
-                    <dt>{{appOrderInfoForm.payment_status}}</dt>
+                    <dt>{{appOrderInfoForm.ord_amount}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -301,6 +301,9 @@ export default {
         // data.shift(0);
         this.userData = data.detail;
         console.log(this.userData);
+        this.formInline = data.info;
+        console.log(this.formInline);
+        
         this.loading = false;
 
         appOrderListCustomerinfo(params).then(res => {

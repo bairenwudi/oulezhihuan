@@ -134,6 +134,18 @@ const checkoutListCustomerinfo = params => {
     return axios.post(`${baseUrl.base3}/check/customerList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
+// 退房单列表-操作-同意按钮
+const checkoutListAgree = params => {
+    return axios.post(`${baseUrl.base2}/check/agree?startPos=${params.startPos}&pageSize=10`, params);
+};
+
+// 支付宝微信接口
+const AliPay = params => {
+    return axios.post(`${baseUrl.base3}/AliPayController/aliPayRefund`, params);
+};
+
+
+
 //批量预定   新增弹框中的checkboxGroup渲染 房间类型
 const destinationCheckbox = params => {
     return axios.post(`${baseUrl.base3}/Zh_room_type_priceController/showRoomPriceList`, params);
@@ -187,6 +199,8 @@ export {
     checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
+    checkoutListAgree, //退房单列表-操作-同意按钮
+    AliPay, // 支付宝微信接口
     destinationCheckbox,
     addCustomer,
     addOccupant,
