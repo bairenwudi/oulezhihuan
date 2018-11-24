@@ -1,3 +1,9 @@
 .ivu-modal {
   width: 700px !important;
 }
+.inputWidth {
+  width: 100px;
+}
+.color {
+  color: red;
+}
