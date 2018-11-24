@@ -28,7 +28,7 @@
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-            	<DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
+            	<DatePicker type="daterange" v-model="liveTime" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
 
             </FormItem>
 
@@ -68,11 +68,15 @@
                 </FormItem>
 
                 <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="addForm.org_name" placeholder="请输入预订机构"></Input>
+                    <!-- <Input v-model="addForm.org_name" disabled></Input> -->
+                    <span>
+                      {{ addForm.org_name }}
+                    </span>
                 </FormItem>
 
-                <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="addForm.org_name" placeholder="请输入机构手机"></Input>
+                <FormItem label="机构手机" prop="org_name1">
+                    <!-- <Input v-model="addForm.adm_phonenum" disabled></Input> -->
+                    {{ addForm.adm_phonenum }}
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
@@ -82,22 +86,24 @@
                 </FormItem>
 
                 <FormItem prop="check_time" label="入离时间">              
-                    <DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
-
+                  <DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
                 </FormItem>
 
-                <FormItem label="入住天数" prop="org_name">
+                <FormItem label="入住天数" prop="org_name2">
                     <Input v-model="addForm.jiday" disabled placeholder=""></Input>
                 </FormItem>
 
                 <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="roomCheckBox" @on-change="roomChange">
-                        <Checkbox v-for="i in roomName" :label="i.room_name" :value="i.room_type_id" :key="i.room_type_id"></Checkbox>
+                    <CheckboxGroup v-model="addForm.roomCheckBox" @on-change="roomChange">
+                        <Checkbox v-for="i in roomName" :label="i.room_type_id" :value="i.room_type_id" :key="i.room_type_id">{{i.room_name}}</Checkbox>
                     </CheckboxGroup>
                 </FormItem>
 
                 <FormItem prop="check_time" label="ewfweefeDDD">
-                    <DatePicker type="daterange" placeholder="请选择日期" @on-change="dateChange"></DatePicker>
+                  <span>房间数量</span>
+                  <Input v-model="addForm.ord_amount" placeholder="请输入房间数量" class="inputWidth"></Input>
+                  <span>房间单价  ￥{{ 1 }}</span>
+                  <span v-for="(i,index) in maxArr" class="color">该房型最多可预订 {{ i }} 间</span>
                 </FormItem>
 
                 <FormItem label="订单金额" prop="ord_amount">
@@ -115,7 +121,7 @@
         </Modal>
 
      <!--  编辑提示框 -->
-        <Modal v-model="editModal"   org_id:"123",
+        <Modal v-model="editModal"
                                     
                 title="编辑"
                 :mask-closable="false"
@@ -132,11 +138,15 @@
                 </FormItem>
 
                 <FormItem label="预定机构" prop="org_name">
-                    <Input v-model="editForm.org_name" placeholder="请输入预订机构"></Input>
+                    <!-- <Input v-model="editForm.org_name" disabled></Input> -->
+                    {{ addForm.org_name }}
+
                 </FormItem>
 
                 <FormItem label="机构手机" prop="org_name">
-                    <Input v-model="editForm.org_name" placeholder="请输入机构手机"></Input>
+                    <!-- <Input v-model="editForm.adm_phonenum" disabled></Input> -->
+                    {{ addForm.adm_phonenum }}
+
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
@@ -154,7 +164,7 @@
                 </FormItem>
 
                 <FormItem label="选择房型" prop="interest">
-                    <CheckboxGroup v-model="roomCheckBox" @on-change="roomChange">
+                    <CheckboxGroup v-model="editForm.roomCheckBox" @on-change="roomChange1">
                         <Checkbox v-for="i in roomName" :label="i.room_name" :value="i.room_type_id" :key="i.room_type_id"></Checkbox>
                     </CheckboxGroup>
                 </FormItem>
@@ -328,6 +338,8 @@ import {
   delOccupant,
   submit,            //批量预定   提交按钮 
   addReserve,
+  roomTypeChange,    //批量预定   房型checkboxChange
+  roomTypeNum,       //批量预定   房型checkboxChange 查询房间数量
 } from "../../api/lp-order/api.js";
 
 export default {
@@ -370,16 +382,28 @@ export default {
         // 定义新增表单的对象
         reserve_persion_name: "",
         reserve_persion_phone: "",
-        ord_status: "",
         reserve_destination: "",
+        ord_status: "",
         org_name: "",
+        adm_phonenum:"",
         check_time: "",
-        jiday: ""
+        jiday: "",
+        roomCheckBox:[],
+        // begin_time:""    default_priceB
+        // end_time     room_type_id    room_num
       },
 
       editForm: {
         // 定义编辑表单的对象
-        facilities_name: ""
+        reserve_persion_name: "",
+        reserve_persion_phone: "",
+        reserve_destination: "",
+        ord_status: "",
+        org_name: "",
+        adm_phonenum:"",
+        check_time: "",
+        jiday: "",
+        roomCheckBox:[],
       },
 
       bindingAddForm: {
@@ -421,10 +445,6 @@ export default {
 
         reserve_persion_phone: [
           { required: true, message: "请输入预订人手机", trigger: "blur" }
-        ],
-
-        org_name: [
-          { required: true, message: "请输入预定机构", trigger: "blur" }
         ],
 
         interest: [
@@ -491,6 +511,13 @@ export default {
       },
 
       destination: [],
+      
+
+      message:[],//用于存放  各种数据
+      roomNameArr:[],//用于存放 各个房型房间名
+      maxArr:[],//用于存放 各个房型最大房间剩余数
+
+      liveTime:"",//入离时间
 
       delLoading: false, // 控制删除按钮loading
 
@@ -837,6 +864,7 @@ export default {
   methods: {
     //当选择 入离日期 显示天数差
     dateChange(val) {
+      this.liveTime = val;
       var d = new Date(val[0]);
       var D = new Date(val[1]);
       var cha = D.getTime() - d.getTime();
@@ -854,9 +882,72 @@ export default {
       });
     },
     roomChange(val) {
+      // 房型checkboxChange 的时候需先 判断 入住时间是否填写 和 目的地名称是否选择
+      console.log(this.addForm.reserve_destination);
+      var d = new Date(this.liveTime[0]);
+      var D = new Date(this.liveTime[1]);
+      var start_time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); 
+      var end_time = D.getFullYear() + '-' + (D.getMonth() + 1) + '-' + D.getDate(); 
+      if(!this.addForm.reserve_destination){
+        this.$Message.error("请先选择目的地名称");
+        this.addForm.roomCheckBox = [];
+        return
+      }
+      if(!this.liveTime[0]||!this.liveTime[1]){
+        this.$Message.error("请先选择入离时间");
+        this.addForm.roomCheckBox = [];
+        return
+      }
+      console.log(this.addForm.roomCheckBox);
+      let params = {
+        start_time,
+        end_time,
+        room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
+      }
+      roomTypeChange(params).then(res => {
+        console.log(res);
+      })
+      let param = {
+        startTime:start_time,
+        endTime:end_time,
+        room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
+      }
+      roomTypeNum(param).then(res => {
+        console.log(res);
+        var newArr = [];
+        // res.data.data.number.push(newArr);
+        for(var i = 0;i<res.data.data.length;i++){
+          newArr.push(res.data.data[i].number);
+        }
+        var max = Math.max(...newArr);
+        console.log(max);
+        this.maxArr.push(max);
+        this.roomNameArr.push()
+
+
+        var maxNum = 0;
+        var index = 0;
+        for(var i = 0;i<res.data.data.length;i++){
+
+          if(res.data.data[i].number >= maxNum){
+            var msg = {};
+
+            maxNum = res.data.data[i].number;
+            index = i;
+            msg = res.data.data[i]
+          }
+        }
+        this.message.push(msg);
+        console.log(this.message);
+        
+
+        
+        
+      })
+    },
+    roomChange1(val) {
       console.log(val);
     },
-
     // 过滤订单状态
     SetStatusFilter(status) {
       switch (status) {
@@ -888,9 +979,6 @@ export default {
 
     // 执行新增的事件
     addClick() {
-      if (this.$refs["addForm"]) {
-        this.$refs["addForm"].resetFields(); //清除diglog弹窗内数据
-      }
       this.addModal = true;
       this.getCheckbox();
     },
@@ -911,17 +999,21 @@ export default {
       // this.$Message.success("订单提交成功");
     },
 
+    // 封装清空Form的动作
+    clearFormFun(Form) {
+      if (this.$refs[Form]) {
+        this.$refs[Form].resetFields(); //清除diglog弹窗内数据
+      }
+    },
+
     // 点击确定按钮
     AddModalConfirm(name) {
       this.$refs[name].validate(valid => {
-        console.log(valid);
-        
         if (valid) {
-
           this.loading = true;
           addReserve(this[name]).then(res => {
             console.log(res);
-            
+            this.clearFormFun('addForm');
           })
           this.addModal = false;
           this.loading = false;
@@ -933,8 +1025,8 @@ export default {
 
     // 点击新增框取消按钮
     AddModalReset(name) {
-      this.$refs[name].resetFields();
       this.handleResetFile();
+      this.clearFormFun('addForm');
       this.addModal = false;
     },
 
@@ -1179,9 +1271,14 @@ export default {
     },
     //
     async getCheckbox() {
-      const { data } = await destinationCheckbox({ org_id: 6 });
+      var org_id = JSON.parse(localStorage.getItem("user")).org_id;
+
+      const { data } = await destinationCheckbox();
+      console.log(data);
+      
       // console.log(data);
-      this.roomName = data.data;
+      data.shift(0)
+      this.roomName = data;
     },
 
     // 渲染目的地下拉列表
@@ -1217,37 +1314,46 @@ export default {
         startPos: filter ? 1 : this.currentPage,
         adm_user_id
       };
-
-      if (filter) {
-        params = Object.assign(params, filter);
-        if (filter.check_time[0] !== "") {
-          params.check_in_time = this.dataFormat(
-            filter.check_time[0].getTime()
-          );
-          params.check_out_time = this.dataFormat(
-            filter.check_time[1].getTime()
-          );
-        }
-      }
-
-      // this.loading = true;
       let { data } = await batchReservationOrderList(params);
-      this.total = data[0].count;
-      // var org_id = data[0].orgId;
-      var org_id = "";
-      // var org_name = data[0].orgName;
-      var org_name = "新郑";
+      console.log(data);
+      this.userData = data.content.list;
+      this.total = data.content.count;
+      // if (filter) {
+      //   params = Object.assign(params, filter);
+      //   if (filter.check_time[0] !== "") {
+      //     params.check_in_time = this.dataFormat(
+      //       filter.check_time[0].getTime()
+      //     );
+      //     params.check_out_time = this.dataFormat(
+      //       filter.check_time[1].getTime()
+      //     );
+      //   }
+      // }
 
-      let param = {
-        pageSize: 10,
-        startPos: filter ? 1 : this.currentPage,
-        org_name
-      };
-      let res = await batchReservationOrderList(param);
-      this.total = res.data[0].count;
-      res.data.shift(0);
-      this.userData = res.data;
-      this.loading = false;
+      // // this.loading = true;
+      // let { data } = await batchReservationOrderList(params);
+      // this.total = data[0].count;
+      // // var org_id = data[0].orgId;
+      // var org_id = "";
+      // // var org_name = data[0].orgName;
+      // var org_name = "新郑";
+
+      // let param = {
+      //   pageSize: 10,
+      //   startPos: filter ? 1 : this.currentPage,
+      //   org_name
+      // };
+      // let res = await batchReservationOrderList(param);
+      // this.total = res.data[0].count;
+      // res.data.shift(0);
+      // this.userData = res.data;
+      // this.loading = false;
+      this.addForm.org_name = JSON.parse(localStorage.getItem("user")).org_name;
+      console.log(this.addForm.org_name);
+      this.editForm.org_name = JSON.parse(localStorage.getItem("user")).org_name;
+      this.addForm.adm_phonenum = JSON.parse(localStorage.getItem("user")).adm_phonenum;
+      this.editForm.adm_phonenum = JSON.parse(localStorage.getItem("user")).adm_phonenum;
+      //{"adm_account_status":1,"adm_user_type":0,"adm_province_code":"370000","adm_account":"bairenwudi","adm_city_code":"370200","adm_last_login":1534325331000,"adm_phonenum":"13130201017","adm_user_id":"4a22ff420dce4d49a9a129d0eb726794"}
     }
   },
   mounted() {

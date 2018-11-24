@@ -157,7 +157,6 @@
                         :on-error="uploadErrorH5"
                         :on-exceed="uploadonExceedH5"
                         :on-remove="handleRemoveH5"
-                        :limit="1"
                     >
                         <!-- <i class="el-qwe">上传H5</i> -->
                         <span class="h5">{{ H5fileName ? H5fileName : "上传h5" }}</span>
@@ -585,6 +584,8 @@ export default {
     // 执行新增的事件
     addClick() {
       this.addModal = true;
+      this.H5fileName = "";
+      this.imgList = [];
     },
 
     // 点击确定按钮
@@ -622,11 +623,13 @@ export default {
               processData: false, // jQuery不要去处理发送的数据
               contentType: false
             }).success(function(res) {
-                if(res === 1) {
-                    _this.$Message.success('成功');
-                } else {
-                    _this.$Message.error('失败');
-                }
+              if(res === 1) {
+                _this.$Message.success('成功');
+                _this.addModal = false;
+                _this.getUser();
+              } else {
+                _this.$Message.error('失败');
+              }
             }).error(function(err) {
                 console.log(err);
             });
@@ -662,9 +665,13 @@ export default {
           }
           console.log(this.imgList[0]);
           console.log(this.h5List[0]);
+          if(this.imgList[0]){
+            formData.append("upLoad", this.imgList[0].raw);
+          }
           
-          formData.append("upLoad", this.imgList[0].raw);
-          
+          if(this.h5List[0]){
+            formData.append("upLoad", this.h5List[0].raw);
+          }
           // formData.append("upLoad", this.h5List[0].raw);
 
           formData.append("banner_id",this.delbannerId);
@@ -681,11 +688,16 @@ export default {
               processData: false, // jQuery不要去处理发送的数据
               contentType: false
             }).success(function(res) {
-                if(res === 1) {
-                    _this.$Message.success('成功');
-                } else {
-                    _this.$Message.error('失败');
-                }
+              _this.loading = false;
+              if(res === 1) {
+                _this.$Message.success('成功');
+                _this.editModal = false;
+                _this.getUser();
+              } else if(res === 3){
+                _this.$Message.error('排序重复');
+              } else if(res === 4){
+                _this.$Message.error('banner名称重复');
+              }
             }).error(function(err) {
                 console.log(err);
             });
