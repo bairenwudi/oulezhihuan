@@ -24,9 +24,9 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_type" label="房型名称" :label-width="60">
-               <Select v-model="formInline.room_type" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
+            <FormItem prop="room_name" label="房间名称" :label-width="60">
+               <Select v-model="formInline.room_name" clearable style="width:200px">
+                 <Option v-for="item in roomName" :value="item.room_name" :key="item.org_id">{{ item.room_name }}</Option>
                </Select>
             </FormItem>
 
@@ -40,20 +40,21 @@
                </Select>
             </FormItem>
 
-            
-
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
 
-            <!-- <FormItem>
-                <i-switch v-model="loading"></i-switch>
-                &nbsp;&nbsp;切换loading
-            </FormItem> -->
 
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+            :columns="columns" 
+            :data="userData" 
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total"
+            @pageChange="pageChange">
+        </TableM>
     
     </div>
 </template>
@@ -64,8 +65,10 @@ import TableM from "../../common/table/table.vue";
 import {
     checkoutList, //退房单列表
     checkoutListSearch, //退房单模糊查询
-    roomtypeList, // 退房单-房间类型下拉框渲染
-    checkoutInstitutionalTitleList //退房单-机构标题下拉框渲染
+    roomnameList, // 退房单-房间名称下拉框渲染
+    checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
+    checkoutListAgree, //退房单列表-操作-同意按钮
+    AliPay, // 支付宝微信接口
 } from '../../api/lp-order/api.js'
 
 // 补充时间格式 不够10 补充 0
@@ -83,42 +86,42 @@ export default {
   data() {
     return {
         orderStatus: [
-                    {
-                        value: '0',
-                        label: '待付款'
-                    },
-                    {
-                        value: '1',
-                        label: '待审核'
-                    },
-                    {
-                        value: '2',
-                        label: '已付款'
-                    },
-                    {
-                        value: '3',
-                        label: '已审核'
-                    },
-                    {
-                        value: '4',
-                        label: '申请退款'
-                    },
-                    {
-                        value: '5',
-                        label: '退款中'
-                    },
-                    {
-                        value: '6',
-                        label: '退款成功'
-                    }, 
-                    {
-                        value: '7',
-                        label: '退款失败'
-                    },
-                    {
-                        value: '8',
-                        label: '已入住'
-                    },
+                    // {
+                    //     value: '0',
+                    //     label: '待付款'
+                    // },
+                    // {
+                    //     value: '1',
+                    //     label: '待审核'
+                    // },
+                    // {
+                    //     value: '2',
+                    //     label: '已付款'
+                    // },
+                    // {
+                    //     value: '3',
+                    //     label: '已审核'
+                    // },
+                    // {
+                    //     value: '4',
+                    //     label: '申请退款'
+                    // },
+                    // {
+                    //     value: '5',
+                    //     label: '退款中'
+                    // },
+                    // {
+                    //     value: '6',
+                    //     label: '退款成功'
+                    // }, 
+                    // {
+                    //     value: '7',
+                    //     label: '退款失败'
+                    // },
+                    // {
+                    //     value: '8',
+                    //     label: '已入住'
+                    // },
                     {
                         value: '9',
                         label: '申请退房'
@@ -135,21 +138,26 @@ export default {
                         value: '12',
                         label: '退房失败'
                     },
-                    {
-                        value: '13',
-                        label: '订单取消'
-                    },
-                    {
-                        value: '14',
-                        label: '订单完成'
-                    }                                 
+                    // {
+                    //     value: '13',
+                    //     label: '订单取消'
+                    // },
+                    // {
+                    //     value: '14',
+                    //     label: '订单完成'
+                    // } ,
+                    //    {
+                    //     value: '15',
+                    //     label: '预订单'
+                    // }
+                                                  
                 ],
         checkoutinstitutionTitle:[
                     {
                         adm_user_type : 3
                     },
                 ],
-        roomType: [],
+        roomName: [],
 
         currentPageIndex: 1,    // 当前页
 
@@ -221,7 +229,9 @@ export default {
                 title: "入住日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_in_time ? row.check_in_time : `暂无${index}`)
+                    }, 
+                    // this.dataFormat(row.check_in_time) || `暂无`)
+                    row.check_in_time ? row.check_in_time : `暂无${index}`)
                 }
             },
 
@@ -229,7 +239,9 @@ export default {
                 title: "离开日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_out_time ? row.check_out_time : `暂无${index}`)
+                    }, 
+                    // this.dataFormat(row.check_out_time)|| `暂无`)
+                    row.check_out_time ? row.check_out_time : `暂无${index}`)
                 }
             },
 
@@ -237,7 +249,9 @@ export default {
                 title: "申请退房日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_time ? row.refund_time : `暂无${index}`)
+                    }, 
+                    this.dataFormat(row.refund_time)|| `暂无`)
+                    // row.refund_time ? row.refund_time : `暂无${index}`)
                 }
             },
 
@@ -303,11 +317,12 @@ export default {
                         },
                         style: {
                             marginRight: "5px",
-                            display:(params.row.order_status === 15) ? "inline-block":"none"
+                            display:(params.row.order_status === 9) ? "inline-block":"none"
                         },
                         on: {
                             click: () => {
-                                this.delClick(params);
+                                // console.log(params.row.order_status === 9);
+                                this.agreeClick(params);
                             }
                         }
                         },
@@ -322,11 +337,14 @@ export default {
                         },
                         style: {
                             marginRight: "5px",
-                            display:(params.row.order_status === 15) ? "none":"inline-block"
+                            display:(params.row.order_status === 9) ? "none":"inline-block"
                             },
                         on: {
                             click: () => {
-                                this.goToInfo(params);
+                                var Checkout_ord_id = $(params.row).attr('ord_id')
+                                localStorage.setItem('Checkout_ord_id',Checkout_ord_id)
+                                // console.log($(params.row).attr('ord_id'));
+                                this.goToCheckoutInfo(params);
                             }
                         }
                         },
@@ -347,7 +365,7 @@ export default {
             ord_phone_number: '', 
             ord_status: '', 
             org_name: '', 
-            room_type: '',
+            room_name: '',
             check_time: ''
         },
 
@@ -357,9 +375,10 @@ export default {
     };
   },
 
+
   methods: {
     // 进入详情
-    goToInfo({ row }) {
+    goToCheckoutInfo({ row }) {
         this.$router.push({
             path: '/CheckoutListinfoModel',
             query:{
@@ -369,41 +388,56 @@ export default {
         })
     },
 
+
      // 转化时间
     dataFormat(time) {
         return formatTime(time);
     },
 
+     formatTime(date) {
+      if(date === undefined){
+        return '';
+      }
+      var date = new Date(date); //如果date为13位不需要乘1000
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+      var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+      return Y + M + D + h + m + s;
+    },
+
     // 过滤订单状态
     SetStatusFilter(status) {
         switch(status) {
-            case 0:
-                return '待付款';
-                break;
-            case 1:
-                return '待审核';
-                break;
-            case 2:
-                return '已付款';
-                break;
-            case 3:
-                return '已审核';
-                break;
-            case 4:
-                return '申请退款';
-                break;
-            case 5:
-                return '退款中';
-                break;
-            case 6:
-                return '退款成功';
-                break;
-            case 7:
-                return '退款失败';
-                break;
-            case 8:
-                return '已入住';
-                break;
+            // case 0:
+            //     return '待付款';
+            //     break;
+            // case 1:
+            //     return '待审核';
+            //     break;
+            // case 2:
+            //     return '已付款';
+            //     break;
+            // case 3:
+            //     return '已审核';
+            //     break;
+            // case 4:
+            //     return '申请退款';
+            //     break;
+            // case 5:
+            //     return '退款中';
+            //     break;
+            // case 6:
+            //     return '退款成功';
+            //     break;
+            // case 7:
+            //     return '退款失败';
+            //     break;
+            // case 8:
+            //     return '已入住';
+            //     break;
             case 9:
                 return '申请退房';
                 break;
@@ -416,12 +450,15 @@ export default {
             case 12:
                 return '退房失败';
                 break;
-            case 13:
-                return '订单取消';
-                break;
-            case 14:
-                return '订单完成';
-                break;
+            // case 13:
+            //     return '订单取消';
+            //     break;
+            // case 14:
+            //     return '订单完成';
+            //     break;
+            // case 15:
+            // return "预订单";
+            // break;
             default:
                 return '';
                 break;
@@ -454,14 +491,30 @@ export default {
         console.log(this.checkoutinstitutionTitle)
     },
 
-    // 渲染房间类型下拉列表
-    async roomtypeListFun() {
-        const { data } = await roomtypeList();
-        data.shift(0);
-        this.roomType = data;
-        console.log(this.roomType)
+    // 操作同意按钮
+    agreeClick(row){
+        console.log(row);
+        
+        let inverseValue = 9;
+        row.org_status === 9 ? inverseValue = 10 : inverseValue = 9;
+        let params = {
+            org_id,
+            org_status: inverseValue
+        };
+      this.checkoutListAgree(params);
     },
 
+
+    // 渲染房间名称下拉列表
+    async roomnameListFun() {
+        const { data } = await roomnameList();
+        data.shift(0);
+        this.roomName = data;
+        console.log(this.roomName)
+    },
+
+    
+    // 模糊查询
     searchClick(filter) {
         this.resetTotal();
         if (filter) {
@@ -476,29 +529,35 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1 ) {
+        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage
+            startPos: filter ? pageIndex : this.currentPage,
+            // adm_user_id
         };
 
         if (filter) {
             params = Object.assign(params, filter);
+            if(filter.check_time[0] !== '') {
+            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+        }
         };
 
         this.loading = true;
         let { data } = await checkoutList(params);
         console.log(data)
-        this.total = data[0].count;
+        this.total = data.content.count;
         console.log(this.total)
         // data.shift(0);
-        this.userData = data;
+        this.userData = data.content.list;
         this.loading = false;
         console.log(data);
     }
   },
   mounted() {
     this.getUser();
-    this.roomtypeListFun();
+    this.roomnameListFun();
     this.checkoutInstitutionalTitleListFun();
   }
 };

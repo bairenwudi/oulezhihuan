@@ -19,7 +19,7 @@
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>{{appOrderInfoForm.ord_payment}}</dt>
+                    <dt>{{appOrderInfoForm.ord_payment === "1" ? `支付宝` : `微信`}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -49,12 +49,12 @@
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>{{appOrderInfoForm.ord_status}}</dt>
+                    <dt>{{this.SetStatusFilter(appOrderInfoForm.ord_status)}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>支付状态：</dd>
-                    <dt>{{appOrderInfoForm.ord_payment}}</dt>
+                    <dt>{{appOrderInfoForm.ord_payment_status === "1" ? `已支付` : `未支付`}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -64,12 +64,12 @@
 
                 <div class="TD-view">
                     <dd>订单金额：</dd>
-                    <dt>{{appOrderInfoForm.payment_status}}</dt>
+                    <dt>{{appOrderInfoForm.ord_amount}}</dt>
                 </div>
 
                 <div class="TD-view">
-                    <dd>房型名称：</dd>
-                    <dt>{{appOrderInfoForm.room_type}}</dt>
+                    <dd>房间名称：</dd>
+                    <dt>{{appOrderInfoForm.room_name}}</dt>
                 </div>
 
             </Card>
@@ -101,7 +101,7 @@
         <h2>入住人信息</h2><br/>
           <TableM 
             :columns="columns1" 
-            :data="userData" 
+            :data="userData1" 
             :loading="loading" 
             :current.async="currentPageIndex" 
             :total="total" 
@@ -135,7 +135,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_date ? row.ord_date : `暂无${index}`)
+                    }, this.dataFormat(row.ord_date) || `暂无${index}`)
                 }
             },
   
@@ -170,7 +170,7 @@ export default {
                 title: "证件类型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, `身份证${index}`)
+                    }, `身份证`)
                 }
             },
 
@@ -194,6 +194,8 @@ export default {
 
         userData: [],   // 内容数据
 
+        userData1: [],   // 内容数据
+
         loading: false,  // 定义loading为true
         
         total: 0,   // 总页数
@@ -201,6 +203,64 @@ export default {
     }
   },
   methods:{
+
+   // 过滤订单状态
+    SetStatusFilter(status) {
+        switch(status) {
+            case 0:
+                return '待付款';
+                break;
+            case 1:
+                return '待审核';
+                break;
+            case 2:
+                return '已付款';
+                break;
+            case 3:
+                return '已审核';
+                break;
+            case 4:
+                return '申请退款';
+                break;
+            case 5:
+                return '退款中';
+                break;
+            case 6:
+                return '退款成功';
+                break;
+            case 7:
+                return '退款失败';
+                break;
+            case 8:
+                return '已入住';
+                break;
+            case 9:
+                return '申请退房';
+                break;
+            case 10:
+                return '退房中';
+                break;
+            case 11:
+                return '退房成功';
+                break;
+            case 12:
+                return '退房失败';
+                break;
+            case 13:
+                return '订单取消';
+                break;
+            case 14:
+                return '订单完成';
+                break;
+            case 15:
+                return '预订单';
+                break;
+            default:
+                return '';
+                break;
+        }
+    },
+
             // 改变分页触发的事件
     pageChange(pageIndex) {
         // 改变当前页
@@ -213,8 +273,55 @@ export default {
         };
         this.getUser();
     },
+
+    // 为了解决异步问题
+    async getUser(filter, pageIndex = 1) {
+        var ord_id = localStorage.getItem('App_ord_id')
+        console.log(ord_id);
+   
+        let params = {
+            pageSize: 10,
+            startPos: filter ? pageIndex : this.currentPage,
+            ord_id
+        };
+
+         if (filter) {
+        params = Object.assign(params, filter);
+        if(filter.check_time[0] !== '') {
+            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+        }
+      }
+
+        this.loading = true;
+        let { data } = await appOrderListinfo(params);
+        console.log(data)
+        // this.total = data[0].count;
+        // console.log(this.total)
+        // data.shift(0);
+        this.userData = data.detail;
+        console.log(this.userData);
+        this.formInline = data.info;
+        console.log(this.formInline);
+        
+        this.loading = false;
+
+        appOrderListCustomerinfo(params).then(res => {
+        console.log(res)
+        this.userData1 = res.data.content.list;
+        });
+        // // this.total = data[0].count;
+        // // console.log(this.total)
+        // // data.shift(0);
+        // this.userData1 = data;
+        // console.log(this.userData1);
+        // this.loading = false;
+        // console.log(data);
+    }
+
         },
     mounted(){
+        this.getUser();
         console.log(this.appOrderInfoForm = JSON.parse(this.$route.query.data));
         this.appOrderInfoForm = JSON.parse(this.$route.query.data)
     }

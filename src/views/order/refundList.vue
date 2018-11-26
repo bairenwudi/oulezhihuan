@@ -23,9 +23,9 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_type" label="房型名称" :label-width="60">
-               <Select v-model="formInline.room_type" clearable style="width:200px">
-                 <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
+            <FormItem prop="room_name" label="房间名称" :label-width="60">
+               <Select v-model="formInline.room_name" clearable style="width:200px">
+                 <Option v-for="item in roomName" :value="item.room_name" :key="item.org_id">{{ item.room_name }}</Option>
                </Select>
             </FormItem>
 
@@ -70,7 +70,7 @@ import TableM from "../../common/table/table.vue";
 import {
     refundList, //退款单列表
     refundListSearch, //退款单模糊查询
-    roomtypeList, // 退款单-房间类型下拉框渲染
+    roomnameList, // 退款单-房间名称下拉框渲染
     RefundInstitutionalTitleList, //退款单-机构标题下拉框渲染
 } from '../../api/lp-order/api.js'
 
@@ -89,30 +89,30 @@ export default {
   data() {
     return {
         orderStatus: [
-                    {
-                        value: 0,
-                        label: '待付款'
-                    },
-                    {
-                        value: 1,
-                        label: '待审核'
-                    },
-                    {
-                        value: 2,
-                        label: '已付款'
-                    },
-                    {
-                        value: 3,
-                        label: '已审核'
-                    },
-                    {
-                        value: 4,
-                        label: '申请退款'
-                    },
-                    {
-                        value: 5,
-                        label: '退款中'
-                    },
+                    // {
+                    //     value: 0,
+                    //     label: '待付款'
+                    // },
+                    // {
+                    //     value: 1,
+                    //     label: '待审核'
+                    // },
+                    // {
+                    //     value: 2,
+                    //     label: '已付款'
+                    // },
+                    // {
+                    //     value: 3,
+                    //     label: '已审核'
+                    // },
+                    // {
+                    //     value: 4,
+                    //     label: '申请退款'
+                    // },
+                    // {
+                    //     value: 5,
+                    //     label: '退款中'
+                    // },
                     {
                         value: 6,
                         label: '退款成功'
@@ -121,41 +121,41 @@ export default {
                         value: 7,
                         label: '退款失败'
                     },
-                    {
-                        value: 8,
-                        label: '已入住'
-                    },
-                    {
-                        value: 9,
-                        label: '申请退房'
-                    },
-                    {
-                        value: 10,
-                        label: '退房中'
-                    },  
-                    {
-                        value: 11,
-                        label: '退房成功'
-                    },
-                    {
-                        value: 12,
-                        label: '退房失败'
-                    },
-                    {
-                        value: 13,
-                        label: '订单取消'
-                    },
-                    {
-                        value: 14,
-                        label: '订单完成'
-                    }                            
+                    // {
+                    //     value: 8,
+                    //     label: '已入住'
+                    // },
+                    // {
+                    //     value: 9,
+                    //     label: '申请退房'
+                    // },
+                    // {
+                    //     value: 10,
+                    //     label: '退房中'
+                    // },  
+                    // {
+                    //     value: 11,
+                    //     label: '退房成功'
+                    // },
+                    // {
+                    //     value: 12,
+                    //     label: '退房失败'
+                    // },
+                    // {
+                    //     value: 13,
+                    //     label: '订单取消'
+                    // },
+                    // {
+                    //     value: 14,
+                    //     label: '订单完成'
+                    // }                            
                 ],
         RefundinstitutionTitle:[
                     {
                         adm_user_type : 3
                     },
                 ],
-        roomType: [],
+        roomName: [],
 
         currentPageIndex: 1,    // 当前页
 
@@ -201,10 +201,10 @@ export default {
             },
 
             {
-                title: "房型名称",
+                title: "房间名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type ? row.room_type : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无${index}`)
                 }
             },
 
@@ -228,7 +228,7 @@ export default {
                 title: "入住日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_in_time ? row.check_in_time : `暂无${index}`)
+                    }, this.dataFormat(row.check_in_time) || `暂无`)
                 }
             },
 
@@ -236,7 +236,7 @@ export default {
                 title: "离开日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_out_time ? row.check_out_time : `暂无${index}`)
+                    }, this.dataFormat(row.check_out_time)|| `暂无`)
                 }
             },
 
@@ -244,7 +244,7 @@ export default {
                 title: "申请退款日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_time ? row.refund_time : `暂无${index}`)
+                    }, this.dataFormat(row.refund_time) || `暂无`)
                 }
             },
 
@@ -320,7 +320,11 @@ export default {
                         },
                         on: {
                             click: () => {
-                                this.goToInfo(params);
+                                var Refund_ord_id = $(params.row).attr('ord_id')
+                                localStorage.setItem('Refund_ord_id',Refund_ord_id)
+                                // console.log($(params.row).attr('ord_id'));
+                                // alert($(params.row).attr('ord_id'))
+                                this.goToRefundInfo(params);
                             }
                         }
                         },
@@ -341,7 +345,7 @@ export default {
             ord_phone_number: '', 
             ord_status: '', 
             org_name: '', 
-            room_type: '',
+            room_name: '',
             check_time: ''
         },
 
@@ -353,7 +357,7 @@ export default {
 
   methods: {
     // 进入详情
-    goToInfo({ row }) {
+    goToRefundInfo({ row }) {
         console.log(row);
         this.$router.push({
             path: '/RefundListinfoModel',
@@ -371,54 +375,68 @@ export default {
         return formatTime(time);
     },
 
+    formatTime(date) {
+      if(date === undefined){
+        return '';
+      }
+      var date = new Date(date); //如果date为13位不需要乘1000
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+      var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+      return Y + M + D + h + m + s;
+    },
+
     // 过滤订单状态
     SetStatusFilter(status) {
         switch(status) {
-            case 0:
-                return '待付款';
-                break;
-            case 1:
-                return '待审核';
-                break;
-            case 2:
-                return '已付款';
-                break;
-            case 3:
-                return '已审核';
-                break;
-            case 4:
-                return '申请退款';
-                break;
-            case 5:
-                return '退款中';
-                break;
+            // case 0:
+            //     return '待付款';
+            //     break;
+            // case 1:
+            //     return '待审核';
+            //     break;
+            // case 2:
+            //     return '已付款';
+            //     break;
+            // case 3:
+            //     return '已审核';
+            //     break;
+            // case 4:
+            //     return '申请退款';
+            //     break;
+            // case 5:
+            //     return '退款中';
+            //     break;
             case 6:
                 return '退款成功';
                 break;
             case 7:
                 return '退款失败';
                 break;
-            case 8:
-                return '已入住';
-                break;
-            case 9:
-                return '申请退房';
-                break;
-            case 10:
-                return '退房中';
-                break;
-            case 11:
-                return '退房成功';
-                break;
-            case 12:
-                return '退房失败';
-                break;
-            case 13:
-                return '订单取消';
-                break;
-            case 14:
-                return '订单完成';
-                break;
+            // case 8:
+            //     return '已入住';
+            //     break;
+            // case 9:
+            //     return '申请退房';
+            //     break;
+            // case 10:
+            //     return '退房中';
+            //     break;
+            // case 11:
+            //     return '退房成功';
+            //     break;
+            // case 12:
+            //     return '退房失败';
+            //     break;
+            // case 13:
+            //     return '订单取消';
+            //     break;
+            // case 14:
+            //     return '订单完成';
+            //     break;
             default:
                 return '';
                 break;
@@ -451,12 +469,12 @@ export default {
         console.log(this.RefundinstitutionTitle)
     },
 
-    // 渲染房间类型下拉列表
-    async roomtypeListFun() {
-        const { data } = await roomtypeList();
+    // 渲染房间名称下拉列表
+    async roomnameListFun() {
+        const { data } = await roomnameList();
         data.shift(0);
-        this.roomType = data;
-        console.log(this.roomType)
+        this.roomName = data;
+        console.log(this.roomName)
     },
 
     searchClick(filter) {
@@ -473,9 +491,11 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
+        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage
+            startPos: filter ? pageIndex : this.currentPage,
+            // adm_user_id
         };
 
          if (filter) {
@@ -489,17 +509,16 @@ export default {
         this.loading = true;
         let { data } = await refundList(params);
         console.log(data)
-        this.total = data[0].count;
+        this.total = data.content.count;
         console.log(this.total)
-        data.shift(0);
-        this.userData = data;
+        this.userData = data.content.list;
         this.loading = false;
         console.log(data);
     }
   },
   mounted() {
     this.getUser();
-    this.roomtypeListFun();
+    this.roomnameListFun();
     this.RefundInstitutionalTitleListFun();
   }
 };

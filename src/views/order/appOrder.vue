@@ -24,7 +24,6 @@
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-             <!-- <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker> -->
               <DatePicker v-model="formInline.check_time" format="yyyy-MM-dd" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
@@ -34,22 +33,16 @@
                </Select>
             </FormItem>
 
-            <!-- <FormItem prop="org_name" label="机构标题" :label-width="60">
-               <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="(item, index) in AppinstitutionTitle" :key="index" :value="item.ord_id" :label="item.org_name"></Option>
-               </Select>
-            </FormItem> -->
-
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="formInline.org_name" clearable style="width:200px">
                  <Option v-for="item in AppinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="room_type" label="房型名称" :label-width="60">
-                <Select v-model="formInline.room_type" clearable style="width:200px">
+            <FormItem prop="room_name" label="房间名称" :label-width="60">
+                <Select v-model="formInline.room_name" clearable style="width:200px">
                     <virtual-list :size="30" :remain="5">
-                        <Option v-for="item in roomType" :value="item.room_type" :key="item.org_id">{{ item.room_type }}</Option>
+                        <Option v-for="item in roomName" :value="item.room_name" :key="item.org_id">{{ item.room_name }}</Option>
                     </virtual-list>
                 </Select>
             </FormItem>
@@ -77,7 +70,7 @@ import TableM from "@/common/table/table.vue";
 import {
   appOrderList, // App订单列表
   appOrderSearch, // App订单模糊查询
-  roomtypeList, // App订单-房间类型下拉框渲染
+  roomnameList, // App订单-房间名称下拉框渲染
   AppInstitutionalTitleList, //App订单-机构标题下拉框渲染
 } from "../../api/lp-order/api.js";
 
@@ -176,7 +169,7 @@ export default {
         },
       ],
 
-      roomType: [],
+      roomName: [],
 
       currentPageIndex: 1, // 当前页
 
@@ -219,12 +212,12 @@ export default {
         },
 
         {
-          title: "房型名称",
+          title: "房间名称",
           render: (h, { row, index }) => {
             return h(
               "span",
               {},
-              row.room_type ? row.room_type : `暂无${index}`
+              row.room_name ? row.room_name : `暂无${index}`
             );
           }
         },
@@ -274,9 +267,7 @@ export default {
           render: (h, { row, index }) => {
             return h(
               "span",
-              {
-                // }, row.ord_payment_status ? row.ord_payment_status : `暂无${index}`)
-              },
+              {},
               row.ord_payment_status === "1" ? `已支付` : `未支付`
             );
           }
@@ -315,54 +306,25 @@ export default {
                   },
                   style: {
                     marginRight: "5px",
-                    display:(params.row.order_status === 15) ? "none":"inline-block"
                       },
                   on: {
                     click: () => {
-                      this.goToInfo(params);
+                      if (params.row.ord_status === 4 || params.row.ord_status === 5 || params.row.ord_status === 6 || params.row.ord_status === 7) {
+                        this.goToRefundInfo(params)
+                      } else
+                      if (params.row.ord_status === 9 || params.row.ord_status === 10 || params.row.ord_status === 11 || params.row.ord_status === 12) {
+                        this.goToCheckoutInfo(params)
+                      } else {
+                        var App_ord_id = $(params.row).attr('ord_id')
+                        localStorage.setItem('App_ord_id',App_ord_id)
+                        console.log($(params.row).attr('ord_id'));
+                        this.goToAppInfo(params)
+                      }
                     }
                   }
                 },
                 "详情"
               ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px",
-                    display:(params.row.order_status === 5) ? "inline-block":"none"
-                      },
-                  on: {
-                    click: () => {
-                      this.goToRefundInfo(params);
-                    }
-                  }
-                },
-                "详情"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px",
-                    display:(params.row.order_status === 10) ? "inline-block":"none"
-                      },
-                  on: {
-                    click: () => {
-                      this.goToCheckoutInfo(params);
-                    }
-                  }
-                },
-                "详情"
-              )
             ]);
           }
         }
@@ -380,7 +342,7 @@ export default {
         ord_payment_status: "",
         ord_status: "",
         org_name: "",
-        room_type: "",
+        room_name: "",
         check_time: ''
       },
 
@@ -392,7 +354,7 @@ export default {
 
   methods: {
     // 进入App详情
-    goToInfo({ row }) {
+    goToAppInfo({ row }) {
       this.$router.push({
         path: "/AppOrderinfoModel",
         query: {
@@ -420,6 +382,7 @@ export default {
         }
       });
     },
+
 
     // 转化时间
     dataFormat(time) {
@@ -474,6 +437,9 @@ export default {
             case 14:
                 return '订单完成';
                 break;
+            case 15:
+                return "预订单";
+                break;
             default:
                 return '';
                 break;
@@ -506,12 +472,12 @@ export default {
         // console.log(arr)
     },
 
-    // 渲染房间类型下拉列表
-    async roomtypeListFun() {
-        const { data } = await roomtypeList();
+    // 渲染房间名称下拉列表
+    async roomnameListFun() {
+        const { data } = await roomnameList();
         data.shift(0);
-        this.roomType = data;
-        console.log(this.roomType)
+        this.roomName = data;
+        console.log(this.roomName)
     },
 
     // 模糊查询
@@ -529,9 +495,11 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
+      // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
       let params = {
         pageSize: 10,
-        startPos: filter ? pageIndex : this.currentPage
+        startPos: filter ? pageIndex : this.currentPage,
+        // adm_user_id
       };
 
       if (filter) {
@@ -546,17 +514,17 @@ export default {
       this.loading = true;
       let { data } = await appOrderList(params);
       console.log(data);
-      this.total = data[0].count;
+      this.total = data.content.count;
       console.log(this.total);
-      data.shift(0);
-      this.userData = data;
+      // data.shift(0);
+      this.userData = data.content.list;
       this.loading = false;
       console.log(data);
     }
   },
   mounted() {
     this.getUser();
-    this.roomtypeListFun();
+    this.roomnameListFun();
     this.AppInstitutionalTitleListFun();
   }
 };

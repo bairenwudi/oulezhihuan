@@ -1,5 +1,5 @@
 <style scope lang="less">
-    @import './batchAudit.less';
+@import "./batchAudit.less";
 </style>
 <!--批量审核 -->
 <template>
@@ -50,313 +50,354 @@
 </template>
 
 <script>
-
 import TableM from "../../common/table/table.vue";
 import {
-    batchAuditList,//批量审核列表
-    batchAuditSearch,//批量审核模糊查询
-    batchinstitutionTitleList,// 批量审核模糊查询-预定机构下拉列表渲染
-    batchIdList//批量审核模糊查询-获取登录的id(adm_id)
-} from '../../api/lp-order/api.js'
+  batchCheckoutList, //批量审核列表
+  batchAuditSearch, //批量审核模糊查询
+  batchinstitutionTitleList, // 批量审核模糊查询-预定机构下拉列表渲染
+  batchIdList //批量审核模糊查询-获取登录的id(adm_id)
+} from "../../api/lp-order/api.js";
 
 export default {
   name: "batchAuditModel",
 
   components: {
     TableM
-  }, 
+  },
   data() {
-
     return {
-        adm_id: "adm_user_id",
+      adm_id: "adm_user_id",
 
-        addModal: false,
-        
-        editModal: false,
+      addModal: false,
 
-        visible: false,
+      editModal: false,
 
-        formValidate: {     // 定义新增表单的对象
-                reserve_persion_name: "",
-                reserve_persion_phone:'',
-                ord_status: "",
-                reserve_destination:'',
-                org_name: "",
-                check_time: ''
-            },
-        batchinstitutionTitle:[],
+      visible: false,
 
-        orderStatus:[
-            {
-                value: 1,
-                label: "待审核"
-            },
-            {
-                value: 3,
-                label: "已审核"
-            },
-            {
-                value: 13,
-                label: "取消订单"
-            },
-        ],
+      formValidate: {
+        // 定义新增表单的对象
+        reserve_persion_name: "",
+        reserve_persion_phone: "",
+        ord_status: "",
+        reserve_destination: "",
+        org_name: "",
+        check_time: ""
+      },
+      batchinstitutionTitle: [],
 
-        destination:[],
-        
-        delDilaog: false,   // 控制删除弹出框
-        
-        delLoading: false,   // 控制删除按钮loading
+      orderStatus: [
+        {
+          value: 1,
+          label: "待审核"
+        },
+        {
+          value: 3,
+          label: "已审核"
+        },
+        {
+          value: 13,
+          label: "取消订单"
+        }
+      ],
 
-        currentPageIndex: 1,    // 当前页
+      destination: [],
 
-        columns: [    // 表头信息
-            {
-                title: "订单号",
-                width: 120,
-                key: "reserve_id",
-            },
+      delDilaog: false, // 控制删除弹出框
 
-            {
-                title: "预订人",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.reserve_person_name ? row.reserve_person_name : `暂无${index}`)
-                }
-            },
+      delLoading: false, // 控制删除按钮loading
 
-            {
-                title: "预订人手机",
-                width: 100,
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, 
-                    row.reserve_persion_phone ? row.reserve_persion_phone : `暂无${index}`)     
-                }
-            },
+      currentPageIndex: 1, // 当前页
 
-            {
-                title: "预定机构",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.org_name ? row.org_name : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "目的地名称",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "申请日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.apply_date ? row.apply_date : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "入住日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.begin_time ? row.begin_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "离开日期",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.end_time ? row.end_time : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "订单金额",
-                render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
-                }
-            },
-
-            {
-                title: "订单状态",
-                render: (h, {row, index}) => {
-                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无")
-                }
-            },
-
-            {
-                title: "操作",
-                width: 200,
-                key: "action",
-                align: "center",
-                render: (h, params) => {
-                    return h("div", [
-                   
-                   h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        style: {
-                            marginRight: "5px"
-                        },
-                        on: {
-                            click: () => {
-                                this.dealingClick(params);
-                            }
-                        }
-                        },
-                        "处理"
-                    ),
-                    h(
-                        "Button",
-                        {
-                        props: {
-                            type: "primary",
-                            size: "small"
-                        },
-                        on: {
-                            click: () => {
-                                this.goToInfo(params);
-                            }
-                        }
-                        },
-                        "详情"
-                    )
-                    ]);
-                }
-            }
-        ],
-
-        userData: [],   // 内容数据
-
-        total: 0,   // 总页数
-
-        formInline: {   // 定义表单对象
-            cus_account: '',
-            cus_nick_name: ''
+      columns: [
+        // 表头信息
+        {
+          title: "订单号",
+          width: 120,
+          key: "reserve_id"
         },
 
-        loading: false,  // 定义loading为true
+        {
+          title: "预订人",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.reserve_person_name ? row.reserve_person_name : `暂无${index}`
+            );
+          }
+        },
 
-        currentPage: 1   // 定义当前页
+        {
+          title: "预订人手机",
+          width: 100,
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.reserve_persion_phone
+                ? row.reserve_persion_phone
+                : `暂无${index}`
+            );
+          }
+        },
+
+        {
+          title: "预定机构",
+          render: (h, { row, index }) => {
+            return h("span", {}, row.org_name ? row.org_name : `暂无${index}`);
+          }
+        },
+
+        {
+          title: "目的地名称",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.reserve_destination ? row.reserve_destination : `暂无${index}`
+            );
+          }
+        },
+
+        {
+          title: "申请日期",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.apply_date ? row.apply_date : `暂无${index}`
+            );
+          }
+        },
+
+        {
+          title: "入住日期",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.begin_time ? row.begin_time : `暂无${index}`
+            );
+          }
+        },
+
+        {
+          title: "离开日期",
+          render: (h, { row, index }) => {
+            return h("span", {}, row.end_time ? row.end_time : `暂无${index}`);
+          }
+        },
+
+        {
+          title: "订单金额",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              row.ord_amount ? row.ord_amount : `暂无${index}`
+            );
+          }
+        },
+
+        {
+          title: "订单状态",
+          render: (h, { row, index }) => {
+            return h(
+              "span",
+              {},
+              this.SetStatusFilter(row.ord_status) || "暂无"
+            );
+          }
+        },
+
+        {
+          title: "操作",
+          width: 200,
+          key: "action",
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 1 ? "inline-block" : "none"
+                  },
+                  on: {
+                    click: () => {
+                      this.goToDealingInfo(params);
+                    }
+                  }
+                },
+                "处理"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px",
+                    display:
+                      params.row.order_status === 1 ? "none" : "inline-block"
+                  },
+                  on: {
+                    click: () => {
+                      this.goToInfo(params);
+                    }
+                  }
+                },
+                "详情"
+              )
+            ]);
+          }
+        }
+      ],
+
+      userData: [], // 内容数据
+
+      total: 0, // 总页数
+
+      formInline: {
+        // 定义表单对象
+        cus_account: "",
+        cus_nick_name: ""
+      },
+
+      loading: false, // 定义loading为true
+
+      currentPage: 1 // 定义当前页
     };
   },
 
   methods: {
     // 进入详情
     goToInfo(params) {
-        this.$router.push({
-            path: '/infoModel',
-            data: params 
-        })
+      this.$router.push({
+        path: "/infoModel",
+        data: params
+      });
     },
 
-    
     // 过滤订单状态
-    SetStatusFilter(status){
-        switch(status){
-            case 1:
-              return '待审核';
-              break;
-            case 3:
-              return '已审核';
-              break;
-            case 13:
-              return '订单取消';
-              break;
-            default:
-              return '';
-              break;
-
-        }
+    SetStatusFilter(status) {
+      switch (status) {
+        case 1:
+          return "待审核";
+          break;
+        case 3:
+          return "已审核";
+          break;
+        case 13:
+          return "订单取消";
+          break;
+        case 15:
+          return "预订单";
+          break;
+        default:
+          return "";
+          break;
+      }
     },
 
     resetTotal() {
-        this.currentPage = 1;
-        this.total = 1;
+      this.currentPage = 1;
+      this.total = 1;
     },
 
     // 获取时间
-        getFormatterTime(val) {
-            console.log(val);
-        },
+    getFormatterTime(val) {
+      console.log(val);
+    },
 
     // 改变分页触发的事件
     pageChange(pageIndex) {
-        // 改变当前页
-        this.currentPage = pageIndex;
-        for (let i in this.formInline) {
-            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline);  
-                return false;
-            }
-        };
-        this.getUser();
+      // 改变当前页
+      this.currentPage = pageIndex;
+      for (let i in this.formInline) {
+        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+          this.getUser(this.formInline);
+          return false;
+        }
+      }
+      this.getUser();
     },
 
     // 渲染预定机构下拉列表
     async batchinstitutionTitleFun() {
-        const { data } = await batchinstitutionTitleList();
-        data.shift(0);
-        this.batchinstitutionTitle = Array.from(new Set(data));
-        // console.log(arr)
+      const { data } = await batchinstitutionTitleList();
+      data.shift(0);
+      this.batchinstitutionTitle = Array.from(new Set(data));
+      // console.log(arr)
     },
 
     // 获取登录的id(adm_id)
     async batchIdListFun() {
-        const { data } = await batchIdList();
-        console.log(1);
-        data.shift(0);
-        this.adm_id = data;
-        console.log(this.adm_id)
+      const { data } = await batchIdList();
+      console.log(1);
+      data.shift(0);
+      this.adm_id = data;
+      console.log(this.adm_id);
     },
 
     searchClick(filter) {
-        this.resetTotal();
-        if (filter) {
-            for (let i in filter) {
-                if (filter[i] === undefined || filter[i] === '') {
-                    delete filter[i];
-                }
-            };
-        };
-        this.getUser(filter);
+      this.resetTotal();
+      if (filter) {
+        for (let i in filter) {
+          if (filter[i] === undefined || filter[i] === "") {
+            delete filter[i];
+          }
+        }
+      }
+      this.getUser(filter);
     },
-     
-    //批量预定订单列表 
+
+    //批量审核订单列表
     // 为了解决异步问题
     async getUser(filter) {
-        let params = {
-            pageSize: 10,
-            startPos: filter ? 1 : this.currentPage,
-            adm_user_id: this.adm_id
-        };
+      var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+      let params = {
+        pageSize: 10,
+        startPos: filter ? 1 : this.currentPage,
+        adm_user_id
+      };
 
-        if (filter) {
-            params = Object.assign(params, filter);
-            if(filter.check_time[0] !== '') {
-                params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-                params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
-            }
+      if (filter) {
+        params = Object.assign(params, filter);
+        if (filter.check_time[0] !== "") {
+          params.check_in_time = this.dataFormat(
+            filter.check_time[0].getTime()
+          );
+          params.check_out_time = this.dataFormat(
+            filter.check_time[1].getTime()
+          );
         }
+      }
 
-        // this.loading = true;
-        let { data } = await batchAuditList(params);
-        console.log(data)
-        this.total = data[0].count;
-        console.log(this.total)
-        // data.shift(0);
-        this.userData = data;
-        this.loading = false;
-        console.log(data);
+      // this.loading = true;
+      let { data } = await batchCheckoutList(params);
+      this.total = data[0].count;
+      var org_id = "";
+      var org_name = "新郑";
+
+      let param = {
+        pageSize: 10,
+        startPos: filter ? 1 : this.currentPage,
+        org_name
+      };
+      let res = await batchCheckoutList(param);
+      this.total = res.data[0].count;
+      res.data.shift(0);
+      this.userData = res.data;
+      this.loading = false;
     }
   },
   mounted() {

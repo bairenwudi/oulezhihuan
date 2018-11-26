@@ -20,11 +20,24 @@
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
 
+            <FormItem>
+                <Button type="primary">
+                    <a href="http://192.168.1.11:8080/FinanceController/downloadAllExcelData" class="downloadfont">下载Excel</a>
+                </Button>
+            </FormItem>
+
             
 
         </Form>
 
-        <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        <TableM 
+            :columns="columns" 
+            :data="userData" 
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total" 
+            @pageChange="pageChange">
+        </TableM>
 
     </div>
 </template>
@@ -35,7 +48,8 @@ import TableM from "../../common/table/table.vue";
 import {
     financialStatementsList, //财务报表列表
     financialStatementsSearch, //财务报表模糊查询
-    financialInstitutionalTitleList //财务报表-机构标题下拉框渲染
+    financialInstitutionalTitleList, //财务报表-机构标题下拉框渲染
+    financialInstitutionalDownload //财务报表下载
 } from '../../api/lp-financialStatements/api.js'
 
 // 补充时间格式 不够10 补充 0
@@ -128,8 +142,7 @@ export default {
             {
                 title: "订单状态",
                 render: (h, {row, index}) => {
-                    return h('span', {
-                    }, row.ord_status ? row.ord_status : `暂无${index}`)
+                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
                 }
             },
 
@@ -164,7 +177,18 @@ export default {
                         },
                         on: {
                             click: () => {
-                                this.goToInfo(params);
+                                if (params.row.ord_status === 6) {
+                                    // console.log(params.row.ord_status);
+                                    // var financial_id = $(params.row).attr('ord_id')
+                                    // localStorage.setItem('financial_id',financial_id)
+                                    // console.log(financial_id); 
+                                    this.goToRefundInfo(params)
+                                } else
+                                if (params.row.ord_status === 11) {
+                                    this.goToCheckoutInfo(params)
+                                } else {
+                                    this.goToAppInfo(params)
+                                }
                             }
                         }
                         },
@@ -191,12 +215,58 @@ export default {
   },
 
   methods: {
-    // 进入详情
-    goToInfo(params) {
+    // 进入App详情
+    goToAppInfo({ row }) {
         this.$router.push({
             path: '/AppOrderinfoModel',
-            data: params 
-        })
+            qyery:{
+              data: JSON.stringify(row)
+            }
+             
+        });
+    },
+
+    // 进入退款单详情
+    goToRefundInfo({ row }){
+        this.$router.push({
+           path : '/RefundListinfoModel',
+           query:{
+               data:JSON.stringify(row)
+           }
+       });  
+    },
+
+    //进入退房单详情
+    goToCheckoutInfo({ row }){
+       this.$router.push({
+           path: '/CheckoutListinfoModel',
+           query:{
+               data:JSON.stringify(row)
+           }
+       })
+    },
+
+    // 转化时间
+    dataFormat(time) {
+        return formatTime(time);
+    },
+
+    // 过滤订单状态
+    SetStatusFilter(status) {
+        switch(status) {
+            case 6:
+                return '退款成功';
+                break;
+            case 11:
+                return '退房成功';
+                break;
+            case 14:
+                return '订单完成';
+                break;
+            default:
+                return '';
+                break;
+        }
     },
 
     resetTotal() {
@@ -225,6 +295,12 @@ export default {
         console.log(this.financialinstitutionTitle)
     },
 
+    // async downLoadClick(){
+    //     let { data } = await financialInstitutionalDownload();
+    //     console.log(data);
+        
+    // },
+
     searchClick(filter) {
         this.resetTotal();
         if (filter) {
@@ -239,24 +315,28 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
-        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
-            adm_user_id
+            // adm_user_id
         };
 
         if (filter) {
             params = Object.assign(params, filter);
+            if(filter.check_time[0] !== '') {
+                params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
+                params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+        }
         };
 
-        this.loading = true;
+        // this.loading = true;
         let { data } = await financialStatementsList(params);
         console.log(data)
-        this.total = data[0].count;
+        this.total = data.content.count;
         console.log(this.total)
-        data.shift(0);
-        this.userData = data;
+        // data.shift(0);
+        this.userData = data.content.list;
         this.loading = false;
         console.log(data);
     }

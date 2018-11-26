@@ -27,12 +27,19 @@ const financialInstitutionalTitleList = params => {
     return axios.post(`${baseUrl.base3}/FinanceController/Select_org_name`, params);
 };
 
+// 财务报表下载
+const financialInstitutionalDownload = params => {
+    return axios.post(`${baseUrl.base3}/FinanceController/downloadAllExcelData`, params);
+};
+
+
 
 
 export {
     financialStatementsList, //财务报表列表
     financialStatementsSearch, //财务报表模糊查询
-    financialInstitutionalTitleList //财务报表-机构标题下拉框渲染
+    financialInstitutionalTitleList, //财务报表-机构标题下拉框渲染
+    financialInstitutionalDownload //财务报表下载
 };
 
 // 组件中获取base地址
