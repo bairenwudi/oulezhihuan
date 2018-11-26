@@ -2146,17 +2146,20 @@ export default {
                         room_prices.push(i.room_prices);
                     }
                 }
-                // console.log(this[formName].room_type_ids);
-                
-                let params = {
-                    room_prices: room_prices.split(','),
-                    room_type_ids: this[formName].room_type_ids.split(',')
-                }
 
-                params = Object.assign(this[formName], params);
+                this[formName].start_time = this[formName].PlanDate[0];
+                this[formName].end_time = this[formName].PlanDate[1];
+                this[formName].room_prices = room_prices.join(',');
+                this[formName].room_type_ids = this[formName].room_type_ids.join(',');
+                this[formName].org_id = JSON.parse(localStorage.user).org_id;
 
-                console.log(params);
-
+                addPricePlanSave(this[formName]).then(res => {
+                    if(res.data.code === 'success') {
+                        this.$Message.success('成功');
+                    } else {
+                        this.$Message.error(`${res.data.content.msg}`);
+                    }
+                })
             }
         })
     },
