@@ -170,6 +170,18 @@ export const appRouter = [
                 component: resolve => { require(['@/views/order/batchAudit.vue'], resolve); }
             },
             {
+                path: 'batchOrderDeal',
+                name: 'batchOrderDeal',
+                title: '处理后',
+                component: resolve => { require(['@/views/order/batchOrderDeal.vue'], resolve); }
+            },
+            {
+                path: 'applyDeal',
+                name: 'applyDeal',
+                title: '申请受理',
+                component: resolve => { require(['@/views/order/applyDeal.vue'], resolve); }
+            },
+            {
                 path: 'refundListModel',
                 name: 'refundListModel',
                 title: '退款单',
