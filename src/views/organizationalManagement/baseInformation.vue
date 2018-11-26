@@ -503,7 +503,7 @@
             <div class="table-parent">
                 <div class="set-div">
                     <span>价格方案</span>
-                    <Button type="primary" class="">新增方案</Button>
+                    <Button type="primary" class="" @click="addPricePlanClick">新增方案</Button>
                 </div>
 
                 <TableM
@@ -522,42 +522,71 @@
 
         <!-- 新增价格方案 => modal -->
         <Modal v-model="addPricePlanModal"
-                title="添加房间"
+                title="添加价格方案"
                 :mask-closable="false"
-                @on-ok="addRoomModalClick('addPricePlanForm', 0)"
-                @on-cancel="addRoomModalCancelClick('addPricePlanForm', 0)"
+                @on-ok="addPricePlanConfirmClick('addPricePlanForm')"
+                @on-cancel="addPricePlanCancelClick('addPricePlanForm')"
             >
-            <Form ref="addPricePlanForm" :model="addPricePlanForm" :rules="roomTypeRule" :label-width="90">
+            <Form ref="addPricePlanForm" :model="addPricePlanForm" :rules="addPricePlanRule" :label-width="90">
                 <FormItem label="方案名称：" prop="project_name">
                     <Input v-model="addPricePlanForm.project_name" placeholder="请输入名称"></Input>
                 </FormItem>
 
-                <FormItem label="使用房型：" prop="project_name">
-                    <CheckboxGroup v-model="addPricePlanForm.project_name">
-                        <Checkbox label="西瓜"></Checkbox>
+                <FormItem label="使用房型：" prop="room_type_ids">
+                    <CheckboxGroup @on-change="pricePlanChange" v-model="addPricePlanForm.room_type_ids">
+                        <Checkbox v-for="(item, index) in notPageRoomType" :value="item.room_type" :label="item.room_type_id">{{ item.room_type }}</Checkbox>
                     </CheckboxGroup>
                 </FormItem>
 
-                <FormItem label="方案名称：" prop="room_id">
-                    <Select v-model="addPricePlanForm.room_id" placeholder="请选择">
-                        <Option v-for="(item, index) in roomTypeList" :value="item.room_type_id" :label="item.room_name"></Option>
-                    </Select>
+                <FormItem label="日期范围：" prop="PlanDate">
+                    <DatePicker 
+                        v-model="addPricePlanForm.PlanDate"
+                        clearable
+                        format="yyyy-MM-dd"
+                        type="datetimerange"
+                        @on-change="PlanDateChange"
+                        placeholder="请选择时间"
+                        style="width: 300px"
+                    >
+                    </DatePicker>
                 </FormItem>
 
-                 <FormItem label="房型名称：" prop="room_id">
-                    <Select v-model="addPricePlanForm.room_id" placeholder="请选择">
-                        <Option v-for="(item, index) in roomTypeList" :value="item.room_type_id" :label="item.room_name"></Option>
-                    </Select>
+                <FormItem label="价格明细：">
+                    
                 </FormItem>
+
+                <FormItem 
+                    id="addPricePlan"
+                    v-for="(item, index) in addPricePlanForm.checkedPricePlan"
+                    :prop="`checkedPricePlan.${index}.room_prices`"
+                    :key="index"
+                    :rules="[
+                        { required: true, message: '不能为空', trigger: 'blur' }
+                    ]"
+                    :label-width="0"
+                    style="margin-left: -70px;"
+                >
+                    <Col span="16">
+                        <Button type="error" shape="circle" icon="ios-trash-outline" @click="delOneRowClick(index)"></Button>
+                        <span class="sparator-span-sm">{{ item.room_type }}</span>
+                        <Tag>默认房价</Tag>
+                        <span class="sparator-span-sm">￥{{ item.default_priceB || '0'}}</span>
+                        <Tag>变更房价</Tag>
+                    </Col>
+                    <Col span="7">
+                        <Input v-model="item.room_prices" placeholder="请输入变更房价"></Input>
+                    </Col>
+                </FormItem>
+
             </Form>
                 <div slot="footer" align="center">
-                    <Button type="primary" @click="addRoomModalClick('addPricePlanForm', 0)" :loading="loading">保存</Button>
-                    <Button @click="addRoomModalCancelClick('addPricePlanForm', 0)" style="margin-left: 8px">取消</Button>
+                    <Button type="primary" @click="addPricePlanConfirmClick('addPricePlanForm')" :loading="loading">保存</Button>
+                    <Button @click="addPricePlanCancelClick('addPricePlanForm')" style="margin-left: 8px">取消</Button>
                 </div>
         </Modal>
     </TabPane>
 
-    <!-- <TabPane label="默认价格" name="defaultPrice">
+    <TabPane label="默认价格" name="defaultPrice">
         <TableM
             :columns="roomTypeColumns"
             :data="roomTypeUserData"
@@ -568,7 +597,7 @@
             @selectChange="selectChange"
         >
         </TableM>
-    </TabPane> -->
+    </TabPane>
 
 </Tabs>
  
@@ -644,6 +673,25 @@ export default {
             }
         }
     };
+
+    const DateValid = (rule, value, callback) => {
+        if(!value) {
+            return callback(new Error('时间不能为空'));
+        } else if(value[1] === '') {
+            return callback(new Error('时间不能为空'));
+        } else {
+            callback();
+        }
+    };
+
+    const roomTypeIdsValid = (rule, value, callback) => {
+        if(this.addPricePlanForm.room_type_ids.length <= 0) {
+            return callback(new Error('请选择一个房型'));
+        } else {
+            callback();
+        }
+    }
+
     return {
 
         AreaList: [],           // 区域列表radio
@@ -665,8 +713,7 @@ export default {
         roomTypeEditForm: {}, // 房间类型编辑表单
 
         roomTypeRule: {
-
-        room_type: 
+            room_type: 
             [
                 { required: true, message: '内容不能为空', trigger: 'change' }
             ],
@@ -679,6 +726,18 @@ export default {
                 { validator: sortValid, trigger: 'blur' }
             ]
         }, // 房间类型规则
+
+        addPricePlanRule: {       // 添加房间表单
+            PlanDate: [
+                { validator: DateValid, trigger: "change" }
+            ],
+            project_name: [
+                { required: true, message: '请填写内容', trigger: 'blur' }
+            ],
+            room_type_ids: [
+                { validator: roomTypeIdsValid, trigger: 'change' }
+            ]
+        },
 
         loading: false, // 控制执行的loading
 
@@ -850,9 +909,16 @@ export default {
 
         notPageRoomType: [],    // 不带分页的房间类型
 
-        addPricePlanForm: {},   // 新增价格方案新增表单
+        addPricePlanForm: {
+            project_name: '',
+            check_time: [],
+            room_type_ids: [],
+            checkedPricePlan: [],
+        },   // 新增价格方案新增表单
 
         addPricePlanModal: false,   // 新增价格方案dialog
+
+             // 装载已经选择的使用房型
     };
   },
 
@@ -1114,6 +1180,7 @@ export default {
         selectRoomType(params).then(res => {
             res.data.shift(0);
             this.notPageRoomType = res.data;
+            console.log(this.notPageRoomType);
         })
     },
 
@@ -2043,6 +2110,69 @@ export default {
     pricePlanPageChange() {
         // getNotPageRoomTypeFun
     },
+
+    // 点击新增方案
+    addPricePlanClick() {
+        this.addPricePlanModal = true;
+        this.getNotPageRoomTypeFun();
+    },
+
+    // 房间类型改变时
+    pricePlanChange(plan) {
+        this.addPricePlanForm.checkedPricePlan = [];
+        for(let i of plan) {
+            this.addPricePlanForm.checkedPricePlan.push(
+                this.notPageRoomType.find(item => item.room_type_id === i)
+            );
+        }
+    },
+
+    // 删除单个价格明细
+    delOneRowClick(index) {
+        this.addPricePlanForm.room_type_id.splice(index, 1);
+        this.addPricePlanForm.checkedPricePlan.splice(index, 1)
+    },
+
+    // 点击添加房间价格方案确定按钮
+    addPricePlanConfirmClick(formName) {
+        this.$refs[formName].validate((valid) => {
+            console.log(valid)
+            if(valid) {
+                console.log('我成功了 ')
+                let room_prices = [];
+
+                if(this.addPricePlanForm.checkedPricePlan.length >= 1) {
+                    for(let i of this.addPricePlanForm.checkedPricePlan) {
+                        room_prices.push(i.room_prices);
+                    }
+                }
+                // console.log(this[formName].room_type_ids);
+                
+                let params = {
+                    room_prices: room_prices.split(','),
+                    room_type_ids: this[formName].room_type_ids.split(',')
+                }
+
+                params = Object.assign(this[formName], params);
+
+                console.log(params);
+
+            }
+        })
+    },
+
+    // 点击添加房间价格方案取消按钮
+    addPricePlanCancelClick() {
+        this.$nextTick(() => {
+            this.addPricePlanModal = false;
+            this.addPricePlanForm.resetFields();
+        })
+    },
+
+    // 当时间改变时
+    PlanDateChange(val) {
+        this.addPricePlanForm.PlanDate = val;
+    }
 
   },
 
