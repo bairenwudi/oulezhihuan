@@ -148,7 +148,7 @@
             :columns="roomTypeColumns"
             :data="roomTypeUserData"
             :loading="loading"
-            :current.async="roomTypeCurrentPageIndex"
+            :current.async="CurrentPageIndex"
             :total="roomTypeTotal"
             @pageChange="roomTypePageChange"
             @selectChange="selectChange"
@@ -244,18 +244,18 @@
                     <div slot="title">
                         <span>区域</span>
                         <span class="sparator"></span>
-                        <Button type="info" icon="android-checkbox-outline">保存</Button>
+                        <Button type="info" icon="android-checkbox-outline" @click="editOrgNameClick('area')">编辑</Button>
                     </div>
 
                     <div class="filter">
-                        <Input type="text" v-model="areaText" placeholder="区域名称" style="margin-bottom: 20px;"></Input>
+                        <Input type="text" v-model.trim="areaText" placeholder="区域名称" style="margin-bottom: 20px;"></Input>
                         <Button type="primary"  @click="addAreaClick">添加</Button>
-                        <Button type="warning" icon="edit">批量操作</Button>
+                        <Button type="warning" icon="edit" @click="batchOperationClick(1, 'area')">批量操作</Button>
                     </div>
 
                     <div class="content">
-                        <RadioGroup v-model="one_radio" vertical>
-                            <Radio v-for="(item, index) in oneRadioList" :label="item.zone_name" :value="item.zone_id" :key="index"></Radio>
+                        <RadioGroup v-model="area_radio" @on-change="areaRadioChange" vertical>
+                            <Radio v-for="(item, index) in AreaList" :label="item.zone_name" :value="item.zone_id" :key="index"></Radio>
                         </RadioGroup>
                     </div>
                 </Card>
@@ -266,19 +266,20 @@
                     <div slot="title">
                         <span>楼栋</span>
                         <span class="sparator">
-                            <Button type="primary" icon="android-checkbox-outline">查询全部</Button>
+                            <Button type="primary" icon="android-checkbox-outline" @click="slectAllBuildingClick">查询全部</Button>
                         </span>
-                        <Button type="primary" icon="android-checkbox-outline">保存</Button>
+                        <Button type="info" icon="android-checkbox-outline" @click="editOrgNameClick('building')">编辑</Button>
                     </div>
+
                     <div class="filter">
-                        <Input type="text" placeholder="区域" style="margin-bottom: 20px;"></Input>
-                        <Button>添加</Button>
-                        <Button type="primary" icon="edit">批量操作</Button>
+                        <Input type="text" v-model.trim="buildingText" placeholder="楼栋名称" style="margin-bottom: 20px;"></Input>
+                        <Button type="primary" @click="addBuildingTextClick">添加</Button>
+                        <Button type="warning" icon="edit" @click="batchOperationClick(0, 'building')">批量操作</Button>
                     </div>
+
                     <div class="content">
-                        <RadioGroup v-model="two_radio" vertical>
-                            <Radio label="male">A区</Radio>
-                            <Radio label="female">B区</Radio>
+                        <RadioGroup v-model="building_radio" @on-change="buildRadioChange" vertical>
+                            <Radio v-for="(item, index) in buildingList" :label="item.building_name" :value="item.building_id" :key="index"></Radio>
                         </RadioGroup>
                     </div>
                 </Card>
@@ -288,16 +289,19 @@
                 <Card>
                     <div slot="title">
                         <span>楼层</span>
+                        <span class="sparator"></span>
+                        <Button type="info" icon="android-checkbox-outline" @click="editOrgNameClick('floor')">编辑</Button>
                     </div>
+
                     <div class="filter">
-                        <Input type="text" placeholder="区域" style="margin-bottom: 20px;"></Input>
-                        <Button>添加</Button>
-                        <Button type="primary" icon="edit">批量操作</Button>
+                        <Input type="text" v-model.trim="floorText" placeholder="楼层名称" style="margin-bottom: 20px;"></Input>
+                        <Button type="primary"  @click="addFloorClick">添加</Button>
+                        <Button type="warning" icon="edit" @click="batchOperationClick(0, 'floor')">批量操作</Button>
                     </div>
+
                     <div class="content">
-                        <RadioGroup v-model="three_radio" vertical>
-                            <Radio label="male">A区</Radio>
-                            <Radio label="female">B区</Radio>
+                        <RadioGroup v-model="floor_radio" @on-change="floorRadioChange" vertical>
+                            <Radio v-for="(item, index) in floorList" :label="item.floor_name" :value="item.floor_id" :key="index"></Radio>
                         </RadioGroup>
                     </div>
                 </Card>
@@ -308,41 +312,278 @@
                     <div slot="title">
                         <span>房间</span>
                         <span class="sparator"></span>
-                        <Button type="primary" icon="android-checkbox-outline">保存</Button>
+                        <Button type="info" icon="android-checkbox-outline" @click="editOrgNameClick('room')">编辑</Button>
                     </div>
+
                     <div class="filter">
-                        <Button>添加房间</Button>
-                        <Button type="primary" icon="edit">批量操作</Button>
+                        <Button type="primary"  @click="addRoomClick">添加</Button>
+                        <Button type="warning" icon="edit" @click="batchOperationClick(0, 'room')">批量操作</Button>
                     </div>
+
                     <div class="content">
-                        <RadioGroup>
-                            <Radio label="male">A区</Radio>
-                            <Radio label="female">B区</Radio>
+                        <RadioGroup v-model="room_radio" vertical>
+                            <Radio v-for="(item, index) in roomList" :label="item.room_number" :value="item.room_id" :key="index"></Radio>
                         </RadioGroup>
                     </div>
                 </Card>
             </Col>
         </Row>
+
+        <!-- 批量操作 -->
+        <Modal 
+            v-model="batchOperationDialog"
+            :mask-closable="false"
+            width="360"
+        >
+            <p slot="header">
+                批量操作
+            </p>
+
+            <div id="ivu-checkbox-view">
+                <CheckboxGroup v-model="batchOperationChecked" v-if="option === 'building'">
+                    <Checkbox v-for="(item, index) in RadioList" :label="item.building_name" :value="item.building_id" :key="index"></Checkbox>
+                </CheckboxGroup>
+
+                <CheckboxGroup v-model="batchOperationChecked" v-if="option === 'floor'">
+                    <Checkbox v-for="(item, index) in RadioList" :label="item.floor_name" :value="item.floor_id" :key="index"></Checkbox>
+                </CheckboxGroup>
+
+                <CheckboxGroup v-model="batchOperationChecked" v-if="option === 'room'">
+                    <Checkbox v-for="(item, index) in RadioList" :label="item.room_number" :value="item.room_id" :key="index"></Checkbox>
+                </CheckboxGroup>
+            </div>
+
+            <div class="Btn-set">
+                <Button type="primary" icon="edit" @click="batchOperationEditClick">编辑</Button>
+                <Button type="error" icon="ios-trash-outline" @click="batchOperationDelClick">删除</Button>
+            </div>
+
+            <div class="Btn-set" v-if="editShow">
+                <Select v-model="moveAreaRadio" v-if="option === 'building'" style="width:200px">
+                    <Option v-for="(item, index) in slectionList" :label="item.zone_name" :value="item.zone_id" :key="index"></Option>
+                </Select>
+
+                <Select v-model="moveAreaRadio" v-if="option === 'floor'" style="width:200px">
+                    <Option v-for="(item, index) in slectionList" :label="item.building_name" :value="item.building_id" :key="index"></Option>
+                </Select>
+
+                <Select v-model="moveAreaRadio" v-if="option === 'room'" style="width:200px">
+                    <Option v-for="(item, index) in slectionList" :label="item.floor_name" :value="item.floor_id" :key="index"></Option>
+                </Select>
+
+                <div class="sparator-div"></div>
+
+                <Button @click="batchOperationCencelClick">取消</Button>
+                <Button type="primary" :loading="loading" @click="batchOperationSaveClick">确定</Button>
+            </div>
+
+            <div slot="footer"></div>
+        </Modal>
+
+         <!-- 批量操作(区域) -->
+        <Modal 
+            v-model="batchOperationAreaDialog"
+            :mask-closable="false"
+            width="360"
+        >
+            <p slot="header">
+                批量操作
+            </p>
+
+            <div id="ivu-checkbox-view">
+                <CheckboxGroup v-model="batchOperationChecked" v-if="option === 'area'">
+                    <Checkbox v-for="(item, index) in AreaList" :label="item.zone_name" :value="item.zone_id" :key="index"></Checkbox>
+                </CheckboxGroup>
+            </div>
+
+            <div class="Btn-set">
+                <Button type="error" icon="ios-trash-outline" @click="batchOperationDelClick">删除</Button>
+            </div>
+
+            <div slot="footer"></div>
+        </Modal>
+
+        <!--批量删除弹出框  -->
+        <Modal v-model="delDilaog" width="360">
+            <p slot="header" style="color:#f60;text-align:center">
+                <Icon type="ios-information-circle"></Icon>
+                <span>提示</span>
+            </p>
+            <div style="text-align:center">
+                <p>确定要删除吗？</p>
+            </div>
+            <div slot="footer">
+                <Button type="error" size="large" long :loading="delLoading" @click="batchOperationDelConfrmClick">删除</Button>
+            </div>
+        </Modal>
+
+        <!-- 区域管理 -》 房间新增提示框 -->
+        <Modal v-model="roomAddModal"
+                title="添加房间"
+                :mask-closable="false"
+                @on-ok="addRoomModalClick('roomAddForm', 0)"
+                @on-cancel="addRoomModalCancelClick('roomAddForm', 0)"
+            >
+            <Form ref="roomAddForm" :model="roomAddForm" :rules="roomTypeRule" :label-width="90">
+                <FormItem label="楼层：">
+                    {{ building_radio }}
+                    {{ floor_radio }}
+                </FormItem>
+
+                <FormItem label="房型名称：" prop="room_id">
+                    <Select v-model="roomAddForm.room_id" placeholder="请选择">
+                        <Option v-for="(item, index) in roomTypeList" :value="item.room_type_id" :label="item.room_name"></Option>
+                    </Select>
+                </FormItem>
+
+                <FormItem label="房号：" prop="room_number">
+                    <Input v-model="roomAddForm.room_number" placeholder="请输入名称"></Input>
+                </FormItem>
+
+                <FormItem label="房间朝向：" prop="room_orientation">
+                    <Input v-model="roomAddForm.room_orientation" placeholder="请输入名称"></Input>
+                </FormItem>
+
+                <FormItem label="电话分机：" prop="room_telphone">
+                    <Input type="text" v-model.number="roomAddForm.room_telphone" placeholder="请输入排序"></Input>
+                </FormItem>
+
+                <FormItem label="房间特色：" prop="room_characteristics">
+                    <Input type="textarea" v-model.number="roomAddForm.room_characteristics" :autosize="{minRows: 2, maxRows: 5}" placeholder="请输入房间特色"></Input>
+                </FormItem>
+
+                <FormItem label="房间概况：" prop="room_details">
+                    <Input type="textarea" v-model.number="roomAddForm.room_details" :autosize="{minRows: 2, maxRows: 5}" placeholder="请输入房间概况"></Input>
+                </FormItem>
+
+                <FormItem label="房间图片：" prop="">
+                    <el-upload
+                            ref="imgsUpload"
+                            :action="addRoomUrl"
+                            list-type="picture-card"
+                            :auto-upload="false"
+                            :on-preview="handlePictureCardPreview"
+                            :on-success="uploadSuccess"
+                            :on-error="uploadError"
+                            :on-remove="onRemove"
+                            :on-exceed="uploadonExceed"
+                            :on-change="onChangeRoomImgs"
+                            :limit="1"
+                        >
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+
+                    <Modal :footer-hide="true" title="预览图片" v-model="visible">
+                        <img :src="imgUrl" v-if="visible" style="width: 100%">
+                    </Modal>
+                </FormItem>
+
+            </Form>
+                <div slot="footer" align="center">
+                    <Button type="primary" @click="addRoomModalClick('roomAddForm', 0)" :loading="loading">保存</Button>
+                    <Button @click="addRoomModalCancelClick('roomAddForm', 0)" style="margin-left: 8px">取消</Button>
+                </div>
+        </Modal>
     </TabPane>
 
     <TabPane label="价格设置"  name="priceSet">
-        <div width="200">
-            我撒大
+        <div class="split-set">
+            <div class="dropdown-parent">
+                <p class="current-price">当前房价：</p>
+                <div class="dropdown-auto">
+                    <ul>
+                        <li v-for="(item, index) in currentRoomPrice" :key="index">
+                            <span class="sparator-span">{{ index }}</span>
+                            <span>￥{{ item }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-parent">
+                <div class="set-div">
+                    <span>价格方案</span>
+                    <Button type="primary" class="" @click="addPricePlanClick">新增方案</Button>
+                </div>
+
+                <TableM
+                    :columns="pricePlanColumns"
+                    :data="pricePlanList"
+                    :loading="loading"
+                    :current.async="CurrentPageIndex"
+                    :total="pricePricePlan"
+                    @pageChange="pricePlanPageChange"
+                    @selectChange="selectChange"
+                >
+                </TableM>
+            </div>
         </div>
 
-        <div>
-            <TableM
-                width="200"
-                :columns="roomTypeColumns"
-                :data="roomTypeUserData"
-                :loading="loading"
-                :current.async="roomTypeCurrentPageIndex"
-                :total="roomTypeTotal"
-                @pageChange="roomTypePageChange"
-                @selectChange="selectChange"
+
+        <!-- 新增价格方案 => modal -->
+        <Modal v-model="addPricePlanModal"
+                title="添加价格方案"
+                :mask-closable="false"
+                @on-ok="addPricePlanConfirmClick('addPricePlanForm')"
+                @on-cancel="addPricePlanCancelClick('addPricePlanForm')"
             >
-            </TableM>
-        </div>
+            <Form ref="addPricePlanForm" :model="addPricePlanForm" :rules="addPricePlanRule" :label-width="90">
+                <FormItem label="方案名称：" prop="project_name">
+                    <Input v-model="addPricePlanForm.project_name" placeholder="请输入名称"></Input>
+                </FormItem>
+
+                <FormItem label="使用房型：" prop="room_type_ids">
+                    <CheckboxGroup @on-change="pricePlanChange" v-model="addPricePlanForm.room_type_ids">
+                        <Checkbox v-for="(item, index) in notPageRoomType" :value="item.room_type" :label="item.room_type_id">{{ item.room_type }}</Checkbox>
+                    </CheckboxGroup>
+                </FormItem>
+
+                <FormItem label="日期范围：" prop="PlanDate">
+                    <DatePicker 
+                        v-model="addPricePlanForm.PlanDate"
+                        clearable
+                        format="yyyy-MM-dd"
+                        type="datetimerange"
+                        @on-change="PlanDateChange"
+                        placeholder="请选择时间"
+                        style="width: 300px"
+                    >
+                    </DatePicker>
+                </FormItem>
+
+                <FormItem label="价格明细：">
+                    
+                </FormItem>
+
+                <FormItem 
+                    id="addPricePlan"
+                    v-for="(item, index) in addPricePlanForm.checkedPricePlan"
+                    :prop="`checkedPricePlan.${index}.room_prices`"
+                    :key="index"
+                    :rules="[
+                        { required: true, message: '不能为空', trigger: 'blur' }
+                    ]"
+                    :label-width="0"
+                    style="margin-left: -70px;"
+                >
+                    <Col span="16">
+                        <Button type="error" shape="circle" icon="ios-trash-outline" @click="delOneRowClick(index)"></Button>
+                        <span class="sparator-span-sm">{{ item.room_type }}</span>
+                        <Tag>默认房价</Tag>
+                        <span class="sparator-span-sm">￥{{ item.default_priceB || '0'}}</span>
+                        <Tag>变更房价</Tag>
+                    </Col>
+                    <Col span="7">
+                        <Input v-model="item.room_prices" placeholder="请输入变更房价"></Input>
+                    </Col>
+                </FormItem>
+
+            </Form>
+                <div slot="footer" align="center">
+                    <Button type="primary" @click="addPricePlanConfirmClick('addPricePlanForm')" :loading="loading">保存</Button>
+                    <Button @click="addPricePlanCancelClick('addPricePlanForm')" style="margin-left: 8px">取消</Button>
+                </div>
+        </Modal>
     </TabPane>
 
     <TabPane label="默认价格" name="defaultPrice">
@@ -350,9 +591,9 @@
             :columns="roomTypeColumns"
             :data="roomTypeUserData"
             :loading="loading"
-            :current.async="roomTypeCurrentPageIndex"
+            :current.async="CurrentPageIndex"
             :total="roomTypeTotal"
-            @pageChange="roomTypePageChange"
+            @pageChange="pricePlanPageChange"
             @selectChange="selectChange"
         >
         </TableM>
@@ -384,6 +625,28 @@ import {
   selectFacilities,
   selectZone,
   saveZone,
+  updateByIdArea,
+  deleteByIds,
+  updateByIds,
+  selectBuildings,
+  selectAllFloors,
+  buildingSave,
+  deleteByIdsBuilding,
+  updateBuildingName,
+  floorSave,
+  updateByIdsFloor,
+  deleteByIdsFloor,
+  saveRoom,
+  selectRoomTypeSel,
+  selectRooms,
+  deleteByIdsRoom,
+  updateFloorName,
+  updateRoomName,
+  updateByIdsRoom,
+  selectNowRoomPrice,
+  saveRoomPrice,
+  showRoomPriceList,
+  addPricePlanSave,
   getBase,
 } from "@/api/lp-organizational/api.js";
 
@@ -410,9 +673,32 @@ export default {
             }
         }
     };
+
+    const DateValid = (rule, value, callback) => {
+        if(!value) {
+            return callback(new Error('时间不能为空'));
+        } else if(value[1] === '') {
+            return callback(new Error('时间不能为空'));
+        } else {
+            callback();
+        }
+    };
+
+    const roomTypeIdsValid = (rule, value, callback) => {
+        if(this.addPricePlanForm.room_type_ids.length <= 0) {
+            return callback(new Error('请选择一个房型'));
+        } else {
+            callback();
+        }
+    }
+
     return {
 
-        defaultName: '',     // 默认显示哪个标签页
+        AreaList: [],           // 区域列表radio
+
+        moveAreaRadio: '',      // 移动区域的radio
+
+        defaultName: 'priceSet',     // 默认显示哪个标签页
 
         allFacilitiesList: [],  // 获取全部的基地设施
 
@@ -427,16 +713,31 @@ export default {
         roomTypeEditForm: {}, // 房间类型编辑表单
 
         roomTypeRule: {
-        room_type: [
-            { required: true, message: '内容不能为空', trigger: 'change' }
-        ],
-        room_name: [
-            { required: true, message: '内容不能为空', trigger: 'blur' }
-        ],
-        room_type_sort: [
-            { validator: sortValid, trigger: 'blur' }
-        ]
+            room_type: 
+            [
+                { required: true, message: '内容不能为空', trigger: 'change' }
+            ],
+
+            room_name: [
+                { required: true, message: '内容不能为空', trigger: 'blur' }
+            ],
+
+            room_type_sort: [
+                { validator: sortValid, trigger: 'blur' }
+            ]
         }, // 房间类型规则
+
+        addPricePlanRule: {       // 添加房间表单
+            PlanDate: [
+                { validator: DateValid, trigger: "change" }
+            ],
+            project_name: [
+                { required: true, message: '请填写内容', trigger: 'blur' }
+            ],
+            room_type_ids: [
+                { validator: roomTypeIdsValid, trigger: 'change' }
+            ]
+        },
 
         loading: false, // 控制执行的loading
 
@@ -449,58 +750,36 @@ export default {
         defaultImageList: [], // 默认图片列表
 
         roomTypeColumns: [
-        {
-            type: "selection",
-            width: 60,
-            align: "center"
-        },
-        {
-            title: "房型分类",
-            key: "room_type"
-        },
+            {
+                type: "selection",
+                width: 60,
+                align: "center"
+            },
+            {
+                title: "房型分类",
+                key: "room_type"
+            },
 
-        {
-            title: "房型名称",
-            key: "room_name"
-        },
+            {
+                title: "房型名称",
+                key: "room_name"
+            },
 
-        {
-            title: "排序",
-            render: (h, { row, index }) => {
-            return h(
-                "span", {
-                }, row.room_type_sort || '暂无' );
-            }
-        },
-
-        {
-            title: "操作",
-            align: "center",
-            render: (h, { row, index }) => {
-            return h(
-                "Button",
-                {
-                props: {
-                    type: "primary",
-                    icon: "edit"
-                },
-                on: {
-                    click: () => {
-                        this.roomTypeEditClick(row);
-                    }
+            {
+                title: "排序",
+                render: (h, { row, index }) => {
+                return h(
+                    "span", {
+                    }, row.room_type_sort || '暂无' );
                 }
-                },
-                "编辑"
-            );
             }
-        }
-        ], // 房间类型表头
+        ],
 
         visible: false, // 控制放大图片的显示
 
         roomTypeUserData: [{}], // 房间类型数据
 
-        roomTypeCurrentPageIndex: 1, // 房间类型分页(当前第几页)
+        CurrentPageIndex: 1, // 房间类型分页(当前第几页)
 
         roomTypeTotal: 0, // 房间类型分页(总页数)
 
@@ -524,19 +803,122 @@ export default {
 
         roomTypeEditModal: false,  // 控制房间类型编辑显示
 
-        selectRow: [],        // 多选框对象
+        selectRow: [],   // 多选框对象
 
-        validationImgsList: [],     // 记录多张图片操作状态
+        validationImgsList: [],   // 记录多张图片操作状态
 
-        oneRadioList: [],           // 区域的radio列表
+        RadioList: [],   // 区域的radio列表
 
-        one_radio: '',        // 区域单选框1
+        area_radio: '',  // 区域单选框1
 
-        two_radio: '',          // 区域单选框2
+        building_radio: '',   // 楼栋单选框2
 
-        three_radio: '',        // 区域单选框3
+        floor_radio: '',    // 楼层单选框3
 
-        areaText: '',           // 区域新增字段
+        room_radio: '',    // 房间单选框4
+
+        areaText: '',    // 区域新增字段
+
+        areaDeepName: '',  // 克隆编辑区域名称(编辑)
+
+        dirty: false,   // 脏检查   
+
+        batchOperationDialog: false,  // 批量操作dialog
+
+        editShow: false,   // 控制显示编辑出现slection框
+
+        delLoading: false,  // 删除弹出框
+
+        delDilaog: false,    // 控制批量删除显示
+
+        batchOperationChecked: [],  // 已经选择的区域集合
+
+        buildingList: [],  // 楼栋列表
+
+        batchOperationAreaDialog: false,  // 区域的单独dialog
+
+        selected: '',  // 已经选择的下拉框
+
+        option: '',    // 点击批量操作当前的list
+
+        slectionList: [], // 下拉框list
+
+        buildingText: '',    //  楼栋新增字段
+
+        floorText: '',  // 楼层新增字段
+
+        roomText: '',   // 房间新增字段
+        
+        floorList: [],   // 楼层列表
+
+        roomList: [],  // 房间列表
+
+        roomAddForm: {},   // 房间新增表单
+
+        roomTypeRule: {     // 房间新增表单
+
+            room_id: [
+                { required: true, message: '请选择完整', trigger: 'change' }
+            ],
+
+            room_number: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ],
+
+            room_orientation: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ],
+
+            room_telphone: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ],
+
+            room_characteristics: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ],
+
+            room_details: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ]
+        },
+
+        roomAddModal: false,   // 房间新增dialog
+
+        addRoomUrl: '',       // 定义添加房间接口的地址
+
+        roomImgsfileList: [],      // 定义添加房间中图片的数组
+
+        roomTypeList: [],    // 定义楼层下拉列表
+
+        currentRoomPrice: [],   // 定义当前价格
+
+        currentPricekeys: [],     // 存储当前价格的key
+
+        pricePricePage: 0,     // 价格方案当前页
+
+        pricePricePlan: 0,      // 价格方案总页数
+        
+        pricePlanList: [],     // 价格方案列表
+
+        pricePlanColumns: [
+            {
+                title: '价格方案名称',
+                key: 'project_name'
+            }
+        ],   // 价格设置表头
+
+        notPageRoomType: [],    // 不带分页的房间类型
+
+        addPricePlanForm: {
+            project_name: '',
+            check_time: [],
+            room_type_ids: [],
+            checkedPricePlan: [],
+        },   // 新增价格方案新增表单
+
+        addPricePlanModal: false,   // 新增价格方案dialog
+
+             // 装载已经选择的使用房型
     };
   },
 
@@ -550,11 +932,26 @@ export default {
       return util.handleDrive(base, facilities_pic_url, facilities_pic_name);
     },
 
-    // 初始化多个富文本传值
-    init() {
-      this.base = getBase().base2;
-      console.log(this.base);
-      this.actionUrl = `${this.base}/organ/updateById`;
+    // 在渲染完之前 获取数据
+    initCreated() {
+        this.InstitutionalTitleListFun();
+        this.selectAllFacilitiesFun();
+        this.ProvinceTitleListFun();
+        this.CityTitleListFun();
+        this.selectZoneFun();
+        this.slectCurrentPrice();
+        this.selectPricePlanFun();
+    },
+
+    // 在渲染完之后 初始化多个富文本传值
+    initMounted() {
+        this.base = getBase().base2;
+        console.log(this.base);
+        this.actionUrl = `${this.base}/organ/updateById`;
+        this.addRoomUrl = `${this.base}/Zh_room_infoController/save`;
+        this.selectRoomTypeFun();
+        this.selectOrgByObjFun();
+        this.selectBuildingsFun();
     },
 
     //省下拉框 选择触发
@@ -645,14 +1042,6 @@ export default {
     },
 
 
-    // 获取区域
-    async selectZoneFun() {
-      const { data } = await selectZone({ org_id: JSON.parse(localStorage.user).org_id });
-      this.oneRadioList = data;
-      console.log(this.oneRadioList);
-    },
-
-
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
       this.$Message.warning("超出图片最大限制");
@@ -732,17 +1121,21 @@ export default {
 
     // 图片上传之前的钩子
     onChangeImgs(file, fileList) {
-      this.ImgsfileList = fileList;
-      console.log(file);
-      console.log(this.ImgsfileList);
-      let org_imags = JSON.parse(this.baseInfoList.org_imags);
-      // 如果后进行操作的大于默认图片列表
-    //   if(this.ImgsfileList.length > org_imags.length) {
-    //     // validationImgsList
+        this.ImgsfileList = fileList;
+        let org_imags = JSON.parse(this.baseInfoList.org_imags);
+        // 如果后进行操作的大于默认图片列表
+        //   if(this.ImgsfileList.length > org_imags.length) {
+        //     // validationImgsList
 
-    //   } else {
+        //   } else {
 
-    //   }
+        //   }
+    },
+
+    // 房间上传图片
+
+    onChangeRoomImgs(file, fileList) {
+        this.roomImgsfileList = fileList[0].raw;
     },
 
     // 图片
@@ -776,6 +1169,18 @@ export default {
             this.roomTypeTotal = res.data[0].count;
             res.data.shift(0);
             this.roomTypeUserData = res.data;
+        })
+    },
+
+    // 获取房间类型(没有分页)
+    getNotPageRoomTypeFun() {
+        let params = {
+            org_id: JSON.parse(localStorage.user).org_id
+        };
+        selectRoomType(params).then(res => {
+            res.data.shift(0);
+            this.notPageRoomType = res.data;
+            console.log(this.notPageRoomType);
         })
     },
 
@@ -883,13 +1288,17 @@ export default {
     },
 
 
-
-
     /**
      * 
      * @param { area } 区域管理
      * 
      */
+
+    // 获取区域
+    async selectZoneFun() {
+      const { data } = await selectZone({ org_id: JSON.parse(localStorage.user).org_id });
+      this.AreaList = data;
+    },
 
     // 点击添加
     addAreaClick() {
@@ -902,8 +1311,9 @@ export default {
             };
             saveZone(params).then(res => {
                 console.log(res);
-                if(res.data === 1) {
+                if(res.data.code === 'success') {
                     this.$Message.success('成功');
+                    this.areaText = '';
                     this.selectZoneFun();
                 } else {
                     this.$Message.warning('失败');
@@ -912,21 +1322,869 @@ export default {
         }
     },
 
+    // 编辑区域名称
+    editOrgNameClick(type) {
+        let radio = '';
+        let message1 = '';
+        let message2 = '';
+        let message3 = '';
+        let list = '';
+        let name = '';
+        let currentRow_id = '';
+        if(type === 'area') {
+            radio = 'area_radio';
+            message1 = '请选择区域';
+            message2 = '编辑区域名称：';
+            message3 = '请填写区域名称';
+            list = 'AreaList';
+            name = 'zone_name';
+            currentRow_id = 'zone_id';
+        } else if (type === 'building') {
+            radio = 'building_radio';
+            message1 = '请选择楼栋';
+            message2 = '编辑楼栋名称：';
+            message3 = '请填写楼栋名称';
+            list = 'buildingList';
+            name = 'building_name';
+            currentRow_id = 'building_id';
+        } else if (type === 'floor') {
+            radio = 'floor_radio';
+            message1 = '请选择楼层';
+            message2 = '编辑楼层名称：';
+            message3 = '请填写楼层名称';
+            list = 'floorList';
+            name = 'floor_name';
+            currentRow_id = 'floor_id';
+        } else {
+            radio = 'room_radio';
+            message1 = '请选择房间';
+            message2 = '编辑房间名称：';
+            message3 = '请填写房间名称';
+            list = 'roomList';
+            name = 'room_number';
+            currentRow_id = 'room_id';
+        }
+
+        if(this[radio] === '') {
+            this.$Message.warning(message1);
+            return
+        }
+
+        this.areaDeepName = this[radio];
+        this.$Modal.confirm({
+            loading: this.loading,
+            render: (h) => {
+                return h("div", [
+                    h('h3', {
+
+                    }, message2),
+                    h('Input', {
+                        props: {
+                            value: this[radio],
+                            autofocus: true,
+                            placeholder: message3
+                        },
+                        style: {
+                            marginTop: '20px'
+                        },
+                        on: {
+                            input: (val) => {
+                                this.dirty = true;
+                                this.areaDeepName = val;
+                            }
+                        }
+                    })
+                ]);
+            },
+
+            onOk: () => {
+                if(this.areaDeepName === '') {
+                    this.$Message.warning(message3);
+                    this.dirty = false;
+                    return
+                }
+
+                if(this.areaDeepName === this[radio] || this.dirty === false) {
+                    this.$Message.success('成功');
+                    this.dirty = false;
+                    return
+                }
+
+                this.loading = true;
+
+                const row = this[list].find(item => item[name] === this[radio]);
+
+                if(list === 'AreaList') {
+                    this.editAreaNameFun(row, radio);
+                } else if(list === 'buildingList') {
+                    this.editBuildingNameFun(row, radio);
+                } else if(list === 'floorList') {
+                    this.editFloorNameFun(row, radio);
+                } else {
+                    this.editRoomNameFun(row, radio);
+                }
+            }
+        })
+    },
+
+    // 编辑区域名字封装函数
+    editAreaNameFun(row, radio) {
+        let params = {
+            org_id: JSON.parse(localStorage.user).org_id,
+            zone_id: row.zone_id,
+            zone_name: this.areaDeepName
+        }
+
+        updateByIdArea(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.selectZoneFun();
+                this[radio] = this.areaDeepName;
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 编辑楼栋名字封装函数
+    editBuildingNameFun(row, radio) {
+        let params = {
+            building_name: this.areaDeepName,
+            building_id: row.building_id,
+            org_id: row.org_id,
+            zone_id: row.zone_id
+        }
+        updateBuildingName(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.selectBuildingsFun();
+                this[radio] = this.areaDeepName;
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 编辑楼层名字封装函数
+    editFloorNameFun(row, radio) {
+        let params = {
+            floor_name: this.areaDeepName,
+            floor_id: row.floor_id,
+            org_id: JSON.parse(localStorage.user).org_id,
+            building_id: row.building_id
+        }
+        updateFloorName(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.selectFloorFun(this.building_radio);
+                this[radio] = this.areaDeepName;
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 编辑房间名字封装函数
+    editRoomNameFun(row, radio) {
+        let params = {
+            room_number: this.areaDeepName,
+            room_id: row.room_id,
+            floor_id: row.floor_id
+        }
+        updateRoomName(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.floorRadioChange();
+                this[radio] = this.areaDeepName;
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 批量操作
+    batchOperationClick(choose, list) {
+        this.option = list;
+        if(choose === 1) {
+            this.batchOperationAreaDialog = true;
+        } else {
+            this.batchOperationDialog = true;
+        }
+
+        switch(list) {
+            case 'area':
+                this.selectZoneFun();
+                break;
+            case 'building':
+                this.RadioList = this.buildingList;
+                this.slectionList = this.AreaList;
+                break;
+            case 'floor':
+                this.RadioList = this.floorList;
+                this.slectionList = this.buildingList;
+                break;
+            case 'room':
+                console.log(1);
+                this.RadioList = this.roomList;
+                this.slectionList = this.floorList;
+                break;
+            default:
+                break;
+        }
+    },
+
+    // 批量编辑显示
+    batchOperationEditClick() {
+        this.editShow = true;
+    },
+
+    // 批量编辑取消按钮
+    batchOperationCencelClick() {
+        this.editShow = false;
+    },
+
+    // 批量编辑保存按钮
+    batchOperationSaveClick() {
+        let _this = this;
+        let radio = '';
+        let message1 = '';
+        let message2 = '';
+        let message3 = '';
+        let message4 = '';
+        let list = '';
+        let name = '';
+        let currentRow_id = '';
+        if(this.option === 'building') {
+            message1 = '请选择区域';
+            message2 = '编辑楼栋名称：';
+            message3 = '请填写楼栋名称';
+            message4 = '请选择楼栋';
+            list = 'buildingList';
+            name = 'building_name';
+            currentRow_id = 'building_id';
+        } else if(this.option === 'floor') {
+            message1 = '请选择楼栋';
+            message2 = '编辑楼栋名称：';
+            message4 = '请选择楼栋';
+            message3 = '请填写楼层名称';
+            list = 'floorList';
+            name = 'floor_name';
+            currentRow_id = 'floor_id';
+        } else {
+            message1 = '请选择楼层';
+            message2 = '编辑楼层名称：';
+            message3 = '请填写楼层名称';
+            message4 = '请选择房间';
+            list = 'roomList';
+            name = 'room_number';
+            currentRow_id = 'room_id';
+        }
+        this.$nextTick(() => {
+            if(this.moveAreaRadio === '') {
+                this.$Message.warning(message1)
+                return
+            }
+
+            if(this.batchOperationChecked.length <= 0) {
+                this.$Message.warning(message4)
+                return
+            };
+
+            let arr = [];
+            for(let i of this.batchOperationChecked) {
+                arr.push(this.RadioList.find(item => item[name] === i)[currentRow_id])
+            }
+
+            if(this.option === 'building') {
+                this.buildingMoveFun(arr);
+            } else if(this.option === 'floor') {
+                this.floorMoveFun(arr);
+            } else {
+                this.roomMoveFun(arr);
+            }
+
+        });
+    },
+
+    // 楼栋移动封装函数
+    buildingMoveFun(arr) {
+        this.loading = true;
+        let params = {
+            zone_id: this.moveAreaRadio,
+            building_ids: arr,
+        }
+        updateByIds(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.batchOperationDialog = false;
+                this.selectBuildingsFun();
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 楼层移动封装函数
+    floorMoveFun(arr) {
+        this.loading = true;
+        let params = {
+            building_id: this.moveAreaRadio,
+            floor_ids: arr,
+        }
+        updateByIdsFloor(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.batchOperationDialog = false;
+                this.buildRadioChange(this.building_radio);
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 房间移动封装函数
+    roomMoveFun(arr) {
+        this.loading = true;
+        let params = {
+            floor_id: this.moveAreaRadio,
+            room_ids: arr,
+        }
+        updateByIdsRoom(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.batchOperationDialog = false;
+                this.selectRoomsFun();
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.loading = false;
+        })
+    },
+
+    // 批量删除操作显示
+    batchOperationDelClick() {
+        if(!this.batchOperationChecked.length) {
+            switch(this.option) {
+                case 'area':
+                    this.$Message.warning('请选择区域');
+                    break;
+                case 'building':
+                    this.$Message.warning('请选择楼栋');
+                    break;
+                default: 
+                    this.$Message.warning('我是其他');
+                    break;
+            }
+            return
+        }
+        this.delDilaog = true;
+    },
+
+    // 批量删除确定按钮
+    batchOperationDelConfrmClick() {
+        this.$nextTick(() => {
+            // 声明 需要 获取的属性值 (根据不同的区域)
+            let name = '';
+            let id = '';
+            let ids = '';
+            let deleteFun = '';
+            let list = '';
+
+            if(this.option === 'area') {
+                name = 'zone_name';
+                id = 'zone_id';
+                ids = 'zone_ids';
+                deleteFun = 'deleteByIds';
+                list = 'AreaList';
+            } else if(this.option === 'building') {
+                name = 'building_name';
+                id = 'building_id';
+                ids = 'building_ids';
+                deleteFun = 'deleteByIdsBuilding';
+                list = 'RadioList';
+            } else if(this.option === 'floor') {
+                name = 'floor_name';
+                id = 'floor_id';
+                ids = 'floor_ids';
+                deleteFun = 'deleteByIdsFloor';
+                list = 'RadioList';
+            } else {
+                name = 'room_number';
+                id = 'room_id';
+                ids = 'room_ids';
+                deleteFun = 'deleteByIdsRoom';
+                list = 'RadioList';
+            }
+
+            let arr = [];
+
+            for(let i of this.batchOperationChecked) {
+                arr.push(this[list].find(item => item[name] === i)[id])
+            }
+
+            let params = {
+                [ids]: arr
+            }
+
+            switch(deleteFun) {
+                case 'deleteByIds':
+                    this.areaDelFun(params);
+                    break;
+                case 'deleteByIdsBuilding':
+                    this.buildingDelFun(params);
+                    break;
+                case 'deleteByIdsFloor':
+                    this.floorDelFun(params);
+                    break;
+                case 'deleteByIdsRoom':
+                    this.roomDelFun(params);
+                    break;
+                default:
+                    break;
+            }
+        })
+    },
+
+    // 房间批量删除封装函数
+    roomDelFun(params) {
+        this.delLoading = true;
+        deleteByIdsRoom(params).then(res => {
+            console.log(res);
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.delDilaog = false;
+                this.selectRoomsFun();
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.delLoading = false;
+            this.batchOperationDialog = false;
+        })
+    },
+
+    // 楼层批量删除封装函数
+    floorDelFun(params) {
+        this.delLoading = true;
+        deleteByIdsFloor(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.delDilaog = false;
+                this.selectFloorFun(this.building_radio);
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.delLoading = false;
+            this.batchOperationDialog = false;
+        })
+    },
+
+    // 楼栋批量删除封装函数
+    buildingDelFun(params) {
+        this.delLoading = true;
+        deleteByIdsBuilding(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.delDilaog = false;
+                this.selectBuildingsFun();
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.delLoading = false;
+            this.batchOperationDialog = false;
+        })
+    },
+
+    // 区域批量删除封装函数
+    areaDelFun(params) {
+        this.delLoading = true;
+        deleteByIds(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.delDilaog = false;
+                this.selectZoneFun();
+                this.batchOperationChecked = [];
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+            this.delLoading = false;
+            this.batchOperationAreaDialog = false;
+        })
+    },
+
+    // 区域radio改变的事件
+    areaRadioChange(val) {
+        const zone_id = this.AreaList.find(item => item.zone_name === val).zone_id
+        this.buildingList = [];
+        let params = {
+            zone_id
+        }
+        this.selectBuildingsFun(params);
+    },
+
+    // 查询楼栋
+    async selectBuildingsFun(params) {
+        const res = await selectBuildings(params);
+        this.buildingList = res.data;
+    },
+
+    // 店家查询全部
+    slectAllBuildingClick() {
+        this.selectBuildingsFun();
+        this.area_radio = '';
+    },
+
+    // 楼栋新增
+    addBuildingTextClick() {
+        if(this.buildingText === '') {
+            this.$Message.warning('请您填写楼栋名称');
+        } else {
+            if(!this.AreaList.length) {
+                this.$Modal.confirm({
+                    loading: this.loading,
+                    render: (h) => {
+                        return h("div", [
+                            h('h3', {
+
+                            }, '确定要添加到区域吗？')
+                        ])
+                    },
+
+                    onOk: () => {
+                        let params = {
+                            org_id: JSON.parse(localStorage.user).org_id,
+                            zone_name: this.buildingText
+                        }
+                        saveZone(params).then(res => {
+                            console.log(res);
+                            if(res.data.code === 'success') {
+                                this.$Message.success('成功');
+                                this.buildingText = '';
+                                this.selectZoneFun();
+                            } else {
+                                this.$Message.warning('失败');
+                            }
+                        })
+                    },
+                    onCancel: () => {
+                        this.buildingAddFun();
+                    }
+                })
+            } else {
+                this.buildingAddFun();
+            }
+        }
+    },
+
+    // 楼栋添加接口封装 利于多次调用
+    buildingAddFun() {
+        this.loading = true;
+        let params = {
+            building_name: this.buildingText,
+            zone_id: 0,
+            org_id: JSON.parse(localStorage.user).org_id
+        }
+        buildingSave(params).then(res => {
+            console.log(res);
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+                this.buildingText = '';
+                this.selectZoneFun();
+                this.selectBuildingsFun();
+            } else {
+                this.$Message.error(`${res.data.content.msg}`)
+            }
+            this.loading = false;
+        })
+    },
+
+    // 点击单个楼栋查询下面的楼层
+    buildRadioChange(val) {
+        this.floorList = [];
+        this.selectFloorFun(val);
+    },
+
+    // 查询楼层封装函数
+    selectFloorFun(val){
+        const building_id = this.buildingList.find(item => item.building_name === val).building_id;
+        let params = {
+            building_id
+        }
+        selectAllFloors(params).then(res => {
+            this.floorList = res.data
+        })
+    },
     
+    // 楼层添加接口
+    addFloorClick() {
+        // 判断是否选择了楼栋
+        if(this.floorText === '') {
+            this.$Message.warning('请您填写楼层名称')
+            return
+        }
+
+        if(this.building_radio === '') {
+            this.$Message.warning('请选择楼栋');
+            return
+        }
+        const row = this.buildingList.find(item => item.building_name === this.building_radio);
+
+        let params = {
+            building_id: row.building_id,
+            floor_name: this.floorText
+        };
+
+        floorSave(params).then(res => {
+            this.floorText = '';
+            this.buildRadioChange(this.building_radio);
+        })
+    },
+
+
+    // 房间添加接口
+    addRoomClick() {
+        // 判断是否选择了楼层
+        if(this.floor_radio === '') {
+            this.$Message.warning('请选择楼栋');
+            return
+        }
+
+        this.getRoomTypeFun();
+        this.roomAddModal = true;
+    },
+
+    // 房间弹出框确定按钮
+    addRoomModalClick(formName) {
+        this.$refs[formName].validate((valid) => {
+            if(valid) {
+                let formData = new FormData();
+                let _this = this;
+                
+                for(let i in this[formName]) {
+                    formData.append(i, this[formName][i])
+                }
+
+                const floor_id = this.floorList.find(item => item.floor_name === this.floor_radio).floor_id;
+
+                formData.append('file', this.roomImgsfileList);
+                formData.append('floor_id', floor_id);
+                formData.append('room_type_id', this[formName].room_id);
+                // 请求接口
+                setTimeout(() => {
+                    $.ajax({
+                        type: "POST",
+                        url: `${_this.addRoomUrl}`,
+                        data: formData,
+                        dataType: "JSON",
+                        cache: false, // 不缓存
+                        processData: false, // jQuery不要去处理发送的数据
+                        contentType: false
+                    }).success(function(res) {
+                        console.log(res);
+                        if(res.code === 'success') {
+                            _this.$Message.success('成功');
+                            _this.getRoomTypeFun();
+                            _this.selectRoomsFun();
+                            _this.roomAddModal = false;
+                        } else {
+                            _this.$Message.error('失败');
+                        }
+                    }).error(function(err) {
+                        console.log(err);
+                    });
+                }, 200)
+            }
+        })
+    },
+
+    // 房间弹出框取消按钮
+    addRoomModalCancelClick() {
+
+    },
+
+    // 获取楼层
+    async getRoomTypeFun() {
+        let params = {
+            org_id: JSON.parse(localStorage.user).org_id
+        }
+        const { data } = await selectRoomTypeSel(params);
+        data.shift(0);
+        this.roomTypeList = data;
+        console.log(data);
+    },
+
+    // 获取房间
+    async selectRoomsFun() {
+        const floor_id = this.floorList.find(item => item.floor_name === this.floor_radio).floor_id;
+
+        let params = {
+            floor_id
+        }
+        const { data } = await selectRooms(params);
+        this.roomList = data;
+        console.log(data);
+    },
+
+    // 当floor的改变时查询楼层下面的房间
+    floorRadioChange() {
+        this.selectRoomsFun();
+    },
+
+
+
+
+    /**
+     * @param { price } 价格管理
+     */
+
+
+    // 获取当前价格
+    async slectCurrentPrice() {
+        let params = {
+            org_id: JSON.parse(localStorage.user).org_id
+        }
+        const data = await selectNowRoomPrice(params);
+        this.currentRoomPrice = data.data;
+    },
+
+    // 显示列表
+    async selectPricePlanFun() {
+        let params = {
+            startPos: this.pricePricePage,
+            org_id: JSON.parse(localStorage.user).org_id
+        }
+        const { data } = await showRoomPriceList();
+        this.pricePlanList = data.data;
+        this.pricePricePlan = data.count;
+
+        let roomTypeArrIds = [];
+        let pricePlanIds = [];
+        let pricePlanPrices = [];
+
+        let rebirthArr = [];
+        for(let i in this.roomTypeUserData) {
+            roomTypeArrIds.push({ids: this.roomTypeUserData[i].room_type_id, room_name: this.roomTypeUserData[i].room_name});
+        }
+        
+        for(let i of this.pricePlanList) {
+            pricePlanIds = i.room_type_id.split(',');
+            pricePlanPrices = i.room_price.split(',');
+
+            for(let k in roomTypeArrIds) {
+                if(pricePlanIds.indexOf(roomTypeArrIds[k].ids) !== -1) {
+                    console.log(roomTypeArrIds[k].ids);
+                    rebirthArr.push({title: roomTypeArrIds[k].room_name, price: pricePlanPrices[pricePlanIds.indexOf(roomTypeArrIds[k].ids)]});
+                }
+            }
+        }
+
+        console.log(rebirthArr);
+
+        this.pricePlanColumns.push({
+            title: '操作',
+            align: 'center',
+            render: (h, { row, index }) => {
+            return h(
+                "Button", {
+                    props: {
+                        type: 'primary',
+                        icon: 'edit'
+                    },
+                }, '编辑' );
+            }
+        });
+    },
+
+    // 价格方案改变当前页的事件
+    pricePlanPageChange() {
+        // getNotPageRoomTypeFun
+    },
+
+    // 点击新增方案
+    addPricePlanClick() {
+        this.addPricePlanModal = true;
+        this.getNotPageRoomTypeFun();
+    },
+
+    // 房间类型改变时
+    pricePlanChange(plan) {
+        this.addPricePlanForm.checkedPricePlan = [];
+        for(let i of plan) {
+            this.addPricePlanForm.checkedPricePlan.push(
+                this.notPageRoomType.find(item => item.room_type_id === i)
+            );
+        }
+    },
+
+    // 删除单个价格明细
+    delOneRowClick(index) {
+        this.addPricePlanForm.room_type_id.splice(index, 1);
+        this.addPricePlanForm.checkedPricePlan.splice(index, 1)
+    },
+
+    // 点击添加房间价格方案确定按钮
+    addPricePlanConfirmClick(formName) {
+        this.$refs[formName].validate((valid) => {
+            console.log(valid)
+            if(valid) {
+                console.log('我成功了 ')
+                let room_prices = [];
+
+                if(this.addPricePlanForm.checkedPricePlan.length >= 1) {
+                    for(let i of this.addPricePlanForm.checkedPricePlan) {
+                        room_prices.push(i.room_prices);
+                    }
+                }
+
+                this[formName].start_time = this[formName].PlanDate[0];
+                this[formName].end_time = this[formName].PlanDate[1];
+                this[formName].room_prices = room_prices.join(',');
+                this[formName].room_type_ids = this[formName].room_type_ids.join(',');
+                this[formName].org_id = JSON.parse(localStorage.user).org_id;
+
+                addPricePlanSave(this[formName]).then(res => {
+                    if(res.data.code === 'success') {
+                        this.$Message.success('成功');
+                    } else {
+                        this.$Message.error(`${res.data.content.msg}`);
+                    }
+                })
+            }
+        })
+    },
+
+    // 点击添加房间价格方案取消按钮
+    addPricePlanCancelClick() {
+        this.$nextTick(() => {
+            this.addPricePlanModal = false;
+            this.addPricePlanForm.resetFields();
+        })
+    },
+
+    // 当时间改变时
+    PlanDateChange(val) {
+        this.addPricePlanForm.PlanDate = val;
+    }
+
   },
 
   created() {
-    this.InstitutionalTitleListFun();
-    this.selectAllFacilitiesFun();
-    this.ProvinceTitleListFun();
-    this.CityTitleListFun();
-    this.selectZoneFun();
+    this.initCreated()
   },
 
   mounted() {
-    this.init();
-    this.selectRoomTypeFun();
-    this.selectOrgByObjFun();
+    this.initMounted();
   }
 };
 </script>

@@ -31,7 +31,7 @@
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
@@ -68,7 +68,8 @@ import {
     roomnameList, // 退房单-房间名称下拉框渲染
     checkoutInstitutionalTitleList, //退房单-机构标题下拉框渲染
     checkoutListAgree, //退房单列表-操作-同意按钮
-    AliPay, // 支付宝微信接口
+    Alipayment, // 支付宝退款
+    Wepayment, // 微信退款
 } from '../../api/lp-order/api.js'
 
 // 补充时间格式 不够10 补充 0
@@ -317,12 +318,39 @@ export default {
                         },
                         style: {
                             marginRight: "5px",
-                            display:(params.row.order_status === 9) ? "inline-block":"none"
+                            display:(params.row.ord_status === 9) ? "inline-block":"none"
                         },
                         on: {
                             click: () => {
-                                // console.log(params.row.order_status === 9);
-                                this.agreeClick(params);
+                                // console.log(params.row.ord_status === 9);
+                                var Checkout_ord_id = $(params.row).attr('ord_id')
+                                localStorage.setItem('Checkout_ord_id',Checkout_ord_id)
+                                var refund_amount = $(params.row).attr('refund_amount')
+                                localStorage.setItem('refund_amount',refund_amount)
+                                var ord_status = $(params.row).attr('ord_status')
+                                localStorage.setItem('ord_status',ord_status)
+                                var ord_payment = $(params.row).attr('ord_payment')
+                                localStorage.setItem('ord_payment',ord_payment)
+                                var ord_amount = $(params.row).attr('ord_amount')
+                                localStorage.setItem('ord_amount',ord_amount)
+                                
+                                console.log(Checkout_ord_id); 
+                                console.log(refund_amount);
+                                console.log(ord_status);
+                                console.log(ord_payment);
+                                console.log(ord_amount);
+
+                                if(params.row.ord_status === 9){
+                                   this.agreeClick();
+                                }
+                                else{
+                                    var Checkout_ord_id = $(params.row).attr('ord_id')
+                                    localStorage.setItem('Checkout_ord_id',Checkout_ord_id)
+                                    console.log($(params.row).attr('ord_id'));
+                                    this.goToCheckoutInfo(params);
+                                }
+                                
+                                                               
                             }
                         }
                         },
@@ -337,13 +365,13 @@ export default {
                         },
                         style: {
                             marginRight: "5px",
-                            display:(params.row.order_status === 9) ? "none":"inline-block"
+                            display:(params.row.ord_status === 9) ? "none":"inline-block"
                             },
                         on: {
                             click: () => {
                                 var Checkout_ord_id = $(params.row).attr('ord_id')
                                 localStorage.setItem('Checkout_ord_id',Checkout_ord_id)
-                                // console.log($(params.row).attr('ord_id'));
+                                console.log($(params.row).attr('ord_id'));
                                 this.goToCheckoutInfo(params);
                             }
                         }
@@ -492,16 +520,75 @@ export default {
     },
 
     // 操作同意按钮
-    agreeClick(row){
-        console.log(row);
+    agreeClick(){
+     var ord_id = localStorage.getItem('Checkout_ord_id')
+     var refund_amount = localStorage.getItem('refund_amount')
+     var ord_status = localStorage.getItem('ord_status')
+     var ord_payment = localStorage.getItem('ord_payment')
+     var ord_amount = localStorage.getItem('ord_amount')
+     console.log(ord_id);
+     console.log(refund_amount);
+     console.log(ord_status);
+     console.log(ord_payment);
+     console.log(ord_amount);
+
+     let params = {
+          ord_id
+        }
+     checkoutListAgree(params).then(res => {
+          console.log(res);
+          if (res.data === 1) {
+            this.$Message.success("申请退房成功!");
+            this.getUser();
+            this.AlipayDetail();
+          } else {
+            this.$Message.success("申请退房失败!");
+        }; 
+     });
+    },
+
+    AlipayDetail(){
+       if (this.ord_payment === 1) {
+           this.aliPay();
+       } else if (this.ord_payment === 2) {
+           this.wePay();
+       }
+    },
+    
+    aliPay(){
+       let params = {
+          out_trade_no:ord_id,
+          money:refund_amount,
+        }
+        Alipayment(params).then(res => {
+        console.log(res);
+        if (res.data === isSuccess) {
+            this.$Message.success("支付宝退款成功!");
+            this.getUser();
+        } else if(res.data === isFailure) {
+            this.$Message.success("支付宝退款失败!");
+        }
+        })
+
+    },
+
+    wePay(){
+       let params = {
+          out_trade_no :ord_id,
+          refund_fee:refund_amount,
+          total_fee:ord_amount
+        }
+        Wepayment(params).then(res => {
+        console.log(res);
+        if (res.data === isSuccess) {
+            this.$Message.success("微信退款成功!");
+            this.getUser();
+        } else if(res.data === isFailure) {
+            this.$Message.success("微信退款失败!");
+        }
         
-        let inverseValue = 9;
-        row.org_status === 9 ? inverseValue = 10 : inverseValue = 9;
-        let params = {
-            org_id,
-            org_status: inverseValue
-        };
-      this.checkoutListAgree(params);
+        })
+
     },
 
 
@@ -530,6 +617,7 @@ export default {
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1 ) {
         // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        console.log(pageIndex)
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
