@@ -67,7 +67,7 @@
                     <Input v-model="addForm.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
                 </FormItem>
 
-                <FormItem label="预定机构" prop="org_name">
+                <FormItem label="预定机构" prop="org_name2">
                     <!-- <Input v-model="addForm.org_name" disabled></Input> -->
                     <span>
                       {{ addForm.org_name }}
@@ -99,11 +99,14 @@
                     </CheckboxGroup>
                 </FormItem>
 
-                <FormItem prop="check_time" label="ewfweefeDDD">
-                  <span>房间数量</span>
-                  <Input v-model="addForm.ord_amount" placeholder="请输入房间数量" class="inputWidth"></Input>
-                  <span>房间单价  ￥{{ 1 }}</span>
-                  <span v-for="(i,index) in maxArr" class="color">该房型最多可预订 {{ i }} 间</span>
+                <FormItem prop="check_time" label="">
+                  <div v-for="(i,index) in message" class="messageBox">
+                  <span class="roomName">{{ i.room_name }}</span>
+                  <span>房间数量&nbsp;</span>
+                  <Input v-model="addForm.ord_amount" @on-blur="showPice" placeholder="请输入房间数量" class="inputWidth"></Input>
+                  <span>&nbsp;房间单价  ￥{{ i.default_priceB }}</span>
+                  <span class="color">您最多可预订{{ i.room_name }} 房型 {{ i.number }} 间</span>
+                  </div>
                 </FormItem>
 
                 <FormItem label="订单金额" prop="ord_amount">
@@ -438,13 +441,18 @@ export default {
 
       destinationTitle: [],
 
+      mock:[
+
+      ],
+
       ruleValidate: {
         reserve_persion_name: [
           { required: true, message: "请输入预订人", trigger: "blur" }
         ],
 
         reserve_persion_phone: [
-          { required: true, message: "请输入预订人手机", trigger: "blur" }
+          { required: true, message: "请输入预订人手机", trigger: "blur" },
+
         ],
 
         interest: [
@@ -512,7 +520,9 @@ export default {
 
       destination: [],
       
-
+      room_type_id:"",//用于发送 拼接的字符串room_type_id
+      compareArr:[],
+      length:0,
       message:[],//用于存放  各种数据
       roomNameArr:[],//用于存放 各个房型房间名
       maxArr:[],//用于存放 各个房型最大房间剩余数
@@ -881,9 +891,13 @@ export default {
         data: params
       });
     },
+    // 输入  预定的房间数量  失去焦点触发的方法
+    showPice(){
+
+    },
     roomChange(val) {
       // 房型checkboxChange 的时候需先 判断 入住时间是否填写 和 目的地名称是否选择
-      console.log(this.addForm.reserve_destination);
+      console.log(val);
       var d = new Date(this.liveTime[0]);
       var D = new Date(this.liveTime[1]);
       var start_time = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); 
@@ -899,51 +913,74 @@ export default {
         return
       }
       console.log(this.addForm.roomCheckBox);
-      let params = {
-        start_time,
-        end_time,
-        room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
-      }
-      roomTypeChange(params).then(res => {
-        console.log(res);
-      })
-      let param = {
-        startTime:start_time,
-        endTime:end_time,
-        room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
-      }
-      roomTypeNum(param).then(res => {
-        console.log(res);
-        var newArr = [];
-        // res.data.data.number.push(newArr);
-        for(var i = 0;i<res.data.data.length;i++){
-          newArr.push(res.data.data[i].number);
+      let a = new Set(this.compareArr);
+      let b = new Set(val);
+      let difference = Array.from(new Set([...a].filter(x => !b.has(x))));
+      console.log(difference);
+      this.compareArr = val;
+
+      // let params = {
+      //   start_time,
+      //   end_time,
+      //   room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
+      // }
+      // roomTypeChange(params).then(res => {
+      //   console.log(res);
+      // })
+      
+      
+      if(this.addForm.roomCheckBox.length > this.length){
+        this.length = this.addForm.roomCheckBox.length;
+
+        let param = {
+          startTime:start_time,
+          endTime:end_time,
+          room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
         }
-        var max = Math.max(...newArr);
-        console.log(max);
-        this.maxArr.push(max);
-        this.roomNameArr.push()
+        roomTypeNum(param).then(res => {
+          console.log(res);
+          // var newArr = [];
+          // // res.data.data.number.push(newArr);
+          // for(var i = 0;i<res.data.data.length;i++){
+          //   newArr.push(res.data.data[i].number);
+          // }
+          // var max = Math.max(...newArr);
+          // console.log(max);
+          // this.maxArr.push(max);
+          // this.roomNameArr.push()
+          
+          var maxNum = 0;
+          var index = 0;
+          for(var i = 0;i<res.data.data.length;i++){
 
+            if(res.data.data[i].number >= maxNum){
+              var msg = {};
 
-        var maxNum = 0;
-        var index = 0;
-        for(var i = 0;i<res.data.data.length;i++){
-
-          if(res.data.data[i].number >= maxNum){
-            var msg = {};
-
-            maxNum = res.data.data[i].number;
-            index = i;
-            msg = res.data.data[i]
+              maxNum = res.data.data[i].number;
+              index = i;
+              msg = res.data.data[i]
+            }
+          }
+          this.message.push(msg);
+          var arr = [];
+          for(var i = 0;i<this.message.length;i++){
+            arr.push(this.message[i].room_type_id)
+          }
+          this.room_type_id = arr.join();
+          console.log(this.room_type_id);
+          
+          console.log(this.message);
+        })
+      }else{
+        this.length--;
+        for(var i = 0;i<this.message.length;i++){
+          if(difference[0] === this.message[i].room_type_id){
+            this.message.splice(i,1);
           }
         }
-        this.message.push(msg);
         console.log(this.message);
-        
-
-        
-        
-      })
+      }
+      
     },
     roomChange1(val) {
       console.log(val);
@@ -1010,8 +1047,27 @@ export default {
     AddModalConfirm(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          console.log(this.liveTime);
+          
           this.loading = true;
-          addReserve(this[name]).then(res => {
+          var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+
+          let params = {
+            adm_user_id,
+            reserve_person_name:this.addForm.reserve_person_name,
+            reserve_persion_phone:this.addForm.reserve_persion_phone,
+            reserve_destination:this.addForm.reserve_destination,
+            comments:this.addForm.comments,
+            begin_time:this.liveTime[0],
+            end_time:this.liveTime[1],
+            room_type_id:this.room_type_id,
+
+            // default_priceB:this.addForm.reserve_persion_phone,
+            // room_num:this.addForm.reserve_persion_phone,
+            default_priceB:"1,2,3",
+            room_num:"1,2,3",
+          }
+          addReserve(params).then(res => {
             console.log(res);
             this.clearFormFun('addForm');
           })
@@ -1214,8 +1270,7 @@ export default {
       console.log(params);
       this.bindingEditForm.name = params.row.name;
       this.bindingEditForm.bindingEditId = params.row.occu_id;
-      this.bindingEditForm.identity_card_number =
-        params.row.identity_card_number;
+      this.bindingEditForm.identity_card_number = params.row.identity_card_number;
       this.bindingEditForm.contact_number = params.row.contact_number;
     },
 

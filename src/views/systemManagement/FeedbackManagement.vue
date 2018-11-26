@@ -91,13 +91,14 @@ export default {
                     return h('img', 
                     {
                         attrs:{
-                            src: this.imgFun(row)
+                            src: this.imgFun(row)   
                         },
                         style:{
-                            width: "100px",
+                            width: "80px",
                             height: "80px",
-                            padding:"12px"
-                        }
+                            padding:"12px",
+                            display:(this.imgFun(row) === "" ) ? "暂无" : "inline-block"
+                        },    
                     }, 
                     )
                 },
@@ -202,6 +203,7 @@ export default {
       var showUrl = this.base + "/" + visit;
       console.log(getBase().base2);
       console.log(this.base);
+      console.log(showUrl);
       
       return showUrl;
     },

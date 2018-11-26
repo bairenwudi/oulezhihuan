@@ -5,7 +5,7 @@
 <template>
     <div>
         <!-- table -->
-        <Table 
+        <Table
             :columns="columns"
             :data="data"
             :loading="loading"
