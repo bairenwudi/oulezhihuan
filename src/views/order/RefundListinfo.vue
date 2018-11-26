@@ -100,14 +100,13 @@
             </Card>
         </Row>
         <h2>订单明细</h2><br/>
-          <TableM 
+           <TableLockM
             :columns="columns" 
             :data="userData" 
-            :loading="loading" 
-            :current.async="currentPageIndex" 
-            :total="total"
-            @pageChange="pageChange">
-          </TableM>
+            :loading="loading"
+            :height="280"
+            class="tableDetail">
+          </TableLockM>
         <br/>
         <h2>预订人信息</h2>
           <Row>
@@ -125,20 +124,19 @@
             </Card>
         </Row>
         <h2>入住人信息</h2><br/>
-          <TableM 
+          <TableLockM 
             :columns="columns1" 
             :data="userData1" 
-            :loading="loading" 
-            :current.async="currentPageIndex" 
-            :total="total" 
-            @pageChange="pageChange">
-          </TableM>
+            :loading="loading"
+            :height="280"
+            class="tableInformation">
+          </TableLockM>
 
     </div>
 </template>
 
 <script>
-import TableM from '../../common/table/table.vue';
+import TableLockM from '../../common/table/tableLock.vue';
 import {
     RefundListinfo, //退款单详情列表-订单信息、订单明细、预订人信息
     RefundListCustomerinfo, // 退款单详情列表-入住人
@@ -153,7 +151,7 @@ export default {
   name: "RefundListinfoModel",
 
   components: {
-      TableM
+      TableLockM
   },
   data() {
     return {
