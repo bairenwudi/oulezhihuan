@@ -19,7 +19,7 @@
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>{{checkoutInfoForm.ord_payment}}</dt>
+                    <dt>{{checkoutInfoForm.ord_payment === "1"? `支付宝` : `微信` }}</dt>
                 </div>
 
                 <div class="TD-view">

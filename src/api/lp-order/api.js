@@ -60,9 +60,6 @@ const destinationTitleList = params => {
     return axios.post(`${baseUrl.base3}/BatchReserveController/Select_des`, params);
 };
 
-<<<<<<< HEAD
-
-=======
 //批量审核列表
 const batchAuditList = params => {
     return axios.post(`${baseUrl.base3}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
@@ -82,7 +79,6 @@ const batchinstitutionTitleList = params => {
 const batchIdList = params => {
     return axios.post(`${baseUrl.base3}/Admin_userController/getSessionAdminUser`, params);
 };
->>>>>>> 8ed4ce84dd55da3b071287da33d82405f27af9e6
 
 
 
@@ -103,20 +99,12 @@ const RefundInstitutionalTitleList = params => {
 
 // 退款单详情列表-订单信息、订单明细、预订人信息
 const RefundListinfo = params => {
-<<<<<<< HEAD
-    return axios.post(`${baseUrl.base3}/RefundOrderApp/selectRefundOrderInfo`, params);
-=======
     return axios.post(`${baseUrl.base3}/Refund/select_refund_info`, params);
->>>>>>> 8ed4ce84dd55da3b071287da33d82405f27af9e6
 };
 
 // 退款单详情列表-入住人
 const RefundListCustomerinfo = params => {
-<<<<<<< HEAD
-    return axios.post(`${baseUrl.base3}/RefundOrderApp/customerList?startPos=${params.startPos}&pageSize=10`, params);
-=======
     return axios.post(`${baseUrl.base3}/Refund/customerList?startPos=${params.startPos}&pageSize=10`, params);
->>>>>>> 8ed4ce84dd55da3b071287da33d82405f27af9e6
 };
 
 
@@ -138,11 +126,7 @@ const checkoutInstitutionalTitleList = params => {
 
 // 退房单详情列表-订单信息、订单明细、预订人信息
 const checkoutListinfo = params => {
-<<<<<<< HEAD
-    return axios.post(`${baseUrl.base3}/check/select_check`, params);
-=======
     return axios.post(`${baseUrl.base3}/check/select_check_info`, params);
->>>>>>> 8ed4ce84dd55da3b071287da33d82405f27af9e6
 };
 
 // 退房单详情列表-入住人
@@ -152,23 +136,25 @@ const checkoutListCustomerinfo = params => {
 
 // 退房单列表-操作-同意按钮
 const checkoutListAgree = params => {
-    return axios.post(`${baseUrl.base2}/check/agree?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base3}/check/agree`, params);
 };
 
-// 支付宝微信接口
-const AliPay = params => {
-    return axios.post(`${baseUrl.base3}/AliPayController/aliPayRefund`, params);
+// 支付宝退款接口
+const Alipayment = params => {
+    return axios.post(`${baseUrl.base2}/AliPayController/aliPayRefund`, params);
 };
+
+// 微信退款接口
+const Wepayment = params => {
+    return axios.post(`${baseUrl.base2}/WeiXin/WeXinRefund`, params);
+};
+
 
 
 
 //批量预定   新增弹框中的checkboxGroup渲染 房间类型
 const destinationCheckbox = params => {
-<<<<<<< HEAD
     return axios.post(`${baseUrl.base3}/Zh_room_typeController/selectRoomType`, params);
-=======
-    return axios.post(`${baseUrl.base3}/Zh_room_type_priceController/showRoomPriceList`, params);
->>>>>>> 8ed4ce84dd55da3b071287da33d82405f27af9e6
 }
 //批量预定   点击绑定 
 const addCustomer = params => {
@@ -211,25 +197,6 @@ const batchCheckoutList = params => {
     return axios.post(`${baseUrl.base3}/BatchReserveController/reserveList1?startPos=${params.startPos}&pageSize=10`, params);
 };
 
-
-
-
-
-
-//批量审核模糊查询
-const batchAuditSearch = params => {
-    return axios.post(`${baseUrl.base3}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
-};
-
-// 批量审核模糊查询-预定机构下拉列表渲染
-const batchinstitutionTitleList = params => {
-    return axios.post(`${baseUrl.base3}/Admin_userController/selectOrg_name`, params);
-};
-
-// 批量审核模糊查询-获取登录的id(adm_id)
-const batchIdList = params => {
-    return axios.post(`${baseUrl.base3}/Admin_userController/getSessionAdminUser`, params);
-};
 export {
     appOrderList, //App订单列表
     appOrderSearch, //App订单模糊查询
@@ -254,7 +221,8 @@ export {
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
     checkoutListAgree, //退房单列表-操作-同意按钮
-    AliPay, // 支付宝微信接口
+    Alipayment, // 支付宝退款
+    Wepayment, // 微信退款
     destinationCheckbox,
     addCustomer,
     addOccupant,
