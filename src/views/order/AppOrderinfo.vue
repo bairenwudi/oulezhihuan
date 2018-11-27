@@ -75,13 +75,14 @@
             </Card>
         </Row>
         <h2>订单明细</h2><br/>
-          <TableLockM
+          <TableM 
             :columns="columns" 
             :data="userData" 
-            :loading="loading"
-            :height="280"
-            class="tableDetail">
-          </TableLockM>
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total" 
+            @pageChange="pageChange">
+          </TableM>
         <h2>预订人信息</h2>
           <Row>
             <Card class="TD-card" ref="appOrderInfoForm" :model="appOrderInfoForm">
@@ -98,19 +99,20 @@
             </Card>
         </Row>
         <h2>入住人信息</h2><br/>
-           <TableLockM 
+          <TableM 
             :columns="columns1" 
             :data="userData1" 
-            :loading="loading"
-            :height="280"
-            class="tableInformation">
-          </TableLockM>
+            :loading="loading" 
+            :current.async="currentPageIndex" 
+            :total="total" 
+            @pageChange="pageChange">
+          </TableM>
 
     </div>
 </template>
 
 <script>
-import TableLockM from '@/common/table/tableLock.vue';
+import TableM from '@/common/table/table.vue';
 import {
     appOrderListinfo,//App订单详情列表-订单信息、订单明细、预订人信息
     appOrderListCustomerinfo,// App订单详情列表-入住人
@@ -118,7 +120,7 @@ import {
 export default {
   name: "AppOrderinfo",
   components: {
-      TableLockM
+      TableM
   },
   data() {
     return {

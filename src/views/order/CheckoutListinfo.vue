@@ -101,13 +101,12 @@
             </Card>
         </Row>
         <h2>订单明细</h2><br/>
-          <TableLockM
+          <TableM 
             :columns="columns" 
             :data="userData" 
-            :loading="loading"
             :height="280"
-            class="tableDetail">
-          </TableLockM>
+            :loading="loading">
+          </TableM>
         <h2>预订人信息</h2>
           <Row>
             <Card class="TD-card" ref="checkoutInfoForm" :model="checkoutInfoForm">
@@ -124,20 +123,18 @@
             </Card>
         </Row>
         <h2>入住人信息</h2><br/>
-          <TableLockM 
-            :columns="columns1" 
-            :data="userData1" 
-            :loading="loading"
+          <TableM 
+            :columns="columns1"
             :height="280"
-            class="tableInformation">
-          </TableLockM>
+            :data="userData1" 
+            :loading="loading">
+          </TableM>
 
     </div>
-    
 </template>
 
 <script>
-import TableLockM from '@/common/table/tableLock.vue';
+import TableM from '@/common/table/tableLock.vue';
 import {
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
@@ -151,7 +148,7 @@ import VirtualList from 'vue-virtual-scroll-list'
 export default {
   name: "CheckoutListinfoModel",
   components: {
-      TableLockM
+      TableM
   },
   data() {
     return {

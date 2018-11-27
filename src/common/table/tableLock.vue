@@ -1,12 +1,12 @@
 <template>
   <div>
-    <!-- table -->
-    <Table
-        :columns="columns"
-        :data="data"
-        :height="height"
-        :loading="listLoading"
-    ></Table>
+      <!-- table -->
+      <Table
+          :columns="columns"
+          :data="data"
+          :height="height"
+          :loading="loading"
+      ></Table>
   </div>
 </template>
 
@@ -18,13 +18,10 @@ export default {
         sels: [],   //列表选中列
     }
   },
-  props: ['data', 'columns', 'checkbox', 'listLoading', 'height'],
+  props: ['columns', 'data', 'height', 'loading'],
   computed: {
   },
   methods: {
-      selsChange () {
-        console.log('selsChange');
-      }
   },
   mounted () {
   }

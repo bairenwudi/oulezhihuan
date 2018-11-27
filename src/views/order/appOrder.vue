@@ -467,7 +467,7 @@ export default {
     // 渲染机构标题下拉列表
     async AppInstitutionalTitleListFun() {
         const { data } = await AppInstitutionalTitleList();
-        // data.shift(0);
+        data.shift(0);
         this.AppinstitutionTitle = Array.from(new Set(data));
         // console.log(arr)
     },
