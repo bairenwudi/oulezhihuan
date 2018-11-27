@@ -29,7 +29,7 @@ const roomnameList = params => {
 
 // App订单模糊查询-机构标题下拉列表渲染
 const AppInstitutionalTitleList = params => {
-    return axios.post(`${baseUrl.base3}/Orders_app/select_Orders_app`, params);
+    return axios.post(`${baseUrl.base3}/Orders_app/Select_org_name`, params);
 };
 
 

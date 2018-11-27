@@ -39,7 +39,7 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房间名称" :label-width="60">
+            <FormItem prop="room_name" label="房型名称" :label-width="60">
                 <Select v-model="formInline.room_name" clearable style="width:200px">
                     <virtual-list :size="30" :remain="5">
                         <Option v-for="item in roomName" :value="item.room_name" :key="item.org_id">{{ item.room_name }}</Option>
@@ -74,8 +74,12 @@ import {
   AppInstitutionalTitleList, //App订单-机构标题下拉框渲染
 } from "../../api/lp-order/api.js";
 
-// 补充时间格式 不够10 补充 0
+// 年月日分秒时 补充时间格式 不够10 补充 0
 import { formatTime } from "@/common/date/formatTime.js";
+
+// 年月日 补充时间格式 不够10 补充 0
+import { formatTimeDay } from "@/common/date/formatTime.js";
+
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
 
@@ -164,7 +168,6 @@ export default {
       
       AppinstitutionTitle: [
         {
-          org_name: '',
           adm_user_type : 3
         },
       ],
@@ -212,7 +215,7 @@ export default {
         },
 
         {
-          title: "房间名称",
+          title: "房型名称",
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -384,9 +387,14 @@ export default {
     },
 
 
-    // 转化时间
+    // 转化时间-年月日分秒时
     dataFormat(time) {
         return formatTime(time);
+    },
+
+     // 转化时间-年月日
+    dataFormatDay(time) {
+        return formatTimeDay(time);
     },
 
     // 过滤订单状态
@@ -468,8 +476,8 @@ export default {
     async AppInstitutionalTitleListFun() {
         const { data } = await AppInstitutionalTitleList();
         data.shift(0);
-        this.AppinstitutionTitle = Array.from(new Set(data));
-        // console.log(arr)
+        this.AppinstitutionTitle = data;
+        console.log(this.AppinstitutionTitle)
     },
 
     // 渲染房间名称下拉列表
@@ -505,8 +513,8 @@ export default {
       if (filter) {
         params = Object.assign(params, filter);
         if(filter.check_time[0] !== '') {
-            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+            params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
         }
       }
 
