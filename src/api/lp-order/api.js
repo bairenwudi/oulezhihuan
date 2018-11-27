@@ -147,8 +147,13 @@ const editOccupant = params => {
 const delOccupant = params => {
     return axios.post(`${baseUrl.base3}/Occupant_infoController/deleteBatchOccupant`, params);
 }
+//批量预定   导入excel 
+const daoruExcel = params => {
+    return axios.post(`${baseUrl.base3}/Occupant_infoController/saveExcel`, params);
+}
+
 //批量预定   提交按钮 
-const submit = params => {
+const submit = params => { 
     return axios.post(`${baseUrl.base3}/BatchReserveController/submit`, params);
 }
 //批量预定   新增 
@@ -189,7 +194,7 @@ const batchCheckoutList = params => {
 
 //批量审核   详情 和 处理
 const detailAndDeal = params => {
-    return axios.post(`${baseUrl.base3}/BatchReserveController/reserveInfo?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base3}/BatchReserveController/reserveInfo`, params);
 };
 
 
@@ -232,6 +237,7 @@ export {
     addOccupant,
     editOccupant,
     delOccupant,
+    daoruExcel,
     submit,
     addReserve,        //批量审核   新增 
     delReserve,        //批量审核   删除 
