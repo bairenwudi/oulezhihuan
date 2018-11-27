@@ -10,6 +10,24 @@ export const loginRouter = {
     component: resolve => { require(['@/views/login.vue'], resolve); }
 };
 
+export const registerRouter = {
+    path: '/register',
+    name: 'register',
+    meta: {
+        title: 'Register - 注册'
+    },
+    component: resolve => { require(['@/views/register.vue'], resolve); }
+};
+
+export const forgetRouter = {
+    path: '/forget',
+    name: 'forget',
+    meta: {
+        title: 'Forget - 忘记密码'
+    },
+    component: resolve => { require(['@/views/forget.vue'], resolve); }
+};
+
 export const page404 = {
     path: '/*',
     name: 'error-404',
@@ -252,6 +270,8 @@ export const appRouter = [
 // 所有上面定义的路由都要写在下面的routers里
 export const routers = [
     loginRouter,
+    registerRouter,
+    forgetRouter,
     otherRouter,
     locking,
     ...appRouter,

@@ -588,15 +588,42 @@
 
     <TabPane label="默认价格" name="defaultPrice">
         <TableM
-            :columns="roomTypeColumns"
-            :data="roomTypeUserData"
+            :columns="defaultPriceColumns"
+            :data="defaultPriceList"
             :loading="loading"
             :current.async="CurrentPageIndex"
-            :total="roomTypeTotal"
-            @pageChange="pricePlanPageChange"
-            @selectChange="selectChange"
+            :total="defaultPriceTotal"
+            @pageChange="defaultPricePageChange"
         >
         </TableM>
+
+
+        <!-- 编辑默认价格 => modal -->
+        <Modal v-model="defaultPriceModal"
+                title="编辑默认价格"
+                :mask-closable="false"
+                @on-ok="defaultPriceConfirmClick('defaultPriceForm')"
+                @on-cancel="defaultPriceCancelClick('defaultPriceForm')"
+            >
+            <Form ref="defaultPriceForm" :model="defaultPriceForm" :rules="defaultPriceRule" :label-width="120">
+                <FormItem label="房型名称：" prop="room_type">
+                    <span>{{ defaultPriceForm.room_type }}</span>
+                </FormItem>
+
+                <FormItem label="B端价格：" prop="default_priceB">
+                    <Input v-model="defaultPriceForm.default_priceB" placeholder="请输入名称"></Input>
+                </FormItem>
+
+                <FormItem label="APP端价格：" prop="default_priceC">
+                    <Input v-model="defaultPriceForm.default_priceC" placeholder="请输入名称"></Input>
+                </FormItem>
+            </Form>
+
+            <div slot="footer" align="center">
+                <Button type="primary" @click="defaultPriceConfirmClick('defaultPriceForm')" :loading="loading">保存</Button>
+                <Button @click="defaultPriceCancelClick('defaultPriceForm')" style="margin-left: 8px">取消</Button>
+            </div>
+        </Modal>
     </TabPane>
 
 </Tabs>
@@ -611,7 +638,6 @@ import { VueEditor } from "vue2-editor";
 
 // 引入api接口
 import {
-  baseInformationList,
   selectOrgByObj,
   InstitutionalTitleList,
   ProvinceTitleList,
@@ -647,6 +673,8 @@ import {
   saveRoomPrice,
   showRoomPriceList,
   addPricePlanSave,
+  selectRoomTypeDefaultPrice,
+  updateByIdDefaultPrice,
   getBase,
 } from "@/api/lp-organizational/api.js";
 
@@ -698,7 +726,7 @@ export default {
 
         moveAreaRadio: '',      // 移动区域的radio
 
-        defaultName: 'priceSet',     // 默认显示哪个标签页
+        defaultName: 'defaultPrice',     // 默认显示哪个标签页
 
         allFacilitiesList: [],  // 获取全部的基地设施
 
@@ -771,6 +799,35 @@ export default {
                 return h(
                     "span", {
                     }, row.room_type_sort || '暂无' );
+                }
+            }
+        ],
+
+        defaultPriceColumns: [
+            {
+                title: "房型名称",
+                key: "room_type"
+            },
+            {
+                title: "B端价格(元/天)",
+                key: "default_priceB"
+            },
+            {
+                title: "APP端价格(元/天)",
+                key: "default_priceC"
+            },
+            {
+                title: "操作",
+                render: (h, { row, index }) => {
+                return h(
+                    "Button", {
+                        props: {
+                            type: 'primary'
+                        },
+                        on: {
+                            click: () => this.defalutPriceShowDialogClick(row)
+                        }
+                    }, '编辑' );
                 }
             }
         ],
@@ -918,7 +975,24 @@ export default {
 
         addPricePlanModal: false,   // 新增价格方案dialog
 
-             // 装载已经选择的使用房型
+        defaultPricePage: 1,    // 默认价格当前页
+
+        defaultPriceList: [],   // 默认价格列表
+
+        defaultPriceTotal: 0,   // 默认价格总数
+
+        defaultPriceModal: false,   // 默认价格编辑dialog
+
+        defaultPriceForm: {},   // 默认价格表单对象
+
+        defaultPriceRule: {     // 默认价格校验表单
+            default_priceB: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ],
+            default_priceC: [
+                { required: true, message: '请填写完整', trigger: 'blur' }
+            ]
+        },   
     };
   },
 
@@ -941,6 +1015,7 @@ export default {
         this.selectZoneFun();
         this.slectCurrentPrice();
         this.selectPricePlanFun();
+        this.getDefaultPrice();
     },
 
     // 在渲染完之后 初始化多个富文本传值
@@ -2138,24 +2213,31 @@ export default {
         this.$refs[formName].validate((valid) => {
             console.log(valid)
             if(valid) {
-                console.log('我成功了 ')
                 let room_prices = [];
+                let room_type_ids = [];
 
                 if(this.addPricePlanForm.checkedPricePlan.length >= 1) {
-                    for(let i of this.addPricePlanForm.checkedPricePlan) {
+                    for(let i of this[formName].checkedPricePlan) {
                         room_prices.push(i.room_prices);
                     }
                 }
+                for(let i of this[formName].room_type_ids) {
+                    room_type_ids.push(i);
+                }
 
-                this[formName].start_time = this[formName].PlanDate[0];
-                this[formName].end_time = this[formName].PlanDate[1];
-                this[formName].room_prices = room_prices.join(',');
-                this[formName].room_type_ids = this[formName].room_type_ids.join(',');
-                this[formName].org_id = JSON.parse(localStorage.user).org_id;
+                let params = {
+                    start_time: this[formName].PlanDate[0],
+                    end_time: this[formName].PlanDate[0],
+                    room_prices: room_prices.join(','),
+                    room_type_ids: room_type_ids.join(','),
+                    org_id: JSON.parse(localStorage.user).org_id,
+                    project_name: this[formName].project_name
+                };
 
-                addPricePlanSave(this[formName]).then(res => {
+                addPricePlanSave(params).then(res => {
                     if(res.data.code === 'success') {
                         this.$Message.success('成功');
+                        this.addPricePlanModal = false;
                     } else {
                         this.$Message.error(`${res.data.content.msg}`);
                     }
@@ -2175,7 +2257,58 @@ export default {
     // 当时间改变时
     PlanDateChange(val) {
         this.addPricePlanForm.PlanDate = val;
+    },
+
+    // 获取默认价格
+    async getDefaultPrice() {
+        let params = {
+            startPos: this.defaultPricePage
+        };
+        const { data } = await selectRoomTypeDefaultPrice(params);
+        this.defaultPriceTotal = data[0].count;
+        data.shift(0);
+        this.defaultPriceList = data;
+        console.log(this.defaultPriceList)
+    },
+
+    // 默认价格改变分页
+    defaultPricePageChange(pageIndex) {
+        this.defaultPricePage = pageIndex;
+        this.getDefaultPrice();
+    },
+
+    // 点击编辑 显示编辑dialog
+    defalutPriceShowDialogClick(row) {
+        this.defaultPriceModal = true;
+        this.defaultPriceForm = Object.assign({}, row)
+    },  
+
+    // 点击默认价格编辑确定按钮
+    defaultPriceConfirmClick(formName) {
+        this.$refs[formName].validate((valid) => {
+            if(valid) {
+                this[formName].org_id = JSON.parse(localStorage.user).org_id
+                updateByIdDefaultPrice(this[formName]).then(res => {
+                    if(res.data.code === 'success') {
+                        this.$Message.success('成功');
+                        this.defaultPriceModal = false;
+                        this.getDefaultPrice();
+                    } else {
+                        this.$Message.error(`${res.data.content.msg}`);
+                    }
+                })
+            }
+        })
+    },
+
+    // 点击默认价格编辑取消按钮
+    defaultPriceCancelClick(formName) {
+        this.$nextTick(() => {
+            this.$refs[formName].resetFields();
+            this.defaultPriceModal = false;
+        })
     }
+
 
   },
 

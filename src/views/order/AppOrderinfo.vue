@@ -75,13 +75,12 @@
             </Card>
         </Row>
         <h2>订单明细</h2><br/>
-          <TableLockM
+          <TableM 
             :columns="columns" 
             :data="userData" 
-            :loading="loading"
             :height="280"
-            class="tableDetail">
-          </TableLockM>
+            :loading="loading">
+          </TableM>
         <h2>预订人信息</h2>
           <Row>
             <Card class="TD-card" ref="appOrderInfoForm" :model="appOrderInfoForm">
@@ -98,27 +97,34 @@
             </Card>
         </Row>
         <h2>入住人信息</h2><br/>
-           <TableLockM 
-            :columns="columns1" 
-            :data="userData1" 
-            :loading="loading"
+           <TableM 
+            :columns="columns1"
             :height="280"
-            class="tableInformation">
-          </TableLockM>
+            :data="userData1" 
+            :loading="loading">
+          </TableM>
 
     </div>
 </template>
 
 <script>
-import TableLockM from '@/common/table/tableLock.vue';
+import TableM from '@/common/table/tableLock.vue';
 import {
     appOrderListinfo,//App订单详情列表-订单信息、订单明细、预订人信息
     appOrderListCustomerinfo,// App订单详情列表-入住人
 }from '../../api/lp-order/api.js'
+
+// 年月日分秒时 补充时间格式 不够10 补充 0
+import { formatTime } from "@/common/date/formatTime.js";
+
+// 年月日 补充时间格式 不够10 补充 0
+import { formatTimeDay } from "@/common/date/formatTime.js";
+
+
 export default {
   name: "AppOrderinfo",
   components: {
-      TableLockM
+      TableM
   },
   data() {
     return {
@@ -133,7 +139,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, this.dataFormat(row.ord_date) || `暂无${index}`)
+                    }, this.dataFormatDay(row.ord_date) || `暂无${index}`)
                 }
             },
   
@@ -201,6 +207,18 @@ export default {
     }
   },
   methods:{
+
+   
+    // 转化时间-年月日分秒时
+    dataFormat(time) {
+        return formatTime(time);
+    },
+
+     // 转化时间-年月日
+    dataFormatDay(time) {
+        return formatTimeDay(time);
+    },
+
 
    // 过滤订单状态
     SetStatusFilter(status) {
@@ -286,8 +304,8 @@ export default {
          if (filter) {
         params = Object.assign(params, filter);
         if(filter.check_time[0] !== '') {
-            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+            params.check_in_time = this.formatTimeDay(filter.check_time[0].getTime());
+            params.check_out_time = this.formatTimeDay(filter.check_time[1].getTime());
         }
       }
 

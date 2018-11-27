@@ -29,7 +29,7 @@ const roomnameList = params => {
 
 // App订单模糊查询-机构标题下拉列表渲染
 const AppInstitutionalTitleList = params => {
-    return axios.post(`${baseUrl.base3}/Orders_app/select_Orders_app`, params);
+    return axios.post(`${baseUrl.base3}/Orders_app/Select_org_name`, params);
 };
 
 
@@ -80,12 +80,12 @@ const RefundInstitutionalTitleList = params => {
 
 // 退款单详情列表-订单信息、订单明细、预订人信息
 const RefundListinfo = params => {
-    return axios.post(`${baseUrl.base3}/RefundOrderApp/selectRefundOrderInfo`, params);
+    return axios.post(`${baseUrl.base3}/Refund/select_refund_info`, params);
 };
 
 // 退款单详情列表-入住人
 const RefundListCustomerinfo = params => {
-    return axios.post(`${baseUrl.base3}/RefundOrderApp/customerList?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base3}/Refund/customerList?startPos=${params.startPos}&pageSize=10`, params);
 };
 
 
@@ -107,7 +107,7 @@ const checkoutInstitutionalTitleList = params => {
 
 // 退房单详情列表-订单信息、订单明细、预订人信息
 const checkoutListinfo = params => {
-    return axios.post(`${baseUrl.base3}/check/select_check`, params);
+    return axios.post(`${baseUrl.base3}/check/select_check_info`, params);
 };
 
 // 退房单详情列表-入住人
@@ -117,13 +117,19 @@ const checkoutListCustomerinfo = params => {
 
 // 退房单列表-操作-同意按钮
 const checkoutListAgree = params => {
-    return axios.post(`${baseUrl.base2}/check/agree?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base3}/check/agree`, params);
 };
 
-// 支付宝微信接口
-const AliPay = params => {
-    return axios.post(`${baseUrl.base3}/AliPayController/aliPayRefund`, params);
+// 支付宝退款接口
+const Alipayment = params => {
+    return axios.post(`${baseUrl.base2}/AliPayController/aliPayRefund`, params);
 };
+
+// 微信退款接口
+const Wepayment = params => {
+    return axios.post(`${baseUrl.base2}/WeiXin/WeXinRefund`, params);
+};
+
 
 
 
@@ -231,7 +237,8 @@ export {
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
     checkoutListAgree, //退房单列表-操作-同意按钮
-    AliPay, // 支付宝微信接口
+    Alipayment, // 支付宝退款
+    Wepayment, // 微信退款
     destinationCheckbox,
     addCustomer,
     addOccupant,

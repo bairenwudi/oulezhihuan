@@ -40,7 +40,8 @@
                             <Button @click="handleSubmit" type="primary" long :loading="loading">登录</Button>
                         </FormItem>
                     </Form>
-                    <p class="login-tip">输入任意用户名和密码即可</p>
+                    <span class="login-tip sparator-right" @click.navtive="goToRegisterClick">注册账号</span>
+                    <span class="login-tip" @click.navtive="goToForgetPassClick">忘记密码？</span>
                 </div>
             </Card>
         </div>
@@ -165,12 +166,27 @@ export default {
             });
         },
 
+        // 初始化
         init() {
             this.$nextTick(() => {
                 this.base = getBase().base2;
                 this.getAutoImageFun();
             });
         },
+
+        // 点击进入注册页面
+        goToRegisterClick() {
+            this.$router.push({
+                path: '/register'
+            })
+        },
+
+        // 点击进入忘记密码
+        goToForgetPassClick() {
+            this.$router.push({
+                path: '/forget'
+            })
+        }
     },
 
     mounted() {

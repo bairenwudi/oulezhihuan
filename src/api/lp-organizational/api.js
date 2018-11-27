@@ -47,18 +47,6 @@ export const InstitutionalTitleList = params => {
     return axios.post(`${baseUrl.base2}/Admin_userController/selectOrg_name`, params);
 };
 
-// 机构设置-基地信息列表
-export const baseInformationList = params => {
-    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
-};
-
-// 机构设置-房间类型列表
-export const roomtypeList = params => {
-    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
-};
-
-
-
 // 修改上下线
 export const changeOnlineType = params => {
     return axios.post(`${baseUrl.base2}/organ/changeOnlineType`, params);
@@ -73,9 +61,6 @@ export const selectOrgByObj = params => {
 export const updateById = params => {
     return axios.post(`${baseUrl.base2}/organ/updateById`, params);
 }
-
-
-
 
 
 
@@ -249,6 +234,23 @@ export const addPricePlanSave = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/save`, params);
 }
 
+
+
+/**
+ *
+ *  @param { defaultPrice } 默认价格 
+ */
+
+// 查询默认价格
+export const selectRoomTypeDefaultPrice = params => {
+    return axios.post(`${baseUrl.base2}/Zh_room_typeController/selectRoomType?pageSize=10`, params);
+}
+
+
+// 编辑默认价格
+export const updateByIdDefaultPrice = params => {
+    return axios.post(`${baseUrl.base2}/Zh_room_typeController/updateById`, params);
+}
 
 
 

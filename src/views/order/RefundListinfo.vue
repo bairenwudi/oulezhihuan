@@ -39,7 +39,7 @@
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>{{this.dataFormat(refundInfoForm.check_in_time)}}</dt>
+                    <dt>{{this.dataFormatDay(refundInfoForm.check_in_time)}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -59,7 +59,7 @@
 
                 <div class="TD-view">
                     <dd>离开日期：</dd>
-                    <dt>{{this.dataFormat(refundInfoForm.check_out_time)}}</dt>
+                    <dt>{{this.dataFormatDay(refundInfoForm.check_out_time)}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -100,13 +100,12 @@
             </Card>
         </Row>
         <h2>订单明细</h2><br/>
-           <TableLockM
-            :columns="columns" 
-            :data="userData" 
-            :loading="loading"
+          <TableM 
+            :columns="columns"
             :height="280"
-            class="tableDetail">
-          </TableLockM>
+            :data="userData" 
+            :loading="loading">
+          </TableM>
         <br/>
         <h2>预订人信息</h2>
           <Row>
@@ -124,26 +123,29 @@
             </Card>
         </Row>
         <h2>入住人信息</h2><br/>
-          <TableLockM 
-            :columns="columns1" 
-            :data="userData1" 
-            :loading="loading"
+          <TableM 
+            :columns="columns1"
             :height="280"
-            class="tableInformation">
-          </TableLockM>
+            :data="userData1" 
+            :loading="loading">
+          </TableM>
 
     </div>
 </template>
 
 <script>
-import TableLockM from '../../common/table/tableLock.vue';
+import TableM from '../../common/table/tableLock.vue';
 import {
     RefundListinfo, //退款单详情列表-订单信息、订单明细、预订人信息
     RefundListCustomerinfo, // 退款单详情列表-入住人
 }from '../../api/lp-order/api.js'
 
-// 补充时间格式 不够10 补充 0
+// 年月日分秒时 补充时间格式 不够10 补充 0
 import { formatTime } from "@/common/date/formatTime.js";
+
+// 年月日 补充时间格式 不够10 补充 0
+import { formatTimeDay } from "@/common/date/formatTime.js";
+
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
 
@@ -151,7 +153,7 @@ export default {
   name: "RefundListinfoModel",
 
   components: {
-      TableLockM
+      TableM
   },
   data() {
     return {
@@ -168,7 +170,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '总计' :this.dataFormat(row.ord_date) || `暂无`)
+                    }, index === this.userData.length - 1 ? '总计' :this.dataFormatDay(row.ord_date) || `暂无`)
                 }
             },
   
@@ -261,24 +263,17 @@ export default {
   },
   methods:{
 
-    // 转化时间
+    // 转化时间-年月日分秒时
     dataFormat(time) {
         return formatTime(time);
     },
 
-    formatTime(date) {
-      if(date === undefined){
-        return '';
-      }
-      var date = new Date(date); //如果date为13位不需要乘1000
-      var Y = date.getFullYear() + '-';
-      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-      var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
-      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
-      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
-      return Y + M + D + h + m + s;
+     // 转化时间-年月日
+    dataFormatDay(time) {
+        return formatTimeDay(time);
     },
+
+
 
     SetStatusFilter(status){
        switch(status){
@@ -362,8 +357,8 @@ export default {
          if (filter) {
         params = Object.assign(params, filter);
         if(filter.check_time[0] !== '') {
-            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+            params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
         }
       }
 
