@@ -104,10 +104,8 @@
           <TableM 
             :columns="columns" 
             :data="userData" 
-            :loading="loading" 
-            :current.async="currentPageIndex" 
-            :total="total" 
-            @pageChange="pageChange">
+            :height="280"
+            :loading="loading">
           </TableM>
         <h2>预订人信息</h2>
           <Row>
@@ -126,19 +124,17 @@
         </Row>
         <h2>入住人信息</h2><br/>
           <TableM 
-            :columns="columns1" 
+            :columns="columns1"
+            :height="280"
             :data="userData1" 
-            :loading="loading" 
-            :current.async="currentPageIndex" 
-            :total="total" 
-            @pageChange="pageChange">
+            :loading="loading">
           </TableM>
 
     </div>
 </template>
 
 <script>
-import TableM from '@/common/table/table.vue';
+import TableM from '@/common/table/tableLock.vue';
 import {
     checkoutListinfo, //退房单详情列表-订单信息、订单明细、预订人信息
     checkoutListCustomerinfo, // 退房单详情列表-入住人
