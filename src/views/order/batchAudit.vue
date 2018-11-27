@@ -55,7 +55,6 @@ import {
   batchCheckoutList, //批量审核列表
   batchAuditSearch, //批量审核模糊查询
   batchinstitutionTitleList, // 批量审核模糊查询-预定机构下拉列表渲染
-  batchIdList //批量审核模糊查询-获取登录的id(adm_id)
 } from "../../api/lp-order/api.js";
 
 export default {
@@ -144,7 +143,7 @@ export default {
         {
           title: "预定机构",
           render: (h, { row, index }) => {
-            return h("span", {}, row.org_name ? row.org_name : `暂无${index}`);
+            return h("span", {}, row.yu_org_name ? row.yu_org_name : `暂无${index}`);
           }
         },
 
@@ -154,7 +153,7 @@ export default {
             return h(
               "span",
               {},
-              row.reserve_destination ? row.reserve_destination : `暂无${index}`
+              row.org_name ? row.org_name : `暂无${index}`
             );
           }
         },
@@ -165,7 +164,8 @@ export default {
             return h(
               "span",
               {},
-              row.apply_date ? row.apply_date : `暂无${index}`
+              this.formatTime(row.apply_date) || "暂无"
+
             );
           }
         },
@@ -205,7 +205,7 @@ export default {
             return h(
               "span",
               {},
-              this.SetStatusFilter(row.ord_status) || "暂无"
+              this.SetStatusFilter(row.order_status) || "暂无"
             );
           }
         },
@@ -289,6 +289,8 @@ export default {
 
     // 过滤订单状态
     SetStatusFilter(status) {
+      console.log(status);
+      
       switch (status) {
         case 1:
           return "待审核";
@@ -336,18 +338,24 @@ export default {
       const { data } = await batchinstitutionTitleList();
       data.shift(0);
       this.batchinstitutionTitle = Array.from(new Set(data));
-      // console.log(arr)
     },
 
-    // 获取登录的id(adm_id)
-    async batchIdListFun() {
-      const { data } = await batchIdList();
-      console.log(1);
-      data.shift(0);
-      this.adm_id = data;
-      console.log(this.adm_id);
-    },
 
+    formatTime(date) {
+      console.log(date);
+      if(!date){
+        return ""
+      }
+      var date = new Date(date); //如果date为13位不需要乘1000
+
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+      var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+      return Y + M + D + h + m + s;
+    },
     searchClick(filter) {
       this.resetTotal();
       if (filter) {
@@ -384,20 +392,23 @@ export default {
 
       // this.loading = true;
       let { data } = await batchCheckoutList(params);
-      this.total = data[0].count;
-      var org_id = "";
-      var org_name = "新郑";
+      console.log(data);
+      
+      this.total = data.content.count;
+      this.userData = data.content.list;
+      // var org_id = "";
+      // var org_name = "新郑";
 
-      let param = {
-        pageSize: 10,
-        startPos: filter ? 1 : this.currentPage,
-        org_name
-      };
-      let res = await batchCheckoutList(param);
-      this.total = res.data[0].count;
-      res.data.shift(0);
-      this.userData = res.data;
-      this.loading = false;
+      // let param = {
+      //   pageSize: 10,
+      //   startPos: filter ? 1 : this.currentPage,
+      //   org_name
+      // };
+      // let res = await batchCheckoutList(param);
+      // this.total = res.data[0].count;
+      // res.data.shift(0);
+      // this.userData = res.data;
+      // this.loading = false;
     }
   },
   mounted() {
