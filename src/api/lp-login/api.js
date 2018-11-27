@@ -57,6 +57,9 @@ export const registerSave = params =>{
     return axios.post(`${baseUrl.base2}/Admin_userController/save`, params)
 }
 
+
+
+
 // 组件中获取base地址
 export const getBase = () => {
     return baseObj;
