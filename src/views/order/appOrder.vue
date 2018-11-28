@@ -290,7 +290,10 @@ export default {
         {
           title: "订单状态",
           render: (h, { row, index }) => {
-            return h("span", {}, this.SetStatusFilter(row.ord_status) || "暂无");
+            return h("span", {
+
+            }, 
+            row.ord_status ? this.SetStatusFilter(row.ord_status) : `暂无`);
           }
         },
 
