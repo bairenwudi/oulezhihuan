@@ -34,7 +34,7 @@
                             <Input v-model="userForm.org_name" @on-keydown="hasChangePhone"></Input>
                         </div>
                     </FormItem>
-                    
+
                     <FormItem label="手机号：" prop="adm_phonenum" >
                         <div style="display:inline-block;width:204px;">
                             <Input v-model="userForm.adm_phonenum" @on-keydown="hasChangePhone"></Input>

@@ -57,7 +57,15 @@ export const registerSave = params =>{
     return axios.post(`${baseUrl.base2}/Admin_userController/save`, params)
 }
 
+// 查询所有省
+export const findAllProvince = params =>{
+    return axios.post(`${baseUrl.base2}/Region_province_infoController/findAll`, params)
+}
 
+// 查询对应省下面的市(p_code //传入省编码查下面的市)
+export const findAllCity = params =>{
+    return axios.post(`${baseUrl.base2}/Region_city_infoController/findAll`, params)
+}
 
 
 // 组件中获取base地址

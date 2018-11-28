@@ -20,23 +20,25 @@
 
                         <FormItem prop="adm_user_type" label="类型：">
                             <Select v-model="registerForm.adm_user_type">
-                                <Option value="value">辽宁</Option>
+                                <Option :value="1 + ''" label="基地"></Option>
+                                <Option :value="2 + ''" label="个人"></Option>
+                                <Option :value="3 + ''" label="旅行社"></Option>
                             </Select>
                         </FormItem>
 
                         <FormItem prop="org_name" label="机构标题：">
-                            <Input v-model="registerForm.org_name" clearable size="large" placeholder="请输入房间数量"></Input>
+                            <Input v-model="registerForm.org_name" clearable size="large" placeholder="请输入机构标题"></Input>
                         </FormItem>
 
                         <FormItem prop="adm_province_code" label="省份：">
-                            <Select v-model="registerForm.adm_province_code">
-                                <Option value="value">辽宁</Option>
+                            <Select @on-change="provinceChange" v-model="registerForm.adm_province_code">
+                                <Option v-for="(item, index) in provinceList" :value="item.code + ''" :label="item.name"></Option>
                             </Select>
                         </FormItem>
 
                         <FormItem prop="adm_city_code" label="城市：">
                             <Select v-model="registerForm.adm_city_code">
-                                <Option value="value">沈阳</Option>
+                                <Option v-for="(item, index) in cityList" :value="item.code + ''" :label="item.name"></Option>
                             </Select>
                         </FormItem>
 
@@ -59,6 +61,26 @@
                 </div>
             </Card>
         </div>
+
+        <Modal
+            v-model="RegisteredSuccessfully"
+            title="提示"
+            :loading="loading"
+            @on-ok="RegisteredSuccessfullyOK"
+            @on-cancel="RegisteredSuccessfullyCancel"
+        >
+            <p class="successful">
+                <Icon type="checkmark-circled" class="icon-color"></Icon>
+                注册成功
+            </p>
+            
+            <p class="center successDesc">
+                你的账户：{{ registerForm.adm_account }} 注册成功
+            </p>
+
+            <Button type="primary" long @click="LoginClick">登陆</Button>
+            <div slot="footer"></div>
+        </Modal>
     </div>
 </template>
 
@@ -66,13 +88,47 @@
 // 引入api
 import {
     registerSave,
+    findAllCity,
+    findAllProvince,
+    validCode,
     getCode,
 } from '@/api/lp-login/api.js'
 
 export default {
     data () {
+        const passwordValid = (rule, value, callback) => {
+            if(!value) {
+                return callback(new Error('请填写完整'));
+            } else if(value.length < 6 || value.length > 20) {
+                return callback(new Error('密码为6到20位'));
+            } else {
+                callback();
+            }
+        };
+
+        const confirmValid = (rule, value, callback) => {
+            if(!value) {
+                return callback(new Error('请填写完整'));
+            } else if(value !== this.registerForm.adm_passwd) {
+                return callback(new Error('两次密码输入不一样'));
+            } else {
+                callback();
+            }
+        };
+
+        const validePhone = (rule, value, callback) => {
+            var re = /^1[0-9]{10}$/;
+            if (!re.test(value)) {
+                callback(new Error('请输入正确格式的手机号'));
+            } else {
+                callback();
+            }
+        };
+
         return {
             loading: false,
+
+            RegisteredSuccessfully: false,
 
             registerForm: {
 
@@ -80,13 +136,19 @@ export default {
 
             registerRules: {
                 adm_account: [{ required: true, message: '请填写完整', trigger: 'blur' }],
-                adm_passwd: [{ required: true, message: '请填写完整', trigger: 'blur' }],
-                confirm_passwd: [{ required: true, message: '请填写完整', trigger: 'blur' }],
+                adm_passwd: [
+                    { required: true, message: '请填写完整', trigger: 'blur' },
+                    { validator: passwordValid, trigger: 'blur' }
+                ],
+                confirm_passwd: [
+                    { validator: confirmValid, trigger: 'blur' },
+
+                ],
                 adm_user_type: [{ required: true, message: '请填写完整', trigger: 'change' }],
                 org_name: [{ required: true, message: '请填写完整', trigger: 'blur' }],
                 adm_province_code: [{ required: true, message: '请填写完整', trigger: 'change' }],
                 adm_city_code: [{ required: true, message: '请填写完整', trigger: 'change' }],
-                adm_phonenum: [{ required: true, message: '请填写完整', trigger: 'blur' }],
+                adm_phonenum: [{ validator: validePhone, trigger: 'blur' }],
                 phoneCode: [{ required: true, message: '请填写完整', trigger: 'blur' }],
             },
 
@@ -101,26 +163,70 @@ export default {
             codeDisabled: false,
 
             phoneReg: /^1[0-9]{10}$/,
+
+            provinceList: [],    // 省市列表
+
+            cityList: [],   // 市级列表
+
+            codeId: 0,  // 获取验证码返回的id
         };
     },
 
     methods: {
-        init() {
 
+        // 获取所有的省
+        async getAllProvince() {
+            const { data } = await findAllProvince();
+            console.log(data);
+            this.provinceList = data;
         },
 
+        // 初始化
+        init() {
+            this.getAllProvince();
+        },
+
+        // 点击注册保存确定按钮
         handleRegisterClick(formName) {
             this.$refs[formName].validate((valid) => {
                 if(valid) {
                     // 
-                    console.log('我成功了');
+                    let params = {
+                        code: this[formName].phoneCode,
+                        msgId: this.codeId
+                    };
+                    validCode(params).then(res => {
+                        if(res.data.code === 'success') {
+                            registerSave(this[formName]).then(res => {
+                                console.log(res);
+                                if(res.data.code === 'success') {
+                                    this.$Message.success('成功');
+                                    this.RegisteredSuccessfully = true;
+                                } else {
+                                    this.$Message.error(`${res.data.content.msg}`);
+                                }
+                            })
+                        } else {
+                            this.$Message.error(`${res.data.content.msg}`);
+                        }
+                    })
                 }
+            })
+        },
+
+        // 改变省重新获取下面的市
+        provinceChange() {
+            this.cityList = [];
+            let params = {
+                p_code: this.registerForm.adm_province_code
+            }
+            findAllCity(params).then(({ data }) => {
+                this.cityList = data;
             })
         },
 
         // 点击获取验证码
         getCodeClick() {
-            console.log(this.$refs['registerForm'])
             if(this.setIntervaled) {
                 this.codeDisabled = true;
                 this.setIntervaled = false;
@@ -141,15 +247,27 @@ export default {
                     adm_phonenum: this.registerForm.adm_phonenum
                 };
                 getCode(params).then(res => {
-                    console.log(res);
+                    this.codeId = res.data;
                 })
             }
-        }
+        },
+
+        // 点击去登陆
+        LoginClick() {
+            this.$router.push({
+                name: 'login'
+            })
+        },
+
+        // 点击取消清空表单
+        RegisteredSuccessfullyCancel() {
+            this.RegisteredSuccessfully = false;
+            this.registerForm = {};
+        },
     },
 
     mounted() {
         this.init();
-
         console.log(this.phoneReg.test(this.registerForm.adm_phonenum))
     }
 };
@@ -183,5 +301,19 @@ export default {
     .indent {
         text-indent: 93px;
     }
+
+    .successful {
+        font-size: 31px;
+        text-align: center;
+        .icon-color {
+            color: chartreuse;
+        }
+    }
+
+    .successDesc {
+        margin: 50px;
+        font-size: 15px;
+    }
+
 </style>
 
