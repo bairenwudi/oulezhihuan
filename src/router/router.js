@@ -258,6 +258,12 @@ export const appRouter = [
                 component: resolve => { require(['@/views/authorityManagement/authorityManagement.vue'], resolve); }
             },
             {
+                path: 'routerManagementModel',
+                name: 'routerManagementModel',
+                title: '路由管理',
+                component: resolve => { require(['@/views/authorityManagement/rights.vue'], resolve); }
+            },
+            {
                 path: 'systemUserManagementModel',
                 name: 'systemUserManagementModel',
                 title: '系统用户管理',

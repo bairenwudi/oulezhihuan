@@ -146,6 +146,16 @@ export default {
                                         this.getAutoImageFun();
                                         this.loading = false;
                                     } else {
+                                        /**
+                                         * @param admins 白名单()
+                                         * @author Songshuai
+                                         */
+                                        // if (data.data.adm_account === "admins") {
+                                        //     this.getForVueFun(data, data.data, "admins");
+                                        // } else {
+                                        //     // 查询当前登录人的所有权限并保存
+                                        //     this.getForVueFun(data, data.data);
+                                        // }
                                         // 存储用户的信息
                                         localStorage.user = JSON.stringify(res3.data);
                                         Cookies.set('user', this.form.adm_account);
