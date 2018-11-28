@@ -7,23 +7,23 @@
 
         <Form ref="formInline" :model="formInline" inline>
 
-            <FormItem prop="reserve_persion_name" label="预订人" :label-width="50">
-                <Input type="text" v-model="formInline.reserve_persion_name" placeholder="请输入预订人"></Input>
+            <FormItem prop="reserve_person_name" label="预订人" :label-width="50">
+                <Input type="text" v-model="formInline.reserve_person_name" placeholder="请输入预订人"></Input>
             </FormItem>
-
+            
             <FormItem prop="reserve_persion_phone" label="预订人手机" :label-width="75">
                 <Input type="text" v-model="formInline.reserve_persion_phone" placeholder="请输入预订人手机"></Input>
             </FormItem>
 
              <FormItem prop="order_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.order_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value">{{ item.label }}</Option>
+                 <Option v-for="(item,index) in orderStatus" :key="index" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
-            <FormItem prop="org_name" label="预定机构" :label-width="60">
-               <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="item in batchinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
+            <FormItem prop="yu_org_name" label="预定机构" :label-width="60">
+               <Select v-model="formInline.yu_org_name" clearable style="width:200px">
+                 <Option v-for="(item,index) in batchinstitutionTitle" :value="item.org_name" :key="index">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
@@ -38,12 +38,13 @@
         </Form>
 
         <TableM 
-        :columns="columns" 
-        :data="userData" 
-        :loading="loading" 
-        :current.async="currentPageIndex" 
-        :total="total" 
-        @pageChange="pageChange">
+          :columns="columns" 
+          :data="userData" 
+          :loading="loading" 
+          :current.async="currentPageIndex" 
+          :total="total" 
+          @pageChange="pageChange"
+        >
         </TableM>
     
     </div>
@@ -53,7 +54,6 @@
 import TableM from "../../common/table/table.vue";
 import {
   batchCheckoutList, //批量审核列表
-  batchAuditSearch, //批量审核模糊查询
   batchinstitutionTitleList, // 批量审核模糊查询-预定机构下拉列表渲染
 } from "../../api/lp-order/api.js";
 
@@ -65,8 +65,6 @@ export default {
   },
   data() {
     return {
-      adm_id: "adm_user_id",
-
       addModal: false,
 
       editModal: false,
@@ -75,11 +73,11 @@ export default {
 
       formValidate: {
         // 定义新增表单的对象
-        reserve_persion_name: "",
+        reserve_person_name: "",
         reserve_persion_phone: "",
         ord_status: "",
         reserve_destination: "",
-        org_name: "",
+        yu_org_name: "",
         check_time: ""
       },
       batchinstitutionTitle: [],
@@ -268,8 +266,11 @@ export default {
 
       formInline: {
         // 定义表单对象
-        cus_account: "",
-        cus_nick_name: ""
+        reserve_person_name: "",
+        reserve_persion_phone: "",
+        orderStatus: "",
+        yu_org_name: "",
+        check_time: "",
       },
 
       loading: false, // 定义loading为true
@@ -279,18 +280,31 @@ export default {
   },
 
   methods: {
-    // 进入详情
+    // 进入处理后  点击详情
     goToInfo(params) {
+      console.log(params);
+      const { reserve_id } = params.row;
       this.$router.push({
-        path: "/infoModel",
-        data: params
+        path: "/order/batchOrderDeal",
+        query: {
+          data: JSON.stringify(reserve_id)
+        }
+      });
+    },
+    // 进入申请受理  点击处理
+    goToDealingInfo(params) {
+      console.log(params);
+      const { reserve_id } = params.row;
+      this.$router.push({
+        path: "/order/applyDeal",
+        query: {
+          data: JSON.stringify(reserve_id)
+        }
       });
     },
 
     // 过滤订单状态
     SetStatusFilter(status) {
-      console.log(status);
-      
       switch (status) {
         case 1:
           return "待审核";
@@ -319,7 +333,9 @@ export default {
     getFormatterTime(val) {
       console.log(val);
     },
-
+    dataFormat(time) {
+        return this.formatTime(time);
+    },
     // 改变分页触发的事件
     pageChange(pageIndex) {
       // 改变当前页
@@ -337,24 +353,24 @@ export default {
     async batchinstitutionTitleFun() {
       const { data } = await batchinstitutionTitleList();
       data.shift(0);
-      this.batchinstitutionTitle = Array.from(new Set(data));
+      console.log(data);
+      
+      this.batchinstitutionTitle = data;
     },
 
 
     formatTime(date) {
-      console.log(date);
       if(!date){
         return ""
       }
       var date = new Date(date); //如果date为13位不需要乘1000
-
       var Y = date.getFullYear() + '-';
       var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
       var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
-      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
-      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
-      return Y + M + D + h + m + s;
+      // var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      // var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      // var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+      return Y + M + D;
     },
     searchClick(filter) {
       this.resetTotal();
@@ -376,18 +392,16 @@ export default {
         pageSize: 10,
         startPos: filter ? 1 : this.currentPage,
         adm_user_id
+
       };
 
       if (filter) {
         params = Object.assign(params, filter);
         if (filter.check_time[0] !== "") {
-          params.check_in_time = this.dataFormat(
-            filter.check_time[0].getTime()
-          );
-          params.check_out_time = this.dataFormat(
-            filter.check_time[1].getTime()
-          );
+          params.begin_time = this.dataFormat(filter.check_time[0].getTime());
+          params.end_time = this.dataFormat(filter.check_time[1].getTime());
         }
+        delete params.check_time
       }
 
       // this.loading = true;
@@ -396,19 +410,6 @@ export default {
       
       this.total = data.content.count;
       this.userData = data.content.list;
-      // var org_id = "";
-      // var org_name = "新郑";
-
-      // let param = {
-      //   pageSize: 10,
-      //   startPos: filter ? 1 : this.currentPage,
-      //   org_name
-      // };
-      // let res = await batchCheckoutList(param);
-      // this.total = res.data[0].count;
-      // res.data.shift(0);
-      // this.userData = res.data;
-      // this.loading = false;
     }
   },
   mounted() {

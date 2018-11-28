@@ -432,10 +432,10 @@
 
                 <FormItem label="房型名称：" prop="room_id">
                     <Select v-model="roomAddForm.room_id" placeholder="请选择">
-                        <Option v-for="(item, index) in roomTypeList" :value="item.room_type_id" :label="item.room_name"></Option>
+                        <Option v-for="(item, index) in roomTypeList" :key="index" :value="item.room_type_id" :label="item.room_name"></Option>
                     </Select>
                 </FormItem>
-
+    
                 <FormItem label="房号：" prop="room_number">
                     <Input v-model="roomAddForm.room_number" placeholder="请输入名称"></Input>
                 </FormItem>
@@ -534,7 +534,7 @@
 
                 <FormItem label="使用房型：" prop="room_type_ids">
                     <CheckboxGroup @on-change="pricePlanChange" v-model="addPricePlanForm.room_type_ids">
-                        <Checkbox v-for="(item, index) in notPageRoomType" :value="item.room_type" :label="item.room_type_id">{{ item.room_type }}</Checkbox>
+                        <Checkbox v-for="(item, index) in notPageRoomType" :key="index" :value="item.room_type" :label="item.room_type_id">{{ item.room_type }}</Checkbox>
                     </CheckboxGroup>
                 </FormItem>
 

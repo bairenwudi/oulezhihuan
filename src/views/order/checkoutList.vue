@@ -24,7 +24,7 @@
                </Select>
             </FormItem>
 
-            <FormItem prop="room_name" label="房间名称" :label-width="60">
+            <FormItem prop="room_name" label="房型名称" :label-width="60">
                <Select v-model="formInline.room_name" clearable style="width:200px">
                  <Option v-for="item in roomName" :value="item.room_name" :key="item.org_id">{{ item.room_name }}</Option>
                </Select>
@@ -72,8 +72,12 @@ import {
     Wepayment, // 微信退款
 } from '../../api/lp-order/api.js'
 
-// 补充时间格式 不够10 补充 0
+// 年月日分秒时 补充时间格式 不够10 补充 0
 import { formatTime } from "@/common/date/formatTime.js";
+
+// 年月日 补充时间格式 不够10 补充 0
+import { formatTimeDay } from "@/common/date/formatTime.js";
+
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
 
@@ -203,7 +207,7 @@ export default {
             },
 
             {
-                title: "房间名称",
+                title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.room_name ? row.room_name : `暂无${index}`)
@@ -417,23 +421,14 @@ export default {
     },
 
 
-     // 转化时间
+     // 转化时间-年月日分秒时
     dataFormat(time) {
         return formatTime(time);
     },
 
-     formatTime(date) {
-      if(date === undefined){
-        return '';
-      }
-      var date = new Date(date); //如果date为13位不需要乘1000
-      var Y = date.getFullYear() + '-';
-      var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-      var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
-      var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-      var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
-      var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
-      return Y + M + D + h + m + s;
+     // 转化时间-年月日
+    dataFormatDay(time) {
+        return formatTimeDay(time);
     },
 
     // 过滤订单状态
@@ -514,6 +509,8 @@ export default {
     // 渲染机构标题下拉列表
     async checkoutInstitutionalTitleListFun() {
         const { data } = await checkoutInstitutionalTitleList();
+        console.log(data);
+        
         data.shift(0);
         this.checkoutinstitutionTitle = data;
         console.log(this.checkoutinstitutionTitle)
@@ -547,6 +544,7 @@ export default {
      });
     },
 
+// 支付退款判断
     AlipayDetail(){
        if (this.ord_payment === 1) {
            this.aliPay();
@@ -554,7 +552,8 @@ export default {
            this.wePay();
        }
     },
-    
+
+// 支付宝支付退款 
     aliPay(){
        let params = {
           out_trade_no:ord_id,
@@ -572,6 +571,7 @@ export default {
 
     },
 
+// 微信支付退款
     wePay(){
        let params = {
           out_trade_no :ord_id,
@@ -627,8 +627,8 @@ export default {
         if (filter) {
             params = Object.assign(params, filter);
             if(filter.check_time[0] !== '') {
-            params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-            params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+            params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
+            params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
         }
         };
 

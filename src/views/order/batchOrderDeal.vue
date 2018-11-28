@@ -17,7 +17,7 @@
 
              <FormItem prop="order_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.order_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value">{{ item.label }}</Option>
+                 <Option v-for="(item,index) in orderStatus" :key="index" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -101,6 +101,7 @@
 
                 <FormItem prop="check_time" v-for="(i, index) in addForm.message"
                   :prop="'message.' + index + '.room_num'"
+                  :key="index"
                   :rules="{
                       required: true, message: '请输入房间数量', trigger: 'blur'
                   }"
