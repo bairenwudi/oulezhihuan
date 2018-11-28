@@ -974,10 +974,8 @@ export default {
       if (this.addModal === true) {
         var d = new Date(this.liveTime[0]);
         var D = new Date(this.liveTime[1]);
-        var start_time =
-          d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-        var end_time =
-          D.getFullYear() + "-" + (D.getMonth() + 1) + "-" + D.getDate();
+        var start_time = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        var end_time = D.getFullYear() + "-" + (D.getMonth() + 1) + "-" + D.getDate();
         if (!this.addForm.reserve_destination) {
           this.$Message.error("请先选择目的地名称");
           this.addForm.roomCheckBox = [];
@@ -1012,9 +1010,7 @@ export default {
           let param = {
             startTime: start_time,
             endTime: end_time,
-            room_type_id: this.addForm.roomCheckBox[
-              this.addForm.roomCheckBox.length - 1
-            ]
+            room_type_id: this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
           };
           roomTypeNum(param).then(res => {
             console.log(res);
@@ -1060,9 +1056,7 @@ export default {
 
         this.price = 0;
         for (var i = 0; i < this.addForm.message.length; i++) {
-          this.price +=
-            (this.addForm.message[i].default_priceB - 0) *
-            (this.addForm.message[i].room_num - 0);
+          this.price += (this.addForm.message[i].default_priceB - 0) * (this.addForm.message[i].room_num - 0);
         }
         this.totalPrice = (this.price - 0) * (this.addForm.jiday - 0);
         console.log(this.totalPrice, this.price, this.addForm.jiday);
