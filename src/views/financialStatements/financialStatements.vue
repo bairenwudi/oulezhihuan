@@ -13,7 +13,7 @@
             </FormItem>
 
             <FormItem prop="check_time" label="入离时间" :label-width="60">              
-             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM-dd HH:mm:ss" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
+             <DatePicker v-model="formInline.check_time" clearable format="yyyy-MM" type="datetimerange" placeholder="请选择时间" style="width: 300px"></DatePicker>
             </FormItem>
 
             <FormItem>
@@ -52,8 +52,9 @@ import {
     financialInstitutionalDownload //财务报表下载
 } from '../../api/lp-financialStatements/api.js'
 
-// 补充时间格式 不够10 补充 0
-import { formatTime } from "@/common/date/formatTime.js";
+// 年月 补充时间格式 不够10 补充 0
+import { formatTimeMonth } from "@/common/date/formatTime.js";
+
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
 
@@ -246,9 +247,9 @@ export default {
        })
     },
 
-    // 转化时间
-    dataFormat(time) {
-        return formatTime(time);
+    // 转化时间-年月日
+    dataFormatMonth(time) {
+        return formatTimeMonth(time);
     },
 
     // 过滤订单状态
@@ -325,8 +326,8 @@ export default {
         if (filter) {
             params = Object.assign(params, filter);
             if(filter.check_time[0] !== '') {
-                params.check_in_time = this.dataFormat(filter.check_time[0].getTime());
-                params.check_out_time = this.dataFormat(filter.check_time[1].getTime());
+                params.check_in_time = this.dataFormatMonth(filter.check_time[0].getTime());
+                params.check_out_time = this.dataFormatMonth(filter.check_time[1].getTime());
         }
         };
 
