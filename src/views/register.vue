@@ -32,13 +32,13 @@
 
                         <FormItem prop="adm_province_code" label="省份：">
                             <Select @on-change="provinceChange" v-model="registerForm.adm_province_code">
-                                <Option v-for="(item, index) in provinceList" :value="item.code + ''" :label="item.name" :key="index"></Option>
+                                <Option v-for="(item, index) in provinceList" :key="index" :value="item.code + ''" :label="item.name"></Option>
                             </Select>
                         </FormItem>
 
                         <FormItem prop="adm_city_code" label="城市：">
                             <Select v-model="registerForm.adm_city_code">
-                                <Option v-for="(item, index) in cityList" :value="item.code + ''" :label="item.name" :key="index"></Option>
+                                <Option v-for="(item, index) in cityList" :key="index" :value="item.code + ''" :label="item.name"></Option>
                             </Select>
                         </FormItem>
 

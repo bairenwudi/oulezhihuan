@@ -9,47 +9,47 @@
             <Card class="TD-card" ref="appOrderInfoForm" :model="appOrderInfoForm">
                  <div class="TD-view">
                     <dd>订单号：</dd>
-                    <dt>{{appOrderInfoForm.ord_id}}</dt>
+                    <dt>{{appOrderInfoForm.ord_id  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>{{appOrderInfoForm.ord_payment_time}}</dt>
+                    <dt>{{this.dataFormat(appOrderInfoForm.ord_payment_time  || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>{{appOrderInfoForm.ord_payment === "1" ? `支付宝` : `微信`}}</dt>
+                    <dt>{{appOrderInfoForm.ord_payment === "1"? `支付宝` : appOrderInfoForm.ord_payment === "2"? `微信` : `暂无`}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>房间数量：</dd>
-                    <dt>{{appOrderInfoForm.ord_room_numbers}}</dt>
+                    <dt>{{appOrderInfoForm.ord_room_numbers  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>机构标题：</dd>
-                    <dt>{{appOrderInfoForm.org_name}}</dt>
+                    <dt>{{appOrderInfoForm.org_name  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>{{appOrderInfoForm.ord_time}}</dt>
+                    <dt>{{this.dataFormat(appOrderInfoForm.ord_time  || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>{{appOrderInfoForm.check_in_time}}</dt>
+                    <dt>{{this.dataFormatDay(appOrderInfoForm.check_in_time  || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>预定天数：</dd>
-                    <dt>{{appOrderInfoForm.ord_days}}</dt>
+                    <dt>{{appOrderInfoForm.ord_days  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>{{this.SetStatusFilter(appOrderInfoForm.ord_status)}}</dt>
+                    <dt>{{this.SetStatusFilter(appOrderInfoForm.ord_status)  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -59,17 +59,17 @@
 
                 <div class="TD-view">
                     <dd>离开日期：</dd>
-                    <dt>{{appOrderInfoForm.check_out_time}}</dt>
+                    <dt>{{this.dataFormatDay(appOrderInfoForm.check_out_time  || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单金额：</dd>
-                    <dt>{{appOrderInfoForm.ord_amount}}</dt>
+                    <dt>{{appOrderInfoForm.ord_amount  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
-                    <dd>房间名称：</dd>
-                    <dt>{{appOrderInfoForm.room_name}}</dt>
+                    <dd>房型名称：</dd>
+                    <dt>{{appOrderInfoForm.room_name  || '暂无'}}</dt>
                 </div>
 
             </Card>
@@ -86,12 +86,12 @@
             <Card class="TD-card" ref="appOrderInfoForm" :model="appOrderInfoForm">
                 <div class="TD-view">
                     <dd>预订人姓名：</dd>
-                    <dt>{{appOrderInfoForm.ord_customer}}</dt>
+                    <dt>{{appOrderInfoForm.ord_customer  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>预订人手机：</dd>
-                    <dt>{{appOrderInfoForm.ord_phone_number}}</dt>
+                    <dt>{{appOrderInfoForm.ord_phone_number  || '暂无'}}</dt>
                 </div>
 
             </Card>
@@ -139,7 +139,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, this.dataFormatDay(row.ord_date) || `暂无${index}`)
+                    }, row.ord_date ? this.dataFormatDay(row.ord_date) : `暂无${index}`)
                 }
             },
   
@@ -202,7 +202,7 @@ export default {
 
         loading: false,  // 定义loading为true
         
-        total: 0,   // 总页数
+        // total: 0,   // 总页数
 
     }
   },
@@ -278,26 +278,26 @@ export default {
     },
 
             // 改变分页触发的事件
-    pageChange(pageIndex) {
-        // 改变当前页
-        this.currentPage = pageIndex;
-        for (let i in this.formInline) {
-            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline);  
-                return false;
-            }
-        };
-        this.getUser();
-    },
+    // pageChange(pageIndex) {
+    //     // 改变当前页
+    //     this.currentPage = pageIndex;
+    //     for (let i in this.formInline) {
+    //         if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
+    //             this.getUser(this.formInline);  
+    //             return false;
+    //         }
+    //     };
+    //     this.getUser();
+    // },
 
     // 为了解决异步问题
-    async getUser(filter, pageIndex = 1) {
+    async getUser(filter) {
         var ord_id = localStorage.getItem('App_ord_id')
         console.log(ord_id);
    
         let params = {
-            pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage,
+            // pageSize: 10,
+            // startPos: filter ? pageIndex : this.currentPage,
             ord_id
         };
 
@@ -317,8 +317,8 @@ export default {
         // data.shift(0);
         this.userData = data.detail;
         console.log(this.userData);
-        this.formInline = data.info;
-        console.log(this.formInline);
+        this.appOrderInfoForm = data.info[0];
+        console.log(this.appOrderInfoForm);
         
         this.loading = false;
 

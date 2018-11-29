@@ -9,42 +9,47 @@
             <Card class="TD-card" ref="checkoutInfoForm" :model="checkoutInfoForm">
                 <div class="TD-view">
                     <dd>订单号：</dd>
-                    <dt>{{checkoutInfoForm.ord_id}}</dt>
+                    <dt>{{checkoutInfoForm.ord_id  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>{{checkoutInfoForm.ord_payment_time}}</dt>
+                    <dt>{{this.dataFormat(checkoutInfoForm.ord_payment_time || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>支付方式：</dd>
-                    <dt>{{checkoutInfoForm.ord_payment === "1"? `支付宝` : `微信` }}</dt>
+                    <dt>{{checkoutInfoForm.ord_payment === "1"? `支付宝` : checkoutInfoForm.ord_payment === "2"? `微信` : `暂无`}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>房间数量：</dd>
-                    <dt>{{checkoutInfoForm.ord_room_numbers}}</dt>
+                    <dt>{{checkoutInfoForm.ord_room_numbers || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>机构标题：</dd>
-                    <dt>{{checkoutInfoForm.org_name}}</dt>
+                    <dt>{{checkoutInfoForm.org_name || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>{{this.dataFormat(checkoutInfoForm.ord_time)}}</dt>
+                    <dt>{{this.dataFormat(checkoutInfoForm.ord_time || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>{{checkoutInfoForm.check_in_time}}</dt>
+                    <dt>{{this.dataFormatDay(checkoutInfoForm.check_in_time || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>预定天数：</dd>
-                    <dt>{{checkoutInfoForm.ord_days}}</dt>
+                    <dt>{{checkoutInfoForm.ord_days || '暂无'}}</dt>
+                </div>
+
+                <div class="TD-view">
+                    <dd>剩余入住天数：</dd>
+                    <dt>{{checkoutInfoForm.ord_days || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -59,18 +64,18 @@
 
                 <div class="TD-view">
                     <dd>离开日期：</dd>
-                    <dt>{{checkoutInfoForm.check_out_time}}</dt>
+                    <dt>{{this.dataFormatDay(checkoutInfoForm.check_out_time || '暂无')}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>订单金额：</dd>
-                    <dt>{{checkoutInfoForm.ord_amount}}</dt>
+                    <dt>{{checkoutInfoForm.ord_amount || '暂无'}}</dt>
                 </div>
 
 
                 <div class="TD-view">
-                    <dd>房间名称：</dd>
-                    <dt>{{checkoutInfoForm.room_name}}</dt>
+                    <dd>房型名称：</dd>
+                    <dt>{{checkoutInfoForm.room_name || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -80,22 +85,22 @@
 
                 <div class="TD-view">
                     <dd>退房金额：</dd>
-                    <dt>{{checkoutInfoForm.refund_amount}}</dt>
+                    <dt>{{checkoutInfoForm.refund_amount || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退房手续费：</dd>
-                    <dt>{{checkoutInfoForm.refund_formalities}}</dt>
+                    <dt>{{checkoutInfoForm.refund_formalities || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退房滞纳金：</dd>
-                    <dt>{{checkoutInfoForm.refunds}}</dt>
+                    <dt>{{checkoutInfoForm.refunds || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>退房原因：</dd>
-                    <dt>{{checkoutInfoForm.refund_reason}}</dt>
+                    <dt>{{checkoutInfoForm.refund_reason || '暂无'}}</dt>
                 </div>
 
             </Card>
@@ -112,12 +117,12 @@
             <Card class="TD-card" ref="checkoutInfoForm" :model="checkoutInfoForm">
                 <div class="TD-view">
                     <dd>预订人姓名：</dd>
-                    <dt>{{checkoutInfoForm.ord_customer}}</dt>
+                    <dt>{{checkoutInfoForm.ord_customer  || '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>预订人手机：</dd>
-                    <dt>{{checkoutInfoForm.ord_phone_number}}</dt>
+                    <dt>{{checkoutInfoForm.ord_phone_number  || '暂无'}}</dt>
                 </div>
 
             </Card>
@@ -146,6 +151,9 @@ import { formatTime } from "@/common/date/formatTime.js";
 // 年月日 补充时间格式 不够10 补充 0
 import { formatTimeDay } from "@/common/date/formatTime.js";
 
+// 剩余入住天数
+import { DateDiff } from "@/common/date/formatTime.js";
+
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
 
@@ -167,7 +175,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '总计' : this.dataFormatDay(row.ord_date) || `暂无`)
+                    }, index === this.userData.length - 1 ? '总计' : row.ord_date ? this.dataFormatDay(row.ord_date) : `暂无${index}`)
                 }
             },
   
@@ -254,7 +262,7 @@ export default {
 
         loading: false,  // 定义loading为true
         
-        total: 0,   // 总页数
+        // total: 0,   // 总页数
 
     }
   },
@@ -335,26 +343,26 @@ export default {
     },
 
             // 改变分页触发的事件
-    pageChange(pageIndex) {
-        // 改变当前页
-        // this.currentPage = pageIndex;
-        for (let i in this.formInline) {
-            if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
-                this.getUser(this.formInline, pageIndex);  
-                return false;
-            }
-        };
-        this.getUser();
-    },
+    // pageChange(pageIndex) {
+    //     // 改变当前页
+    //     // this.currentPage = pageIndex;
+    //     for (let i in this.formInline) {
+    //         if (this.formInline[i] !== undefined || this.formInline[i] !== '') {
+    //             this.getUser(this.formInline, pageIndex);  
+    //             return false;
+    //         }
+    //     };
+    //     this.getUser();
+    // },
 
     // 为了解决异步问题
-    async getUser(filter, pageIndex = 1) {
+    async getUser(filter) {
         var ord_id = localStorage.getItem('Checkout_ord_id')
         console.log(ord_id);
    
         let params = {
-            pageSize: 10,
-            startPos: filter ? pageIndex : this.currentPage,
+            // pageSize: 10,
+            // startPos: filter ? pageIndex : this.currentPage,
             ord_id
         };
 
@@ -373,13 +381,17 @@ export default {
         // console.log(this.total)
         // data.shift(0);
         this.userData = data.detail;
+        
         let total = 0;
         for(let i of this.userData) {
             total = total + (i.refund_amount - 0)
         }
         this.userData.push({});
         this.totalPrice = total;
-        this.formInline = data.info;
+
+        this.checkoutInfoForm = data.info[0];
+        console.log(this.checkoutInfoForm);        
+        
         this.loading = false;
 
         checkoutListCustomerinfo(params).then(res => {

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import iView from 'iview';
 import { router } from './router/index';
 import { appRouter } from './router/router';
-import { Upload } from 'element-ui';
+import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import store from './store';
 import App from './app.vue';
@@ -13,16 +13,14 @@ import VueI18n from 'vue-i18n';
 import axios from 'axios'
 import util from '@/libs/util';
 import { VueEditor } from "vue2-editor";
-import ZkTable from 'vue-table-with-tree-grid'
 
 Vue.config.productionTip = false;
 Vue.prototype._ = _;
 
 Vue.use(VueI18n);
 Vue.use(iView);
-Vue.use(Upload);
+Vue.use(ElementUI);
 Vue.use(VueEditor);
-Vue.use(ZkTable);
 
 new Vue({
     el: '#app',

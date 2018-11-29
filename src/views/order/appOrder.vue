@@ -29,7 +29,7 @@
 
             <FormItem prop="ord_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.ord_status" clearable style="width:200px">
-                 <Option v-for="(item,index) in orderStatus" :key="index" :value="item.value">{{ item.label }}</Option>
+                 <Option v-for="(item, index) in orderStatus" :key="index" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -290,7 +290,10 @@ export default {
         {
           title: "订单状态",
           render: (h, { row, index }) => {
-            return h("span", {}, this.SetStatusFilter(row.ord_status) || "暂无");
+            return h("span", {
+
+            }, 
+            row.ord_status ? this.SetStatusFilter(row.ord_status) : `暂无`);
           }
         },
 

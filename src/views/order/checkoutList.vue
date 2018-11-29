@@ -78,6 +78,9 @@ import { formatTime } from "@/common/date/formatTime.js";
 // 年月日 补充时间格式 不够10 补充 0
 import { formatTimeDay } from "@/common/date/formatTime.js";
 
+// 剩余入住天数
+import { DateDiff } from "@/common/date/formatTime.js";
+
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
 
@@ -235,7 +238,6 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    // this.dataFormat(row.check_in_time) || `暂无`)
                     row.check_in_time ? row.check_in_time : `暂无${index}`)
                 }
             },
@@ -245,7 +247,6 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    // this.dataFormat(row.check_out_time)|| `暂无`)
                     row.check_out_time ? row.check_out_time : `暂无${index}`)
                 }
             },
@@ -255,7 +256,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    this.dataFormat(row.refund_time)|| `暂无`)
+                    row.refund_time ? this.dataFormat(row.refund_time) : `暂无`)
                     // row.refund_time ? row.refund_time : `暂无${index}`)
                 }
             },
@@ -264,7 +265,7 @@ export default {
                 title: "剩余入住天数",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.days ? row.days : `暂无${index}`)
+                    }, row.days ? this.row.days : `暂无${index}`)
                 }
             },
 
@@ -279,7 +280,10 @@ export default {
              {
                 title: "订单状态",
                 render: (h, {row, index}) => {
-                    return h('span', {}, this.SetStatusFilter(row.ord_status) || "暂无");
+                    return h('span', {
+
+                    }, 
+                    row.ord_status ? this.SetStatusFilter(row.ord_status) : `暂无`);
                 }
             },
 
@@ -429,6 +433,11 @@ export default {
      // 转化时间-年月日
     dataFormatDay(time) {
         return formatTimeDay(time);
+    },
+
+     // 转化天数-剩余入住天数
+    dataFormatDays(time,time1) {
+        return DateDiff(time,time1);
     },
 
     // 过滤订单状态
@@ -626,6 +635,8 @@ export default {
 
         if (filter) {
             params = Object.assign(params, filter);
+            console.log(params);
+
             if(filter.check_time[0] !== '') {
             params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
             params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
@@ -639,8 +650,21 @@ export default {
         console.log(this.total)
         // data.shift(0);
         this.userData = data.content.list;
+        console.log(this.userData);
+        
         this.loading = false;
         console.log(data);
+            console.log(data.content.list.length);
+
+         for (var i = 1; i < data.content.list.length; i++) { 
+           var days = ''
+           days = this.dataFormatDays(data.content.list[i].check_in_time, data.content.list[i].check_out_time);
+           var check_in_time = formatTimeDay(data.content.list[i].check_in_time)
+           var check_out_time = formatTimeDay(data.content.list[i].check_out_time)
+           var refund_time = formatTimeDay(data.content.list[i].refund_time)
+           console.log(days);
+        }
+           
     }
   },
   mounted() {
