@@ -17,7 +17,7 @@
 
              <FormItem prop="order_status" label="订单状态" :label-width="60">
                <Select v-model="formInline.order_status" clearable style="width:200px">
-                 <Option v-for="item in orderStatus" :value="item.value">{{ item.label }}</Option>
+                 <Option v-for="(item,index) in orderStatus" :key="index" :value="item.value">{{ item.label }}</Option>
                </Select>
             </FormItem>
 
@@ -187,7 +187,7 @@
                     </CheckboxGroup>
                 </FormItem>
 
-                <FormItem prop="check_time" v-for="(i, index) in editForm.message"
+                <FormItem v-for="(i, index) in editForm.message"
                   :key="index"
                   :prop="'message.' + index + '.room_num'"
                   :rules="{
@@ -198,7 +198,7 @@
                       <span class="roomName">{{ i.room_name }}</span>
                       <span>房间数量&nbsp;</span>
                       <Input 
-                        v-model="i.number"
+                        v-model="i.room_num"
                         @on-blur="showPice"
                         placeholder="请输入房间数量"
                         class="inputWidth"
@@ -242,14 +242,24 @@
             </FormItem>
 
             <FormItem>
-                <Button type="primary" @click="downloadClick">
+                <Button type="primary" class="excel_btn">
                   下载excel模板
                   <a class="block fr excel" :href=" base + '/Occupant_infoController/downExcel'"></a>
                 </Button>
             </FormItem>
 
             <FormItem>
-                <Button type="primary" @click="uploadClick">导入Excel</Button>
+                <!-- <Button type="primary" @click="uploadClick">导入Excel</Button> -->
+                <Upload :action ="actionUrl" 
+                      name="upExcel" 
+                      :data="reserveId"
+                      :on-success="excelSuccess"
+                      :on-error="excelError"
+                      >
+                    <Button type="ghost" icon="ios-cloud-upload-outline">导入Excel</Button>
+                </Upload>
+
+
             </FormItem>
         </Form>
 
@@ -400,14 +410,26 @@ export default {
       } else {
         var ph = /^1[3|5|7|8|][0-9]{9}$/; //手机号正则
         if (!ph.test(value)) {
-          this.$Message.error("您输入手机号码有误");
-          return false;
+          return callback(new Error("您输入手机号码有误"));
         } else {
           callback();
         }
       }
     };
 
+    const valiIdCard = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("身份证号码不能为空"));
+      } else {
+        var ph = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/; //手机号正则
+        if (!ph.test(value)) {
+          // this.$Message.error("您输入身份证号码有误");
+          return callback(new Error("您输入身份证号码有误"));
+        } else {
+          callback();
+        }
+      }
+    };
     const sss = (rule, value, callback) => {
       console.log(value);
       if (!value) {
@@ -504,12 +526,12 @@ export default {
       mock: [],
 
       ruleValidate: {
-        reserve_persion_name: [
+        reserve_person_name: [
           { required: true, message: "请输入预订人", trigger: "blur" }
         ],
 
         reserve_persion_phone: [
-          { required: true, message: "请输入预订人手机", trigger: "blur" }
+          { validator: valiContact_number, trigger: "blur" }
         ],
 
         reserve_destination: [
@@ -522,24 +544,19 @@ export default {
           }
         ],
 
-        time: [
-          {
-            required: true,
-            type: "string",
-            message: "Please select time",
-            trigger: "change"
-          }
-        ],
+        // check_time: [
+        //   { required: true, message: "请输入入离时间", trigger: "blur" }
+        // ],
 
-        comments: [
-          { required: true, message: "请输入备注", trigger: "blur" },
-          {
-            type: "string",
-            min: 20,
-            message: "Introduce no less than 20 words",
-            trigger: "blur"
-          }
-        ]
+        // comments: [
+        //   { required: true, message: "请输入备注", trigger: "blur" },
+        //   {
+        //     type: "string",
+        //     min: 20,
+        //     message: "Introduce no less than 20 words",
+        //     trigger: "blur"
+        //   }
+        // ]
       },
 
       ruleValidate1: {
@@ -547,10 +564,12 @@ export default {
         name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
 
         identity_card_number: [
-          { required: true, message: "请输入身份证号码", trigger: "blur" }
+          { validator: valiIdCard, trigger: "blur" }
         ],
 
-        contact_number: [{ validator: valiContact_number, trigger: "blur" }]
+        contact_number: [
+          { validator: valiContact_number, trigger: "blur" }
+        ]
       },
 
       destination: [],
@@ -670,7 +689,7 @@ export default {
             return h(
               "span",
               {},
-              row.ord_amount ? row.ord_amount : `暂无${index}`
+              row.ord_amount ? `￥${row.ord_amount}` : `暂无${index}`
             );
           }
         },
@@ -881,9 +900,10 @@ export default {
           }
         }
       ],
+      reserveId:{},
       userData: [], // 内容数据
       customerData: [], // 内容数据
-
+      actionUrl:"",
       total: 0, // 总页数
       customerTotal: 0,
       roomName: [], //checkbox房间名称
@@ -905,8 +925,20 @@ export default {
   },
 
   methods: {
+    excelSuccess(response, file, fileList){
+      console.log(response);
+      console.log(file);
+      console.log(fileList);
+    },
+        // 上传失败
+    excelError(err, file, fileList) {
+      console.log(err, file, fileList);
+    },
     //当选择 入离日期 显示天数差
     dateChange(val) {
+      console.log(this.liveTimeadd);
+      console.log(val);
+      
       this.liveTime = val;
       var d = new Date(val[0]);
       var D = new Date(val[1]);
@@ -981,20 +1013,21 @@ export default {
           this.addForm.roomCheckBox = [];
           return;
         }
-        console.log(this.liveTime);
-
         if (!this.liveTime[0] || !this.liveTime[1]) {
           this.$Message.error("请先选择入离时间");
           this.addForm.roomCheckBox = [];
           return;
         }
         console.log(this.addForm.roomCheckBox);
+
+        //当选择一个房型时会用this.compareArr与val比较  如果difference是空数组  就证明是新点出来的(checkbox为true)
+        //如果difference不是空数组 证明是点下去的  checkbox为false  在后边要取到它的id 然后从this.message（this.message用来存放显示信息的数组）中移除它
         let a = new Set(this.compareArr);
         let b = new Set(val);
         let difference = Array.from(new Set([...a].filter(x => !b.has(x))));
-        console.log(difference);
         this.compareArr = val;
-
+        console.log(difference);
+        
         // let params = {
         //   start_time,
         //   end_time,
@@ -1032,7 +1065,7 @@ export default {
                 maxNum = res.data.data[i].number;
                 index = i;
                 msg = res.data.data[i];
-                msg.room_num = "";
+                msg.room_num = "";//这个room_num是我push到显示对象中的 所填入的预定房间数 如果注释掉  会出现undefined  减0之后会NAN
               }
             }
 
@@ -1065,10 +1098,8 @@ export default {
       } else {
         var d = new Date(this.liveTime[0]);
         var D = new Date(this.liveTime[1]);
-        var start_time =
-          d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-        var end_time =
-          D.getFullYear() + "-" + (D.getMonth() + 1) + "-" + D.getDate();
+        var start_time = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        var end_time = D.getFullYear() + "-" + (D.getMonth() + 1) + "-" + D.getDate();
         if (!this.editForm.reserve_destination) {
           this.$Message.error("请先选择目的地名称");
           this.editForm.roomCheckBox = []; //??????
@@ -1086,7 +1117,6 @@ export default {
         this.compareArr = val;
         if (this.editForm.roomCheckBox.length > this.length) {
           this.length = this.editForm.roomCheckBox.length;
-
           let param = {
             startTime: start_time,
             endTime: end_time,
@@ -1114,7 +1144,7 @@ export default {
                 maxNum = res.data.data[i].number;
                 index = i;
                 msg = res.data.data[i];
-                msg.room_num = "";
+                msg.number = "";
               }
             }
             this.editForm.message.push(msg);
@@ -1294,7 +1324,6 @@ export default {
       this.editModal = true;
       let { row } = params;
       console.log(row);
-
       this.delReserve_id = params.row.reserve_id;
       getEditMsgReserve({ reserve_id: this.delReserve_id }).then(res => {
         console.log(res);
@@ -1344,6 +1373,9 @@ export default {
       };
     },
     EditModalConfirm(name) {
+      
+      console.log(this.editForm.message.number);
+      
       var roomNumArr = [];
       var roomPriceArr = [];
       console.log(this.editForm.message);
@@ -1388,11 +1420,11 @@ export default {
           editReserve(params).then(res => {
             console.log(res);
             if (res.data.reserve_id) {
-              this.$Message.success("新增成功");
+              this.$Message.success("编辑成功");
               this.addModal = false;
               this.getUser();
             } else {
-              this.$Message.error("新增失败");
+              this.$Message.error("编辑失败");
             }
             this.clearFormFun("addForm");
           });
@@ -1463,6 +1495,7 @@ export default {
 
     // 绑定-执行的事件
     bindingClick(row) {
+      this.reserveId = {reserve_id:row.row.reserve_id};
       if (row) {
         var reserve_id = row.row.reserve_id;
         this.reserve_id = reserve_id;
@@ -1524,7 +1557,10 @@ export default {
             console.log(res);
             if (res.data === 1) {
               this.$Message.success("新增成功");
-              this.bindingClick();
+              addCustomer({ reserve_id: this.reserve_id }).then(res => {
+                this.customerTotal = res.data.content.total;
+                this.customerData = res.data.content.list;
+              });
               this.bindingaddModal = false;
               this.loading = false;
             } else {
@@ -1603,7 +1639,10 @@ export default {
         if (res.data.success === "批量删除成功") {
           this.$Message.success("删除成功");
           this.bindingdelDilaog = false;
-          this.bindingClick();
+          addCustomer({ reserve_id: this.reserve_id }).then(res => {
+            this.customerTotal = res.data.content.total;
+            this.customerData = res.data.content.list;
+          });
         } else {
           this.$Message.success("删除失败");
         }
@@ -1723,6 +1762,7 @@ export default {
     this.getUser();
     this.destinationTitleFun();
     this.base = getBase().base3;
+    this.actionUrl = `${this.base}/Occupant_infoController/saveExcel`;
   }
 };
 </script>

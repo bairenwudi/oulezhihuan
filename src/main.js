@@ -45,12 +45,12 @@ new Vue({
     created () {
         let tagsList = [];
         appRouter.map((item) => {
-            console.log(item);
+            // console.log(item);
             if (item.children.length <= 1) {
                 tagsList.push(item.children[0]);
             } else {
                 tagsList.push(...item.children);
-                console.log(tagsList);
+                // console.log(tagsList);
             }
         });
         this.$store.commit('setTagsList', tagsList);

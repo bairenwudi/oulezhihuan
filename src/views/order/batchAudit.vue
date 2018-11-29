@@ -109,12 +109,14 @@ export default {
         // 表头信息
         {
           title: "订单号",
-          width: 120,
+          width: 260,
           key: "reserve_id"
         },
 
         {
           title: "预订人",
+          width: 140,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -126,7 +128,7 @@ export default {
 
         {
           title: "预订人手机",
-          width: 100,
+          width: 140,
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -140,6 +142,7 @@ export default {
 
         {
           title: "预定机构",
+          width: 140,
           render: (h, { row, index }) => {
             return h("span", {}, row.yu_org_name ? row.yu_org_name : `暂无${index}`);
           }
@@ -147,6 +150,7 @@ export default {
 
         {
           title: "目的地名称",
+          width: 140,
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -158,6 +162,7 @@ export default {
 
         {
           title: "申请日期",
+          width: 140,
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -170,6 +175,7 @@ export default {
 
         {
           title: "入住日期",
+          width: 140,
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -181,6 +187,7 @@ export default {
 
         {
           title: "离开日期",
+          width: 140,
           render: (h, { row, index }) => {
             return h("span", {}, row.end_time ? row.end_time : `暂无${index}`);
           }
@@ -188,17 +195,21 @@ export default {
 
         {
           title: "订单金额",
+          width: 140,
+
           render: (h, { row, index }) => {
             return h(
               "span",
               {},
-              row.ord_amount ? row.ord_amount : `暂无${index}`
+              row.ord_amount ? `￥${row.ord_amount}` : `暂无${index}`
             );
           }
         },
 
         {
           title: "订单状态",
+          width: 140,
+
           render: (h, { row, index }) => {
             return h(
               "span",
@@ -210,7 +221,6 @@ export default {
 
         {
           title: "操作",
-          width: 200,
           key: "action",
           align: "center",
           render: (h, params) => {
@@ -339,9 +349,10 @@ export default {
     // 改变分页触发的事件
     pageChange(pageIndex) {
       // 改变当前页
+      console.log(pageIndex);
       this.currentPage = pageIndex;
       for (let i in this.formInline) {
-        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
+        if ((this.formInline[i] !== undefined || this.formInline[i] !== "") && this.formInline.check_time[0] !== '') {
           this.getUser(this.formInline);
           return false;
         }
@@ -387,12 +398,12 @@ export default {
     //批量审核订单列表
     // 为了解决异步问题
     async getUser(filter) {
+      console.log(filter);
       var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
       let params = {
         pageSize: 10,
         startPos: filter ? 1 : this.currentPage,
         adm_user_id
-
       };
 
       if (filter) {

@@ -202,6 +202,23 @@ const batchCheckoutList = params => {
 const detailAndDeal = params => {
     return axios.post(`${baseUrl.base3}/BatchReserveController/reserveInfo`, params);
 };
+//批量审核   同意
+const agree = params => {
+    return axios.post(`${baseUrl.base3}/BatchReserveController/agreeReserve`, params);
+};
+//批量审核   同意
+const refuse = params => {
+    return axios.post(`${baseUrl.base3}/BatchReserveController/refuseReserve`, params);
+};
+
+
+
+
+
+
+
+
+
 
 
 
@@ -254,7 +271,8 @@ export {
     roomTypeNum,       //批量预定   房型checkboxChange 查询房间数量
     getEditMsgReserve, //批量预定   点击编辑获取id num 
     detailAndDeal,     //批量预定   处理和详情
-    
+    agree,
+    refuse,
 };
 
 // 组件中获取base地址
