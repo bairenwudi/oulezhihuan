@@ -2,7 +2,7 @@ import Vue from 'vue';
 import iView from 'iview';
 import { router } from './router/index';
 import { appRouter } from './router/router';
-import { Upload } from 'element-ui';
+import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import store from './store';
 import App from './app.vue';
@@ -18,7 +18,7 @@ Vue.prototype._ = _;
 
 Vue.use(VueI18n);
 Vue.use(iView);
-Vue.use(Upload);
+Vue.use(ElementUI);
 Vue.use(VueEditor);
 
 new Vue({
@@ -42,12 +42,12 @@ new Vue({
     created () {
         let tagsList = [];
         appRouter.map((item) => {
-            console.log(item);
+            // console.log(item);
             if (item.children.length <= 1) {
                 tagsList.push(item.children[0]);
             } else {
                 tagsList.push(...item.children);
-                console.log(tagsList);
+                // console.log(tagsList);
             }
         });
         this.$store.commit('setTagsList', tagsList);
