@@ -232,6 +232,8 @@ export const selectNowRoomPrice = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/selectNowRoomPrice`, params);
 }
 
+// 192.168.1.39:8080/Zh_room_type_priceController/getRoomPriceList?org_id=d7b1e98c51bb479e834e68c721f80c08
+
 // 添加方案 org_id //机构id project_name //方案名称 start_time //开始时间 end_time //结束时间
 export const saveRoomPrice = params => {
     return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/save`, params);
@@ -239,7 +241,7 @@ export const saveRoomPrice = params => {
 
 // 显示列表
 export const showRoomPriceList = params => {
-    return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/showRoomPriceList?pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Zh_room_type_priceController/getRoomPriceList?pageSize=10`, params);
 }
 
 // 新增方案

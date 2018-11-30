@@ -1,5 +1,5 @@
 <style scope lang="less">
-@import "./baseInformation.less";
+    @import "./baseInformation.less";
 </style>
 
 <template>
@@ -104,14 +104,14 @@
                     <FormItem label="机构图片" prop="org_pic_name">
                         <el-upload
                             ref="imgsUpload"
-                            :action="actionUrl"
+                            :action="coverAddUrl"
+                            :data="imgsData"
                             list-type="picture-card"
                             :file-list="org_imags"
-                            :auto-upload="false"
                             :on-preview="handlePictureCardPreview"
                             :on-success="uploadSuccess"
                             :on-error="uploadError"
-                            :on-remove="onRemove"
+                            :on-remove="imgsRemove"
                             :on-exceed="uploadonExceed"
                             :on-change="onChangeImgs"
                             :limit="9"
@@ -552,9 +552,7 @@
                     </DatePicker>
                 </FormItem>
 
-                <FormItem label="价格明细：">
-                    
-                </FormItem>
+                <FormItem label="价格明细："></FormItem>
 
                 <FormItem 
                     id="addPricePlan"
@@ -857,7 +855,7 @@ export default {
 
         CoverfileList: [], // 封面列表
 
-        roomTypePage: 0,    // 房间类型当前页数
+        roomTypePage: 1,    // 房间类型当前页数
 
         roomTypeAddModal: false,  // 控制房间类型新增显示
 
@@ -999,6 +997,8 @@ export default {
 
         coverData: {},
 
+        imgsData: {},
+
         coverAddUrl: '',
     };
   },
@@ -1034,7 +1034,12 @@ export default {
         this.coverAddUrl = `${this.base}/Picture_DictController/insertPicture`
         this.coverData = {
             pic_property: 1,
-        }
+            org_id: JSON.parse(localStorage.user).org_id
+        },
+        this.imgsData = {
+            pic_property: 2,
+            org_id: JSON.parse(localStorage.user).org_id
+        },
         this.selectRoomTypeFun();
         this.selectOrgByObjFun();
         this.selectBuildingsFun();
@@ -1088,7 +1093,7 @@ export default {
 
         this.org_imags = [];
         for (let i of org_imags) {
-            this.org_imags.push({ url: i.images });
+            this.org_imags.push({ url: i.images, pic_id: i.pic_id });
         }
         
         if(this.baseInfoList.cover !== '') {
@@ -1193,8 +1198,7 @@ export default {
 
     // 上传成功
     uploadSuccess(response, file, fileList) {
-      console.log(response, file, fileList);
-      // this.getUser();
+        this.$Message.success('上传成功');
     },
 
     // 上传时将图片赋到img上
@@ -1210,16 +1214,7 @@ export default {
 
     // 图片上传之前的钩子
     onChangeImgs(file, fileList) {
-        this.ImgsfileList = fileList;
-        let org_imags = JSON.parse(this.baseInfoList.org_imags);
-        console.log(fileList)
-        // 如果后进行操作的大于默认图片列表
-        //   if(this.ImgsfileList.length > org_imags.length) {
-        //     // validationImgsList
-
-        //   } else {
-
-        //   }
+       
     },
 
     // 房间上传图片
@@ -1243,11 +1238,10 @@ export default {
       this.$Message.error("上传失败");
     },
 
-    // 机构图片删除
-    coverDelClick(file, fileList) {
-        console.log(this.defaultImageList);
+    // 封装封面和图片删除函数
+    deleteImgAndCoverFun(pic_id) {
         let params = { 
-            pic_id: this.baseInfoList.c_id
+            pic_id
         }
         deletePicture(params).then(res => {
             if(res.data.code === 'success') {
@@ -1256,6 +1250,15 @@ export default {
                 this.$Message.error(`${res.data.content.msg}`);
             }
         })
+    },
+
+    // 机构图片删除
+    coverDelClick(file, fileList) {
+        this.deleteImgAndCoverFun(this.baseInfoList.c_id);
+    },
+
+    imgsRemove(file, fileList) {
+        this.deleteImgAndCoverFun(file.pic_id);
     },
 
     /**
@@ -2172,51 +2175,25 @@ export default {
             startPos: this.pricePricePage,
             org_id: JSON.parse(localStorage.user).org_id
         }
-        const { data } = await showRoomPriceList();
+        const { data } = await showRoomPriceList(params);
         this.pricePlanList = data.data;
-        this.pricePricePlan = data.count;
+        this.pricePricePlan = data.page.total;
+        console.log(data);
 
-        let roomTypeArrIds = [];
-        let pricePlanIds = [];
-        let pricePlanPrices = [];
-
-        let rebirthArr = [];
-        for(let i in this.roomTypeUserData) {
-            roomTypeArrIds.push({ids: this.roomTypeUserData[i].room_type_id, room_name: this.roomTypeUserData[i].room_name});
+        for(let i = 0; i < data.returnName.length; i++) {
+            this.pricePlanColumns.push({
+                title: data.returnName[i],
+                align: 'center',
+                key: data.returnId[i]
+            });
         }
-        
-        for(let i of this.pricePlanList) {
-            pricePlanIds = i.room_type_id.split(',');
-            pricePlanPrices = i.room_price.split(',');
-
-            for(let k in roomTypeArrIds) {
-                if(pricePlanIds.indexOf(roomTypeArrIds[k].ids) !== -1) {
-                    console.log(roomTypeArrIds[k].ids);
-                    rebirthArr.push({title: roomTypeArrIds[k].room_name, price: pricePlanPrices[pricePlanIds.indexOf(roomTypeArrIds[k].ids)]});
-                }
-            }
-        }
-
-        console.log(rebirthArr);
-
-        this.pricePlanColumns.push({
-            title: '操作',
-            align: 'center',
-            render: (h, { row, index }) => {
-            return h(
-                "Button", {
-                    props: {
-                        type: 'primary',
-                        icon: 'edit'
-                    },
-                }, '编辑' );
-            }
-        });
     },
 
     // 价格方案改变当前页的事件
-    pricePlanPageChange() {
+    pricePlanPageChange(val) {
         // getNotPageRoomTypeFun
+        this.pricePricePage = val;
+        this.selectPricePlanFun();
     },
 
     // 点击新增方案
