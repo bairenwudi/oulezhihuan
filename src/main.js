@@ -13,8 +13,6 @@ import VueI18n from 'vue-i18n';
 import axios from 'axios'
 import util from '@/libs/util';
 import { VueEditor } from "vue2-editor";
-import ZkTable from 'vue-table-with-tree-grid'
-
 Vue.config.productionTip = false;
 Vue.prototype._ = _;
 
@@ -22,7 +20,6 @@ Vue.use(VueI18n);
 Vue.use(iView);
 Vue.use(Upload);
 Vue.use(VueEditor);
-Vue.use(ZkTable);
 
 new Vue({
     el: '#app',

@@ -59,8 +59,8 @@ export default {
     return {
         systemStatus:[
                     {
-                        value: 'ios',
-                        label: 'ios'
+                        value: 'iOS',
+                        label: 'iOS'
                     },
                     {
                         value: 'android',

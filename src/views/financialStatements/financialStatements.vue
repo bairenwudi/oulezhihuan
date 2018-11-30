@@ -52,6 +52,9 @@ import {
     financialInstitutionalDownload //财务报表下载
 } from '../../api/lp-financialStatements/api.js'
 
+// 年月日 补充时间格式 不够10 补充 0
+import { formatTimeDay } from "@/common/date/formatTime.js";
+
 // 年月 补充时间格式 不够10 补充 0
 import { formatTimeMonth } from "@/common/date/formatTime.js";
 
@@ -247,7 +250,12 @@ export default {
        })
     },
 
-    // 转化时间-年月日
+     // 转化时间-年月日
+    dataFormatDay(time) {
+        return formatTimeDay(time);
+    },
+
+    // 转化时间-年月
     dataFormatMonth(time) {
         return formatTimeMonth(time);
     },
@@ -326,8 +334,11 @@ export default {
         if (filter) {
             params = Object.assign(params, filter);
             if(filter.check_time[0] !== '') {
+                // params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
+                // params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
                 params.check_in_time = this.dataFormatMonth(filter.check_time[0].getTime());
                 params.check_out_time = this.dataFormatMonth(filter.check_time[1].getTime());
+                
         }
         };
 

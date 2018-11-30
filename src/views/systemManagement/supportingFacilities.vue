@@ -43,7 +43,6 @@
                         ref="addUpload"
                         name="upLoad"
                         :action="addActionUrl"
-                        :data="addData"
                         :file-list="addFileList"
                         list-type="picture-card"
                         :auto-upload="false"
@@ -70,6 +69,10 @@
             </div>
         </Modal>
 
+        <form :action="addActionUrl" id="form1" method="post" target="posthere" enctype="multipart/form-data"></form>
+        <form :action="editActionUrl" id="form2" method="post" target="posthere" enctype="multipart/form-data"></form>
+        <iframe name="posthere" height="0" width="0"></iframe>
+
      <!--  编辑提示框 -->
         <Modal v-model="editModal"
                 title="编辑"
@@ -78,21 +81,20 @@
                 @on-cancel="EditModalReset('editForm')"
             >
             <Form ref="editForm" :model="editForm" :rules="editRules" :label-width="80">
-
+                
               <FormItem label="设施名称" prop="facilities_name">
-                    <Input v-model="editForm.facilities_name" placeholder="请输入设施名称"></Input>
-                </FormItem>
+                <Input v-model="editForm.facilities_name" placeholder="请输入设施名称"></Input>
+              </FormItem>
 
-                <FormItem label="设施图片" :label-width="85">
-                    <el-upload
+              <FormItem label="设施图片" :label-width="85">
+                <el-upload
                         ref="editUpload"
                         name="upLoad"
                         :action="editActionUrl"
-                        :data="editData"
                         :file-list="editFileList"
                         list-type="picture-card"
                         :auto-upload="false"
-                        :on-change="onChange"
+                        :on-change="EditOnChange"
                         :on-preview="handlePictureCardPreview"
                         :on-success="uploadSuccess"
                         :on-error="uploadError"
@@ -148,12 +150,15 @@ export default {
     TableM
   },
   data() {
-    var DateValdate = (rule, value, callback) => {
-      if (value[0] === "") {
-        return callback(new Error("请填写完整"));
-      } else {
-        callback();
-      }
+    var creatValidator = (rule, value, callback) => {
+      let rules = /^[\u4E00-\u9FA5A-Za-z]{1,5}$/;
+        if (!value) {
+            return callback(new Error('请填写完整'));
+        } else if(!rules.test(value)) {
+            return callback(new Error('只能输入本文和字母'));
+        } else {
+            callback();
+        }
     };
 
     return {
@@ -175,22 +180,20 @@ export default {
       addRules: {
         // 定义表单的校验规则
         facilities_name: [
-          { required: true, message: "请输入设施名称", trigger: "blur" }
+          { min: 1, max: 5, message: '您最多可以输入5个字', trigger: 'blur' },
+          { required: true, message: "设施名称不能为空", trigger: "blur" },
+          { validator: creatValidator, trigger: 'blur' }
         ]
       },
 
       editRules: {
         // 定义表单的校验规则
         facilities_name: [
-          { required: true, message: "请输入设施名称", trigger: "blur" }
+          { min: 1, max: 5, message: '您最多可以输入5个字', trigger: 'blur' },
+          { required: true, message: "设施名称不能为空", trigger: "blur" },
+          { validator: creatValidator, trigger: 'blur' }
         ]
       },
-
-      addData: {},
-
-      editData: {},
-
-      editFileList: [],
 
       addFileList: [],
 
@@ -286,20 +289,7 @@ export default {
                 },
                 "编辑"
               ),
-            //   h(
-            //     "Button",
-            //     {
-            //     props: {
-            //         type: "primary",
-            //     },
-            //     on: {
-            //         click: () => {
-            //             this.delClick(params);
-            //         }
-            //     }
-            //     },
-            //     "删除"
-            // )
+              
             ]);
           }
         }
@@ -320,6 +310,10 @@ export default {
       loading: false, // 定义loading为true
 
       currentPage: 1, // 定义当前页
+
+      editFile: [],   // 编辑图片列表
+
+      isDirty: false, // 脏检查
     };
   },
 
@@ -332,20 +326,23 @@ export default {
 
     // 图片上传之前的钩子
     onChange(file, fileList) {
-      console.log(fileList)
       this.fileList = fileList;
-      this.editFileList = fileList;
     },
 
+    EditOnChange(fileList) {
+      console.log(fileList)
+      this.editFile = [];
+      this.editFile.push(fileList);
+    },
+    
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
-      this.$Message.warning('超出图片最大限制');
+      this.$Message.warning('最多上传一张图片');
     },
 
     // 上传成功
     uploadSuccess(response, file, fileList) {
         console.log(response, file, fileList);
-        this.getUser();
     },
 
     // 上传失败
@@ -359,6 +356,7 @@ export default {
       this.fileList = [];
       this.editFileList = [];
       this.addFileList = [];
+      this.editFile = [];
     },
 
     // 删除图片钩子函数
@@ -440,22 +438,56 @@ export default {
     AddModalConfirm(formName) {
         this.$refs[formName].validate(valid => {
             if (valid) {
-                if(!this.fileList.length) {
-                  this.$Message.warning('请上传图片');
-                  return
-                };
-                this.addData = this[formName];
-                setTimeout(() => {
-                  this.$refs.addUpload.submit();
-                  this.$Message.success("保存成功!");
-                  this.$refs.addForm.resetFields();
-                  setTimeout(() =>{ 
-                    this.handleResetFile();
-                    this.getUser();
-                  }, 200)
-                  this.addModal = false;
-                  this.loading = false;
-                },400);
+              let _this = this;
+              if(!this.fileList.length) {
+                this.$Message.warning('请上传图片');
+                return
+              };
+
+              let formData = new FormData($("form1")[0]);
+
+              for (let i in this[formName]) {
+                formData.append(i, this[formName][i]);
+              }
+
+              formData.append('upLoad', this.fileList[0].raw);
+
+              setTimeout(() => {
+                // this.$refs.addUpload.submit();
+                $.ajax({
+                  type: "POST",
+                  url: `${_this.addActionUrl}`,
+                  data: formData,
+                  dataType: "JSON",
+                  cache: false, // 不缓存
+                  processData: false, // jQuery不要去处理发送的数据
+                  contentType: false
+                }).success(function(res) {
+                    console.log(res);
+                    if(res === 1) {
+                        _this.$Message.success('添加成功!');
+                        _this.addModal = false;
+                        _this.handleResetFile();
+                        _this.getUser();
+                        
+                    } else if(res === 0) {
+                        _this.$Message.error('添加失败!');
+                    } else if(res === 2){
+                        _this.$Message.error('名称重复!');
+                    }
+                }).error(function(err) {
+                    console.log(err);
+                });
+              }, 400)
+                //   this.$Message.success("保存成功!");
+                //   this.$refs.addForm.resetFields();
+                //   setTimeout(() =>{ 
+                //     this.handleResetFile();
+                //     this.getUser();
+                //   }, 200)
+                //   this.addModal = false;
+                //   this.loading = false;
+                // },400);
             }
         });
     },
@@ -474,6 +506,8 @@ export default {
       const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
       this.editFileList = [];
       this.editFileList.push({ url, name: url });
+      this.editFile = [];
+      this.editFile.push({ url, name: url });
       this.editModal = true;
     },
     
@@ -482,22 +516,60 @@ export default {
       this.$refs[formName].validate((valid) => {
         if(valid) {
           // 执行
-          if(!this.editFileList.length) {
+          let _this = this;
+          
+          if(!this.editFile.length) {
             this.$Message.warning('请上传图片');
             return
           };
-          this.editData = this[formName];
-          console.log(this.editData)
-          setTimeout(() => {
-            this.$refs.editUpload.submit();
-            this.$Message.success("保存成功!");
-            setTimeout(() =>{ 
-              this.handleResetFile();
-              this.getUser();
-            }, 200)
-            this.editModal = false;
-            this.loading = false;
-          }, 400);
+
+          let formData = new FormData($("form2")[0]);
+
+          for (let i in this[formName]) {
+            formData.append(i, this[formName][i]);
+          }
+
+          formData.append('upLoad', this.editFile[0].raw);
+
+              setTimeout(() => {
+                // this.$refs.addUpload.submit();
+                $.ajax({
+                  type: "POST",
+                  url: `${_this.editActionUrl}`,
+                  data: formData,
+                  dataType: "JSON",
+                  cache: false, // 不缓存
+                  processData: false, // jQuery不要去处理发送的数据
+                  contentType: false
+                }).success(function(res) {
+                    console.log(res);
+                    if(res === 1) {
+                        _this.$Message.success('修改成功!');
+                        _this.handleResetFile();
+                        _this.editModal = false;
+                        _this.getUser();
+                        
+                    } else if(res === 0) {
+                        _this.$Message.error('修改失败!');
+                    } else if(res === 2){
+                        _this.$Message.error('名称重复!');
+                    }
+                }).error(function(err) {
+                    console.log(err);
+                });
+              }, 400)
+          // this.editData = this[formName];
+          // console.log(this.editData)
+          // setTimeout(() => {
+          //   this.$refs.editUpload.submit();
+          //   this.$Message.success("保存成功!");
+          //   setTimeout(() =>{ 
+          //     this.handleResetFile();
+          //     this.getUser();
+          //   }, 200)
+          //   this.editModal = false;
+          //   this.loading = false;
+          // }, 400);
         }
       })
     },
@@ -519,7 +591,7 @@ export default {
         this.delArr.push(this.selection[i].facilities_id)
       }
       if(!this.selection.length) {
-        this.$Message.warning('请选择');
+        this.$Message.warning('最少选择一条数据');
         return
       };
       this.delDilaog = true;

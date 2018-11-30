@@ -29,6 +29,15 @@
         @pageChange="pageChange">
         </TableM>
 
+        <!-- 轮播图 -->
+        <template>
+            <Carousel autoplay v-model="moreModal"  loop>
+                <CarouselItem>
+                    <img :src="base + '/' + item" alt=""  width="100%" height="100%">
+                </CarouselItem>
+            </Carousel>
+        </template>
+
     </div>
 </template>
 
@@ -102,8 +111,35 @@ export default {
                     }, 
                     )
                 },
-                
             },
+
+            {
+                title: " ",
+                key: "action",
+                align: "center",
+                render: (h, { row }) => {
+                    return h("div", [
+                    h(
+                        "Button",
+                        {
+                        props: {
+                            type: "primary",
+                        },
+                        style: {
+                            marginRight: "5px"
+                        },
+                        on: {
+                            click: () => {
+                            this.moreClick(row);
+                            }
+                        }
+                        },
+                        "预览图片"
+                    ),
+                    
+                    ]);
+                }
+        },
 
 
             {
