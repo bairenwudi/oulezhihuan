@@ -63,6 +63,19 @@ export const updateById = params => {
 }
 
 
+// 异步添加图片 // file //上传图片  // org_id //机构id
+export const insertPicture = params => {
+    return axios.post(`${baseUrl.base2}/Picture_DictController/insertPicture`, params);
+}
+
+// 异步删除图片  pic_id //图片id
+export const deletePicture = params => {
+    return axios.post(`${baseUrl.base2}/Picture_DictController/deletePicture`, params);
+}
+
+
+
+
 
 /**
  * 

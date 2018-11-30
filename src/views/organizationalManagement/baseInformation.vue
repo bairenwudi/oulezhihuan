@@ -81,12 +81,13 @@
                     <FormItem label="机构封面" prop="org_cover">
                         <el-upload
                             ref="coverUpload"
-                            :action="actionUrl"
+                            :action="coverAddUrl"
                             list-type="picture-card"
                             :file-list="defaultImageList"
-                            :auto-upload="false"
+                            :data="coverData"
                             :on-preview="handlePictureCardPreview"
                             :on-success="uploadSuccess"
+                            :on-remove="coverDelClick"
                             :on-error="uploadError"
                             :on-exceed="uploadonExceed"
                             :on-change="onChangeCover"
@@ -675,6 +676,8 @@ import {
   addPricePlanSave,
   selectRoomTypeDefaultPrice,
   updateByIdDefaultPrice,
+  deletePicture,
+  insertPicture,
   getBase,
 } from "@/api/lp-organizational/api.js";
 
@@ -726,7 +729,7 @@ export default {
 
         moveAreaRadio: '',      // 移动区域的radio
 
-        defaultName: 'defaultPrice',     // 默认显示哪个标签页
+        defaultName: 'base',     // 默认显示哪个标签页
 
         allFacilitiesList: [],  // 获取全部的基地设施
 
@@ -992,7 +995,11 @@ export default {
             default_priceC: [
                 { required: true, message: '请填写完整', trigger: 'blur' }
             ]
-        },   
+        },
+
+        coverData: {},
+
+        coverAddUrl: '',
     };
   },
 
@@ -1024,6 +1031,10 @@ export default {
         console.log(this.base);
         this.actionUrl = `${this.base}/organ/updateById`;
         this.addRoomUrl = `${this.base}/Zh_room_infoController/save`;
+        this.coverAddUrl = `${this.base}/Picture_DictController/insertPicture`
+        this.coverData = {
+            pic_property: 1,
+        }
         this.selectRoomTypeFun();
         this.selectOrgByObjFun();
         this.selectBuildingsFun();
@@ -1079,8 +1090,11 @@ export default {
         for (let i of org_imags) {
             this.org_imags.push({ url: i.images });
         }
-
-        this.defaultImageList = [{ url: this.baseInfoList.cover }];
+        
+        if(this.baseInfoList.cover !== '') {
+            this.defaultImageList = [{ url: this.baseInfoList.cover }];
+        }
+        
         // 根据获取基地信息的机构设施字段来获取机构设施图片集合
         this.social = [];
 
@@ -1115,7 +1129,6 @@ export default {
       const { data } = await CityTitleList({ p_code });
       this.CityTitle = data;
     },
-
 
     // 当图片数量超出规定的数量的钩子函数
     uploadonExceed() {
@@ -1154,6 +1167,7 @@ export default {
               }
             }
           }
+
           setTimeout(() => {
             $.ajax({
               type: "POST",
@@ -1198,6 +1212,7 @@ export default {
     onChangeImgs(file, fileList) {
         this.ImgsfileList = fileList;
         let org_imags = JSON.parse(this.baseInfoList.org_imags);
+        console.log(fileList)
         // 如果后进行操作的大于默认图片列表
         //   if(this.ImgsfileList.length > org_imags.length) {
         //     // validationImgsList
@@ -1208,21 +1223,39 @@ export default {
     },
 
     // 房间上传图片
-
     onChangeRoomImgs(file, fileList) {
         this.roomImgsfileList = fileList[0].raw;
     },
 
-    // 图片
+    // 图片改变
     onChangeCover(file, fileList) {
       this.CoverfileList = fileList;
-      console.log(fileList);
+        //   setTimeout(() => {
+        //     insertPicture(this.coverData).then(res => {
+        //         console.log(res);
+        //     })
+        //   }, 200)
     },
 
     // 上传失败
     uploadError(err, file, fileList) {
       console.log(err, file, fileList);
       this.$Message.error("上传失败");
+    },
+
+    // 机构图片删除
+    coverDelClick(file, fileList) {
+        console.log(this.defaultImageList);
+        let params = { 
+            pic_id: this.baseInfoList.c_id
+        }
+        deletePicture(params).then(res => {
+            if(res.data.code === 'success') {
+                this.$Message.success('成功');
+            } else {
+                this.$Message.error(`${res.data.content.msg}`);
+            }
+        })
     },
 
     /**
@@ -2318,6 +2351,8 @@ export default {
 
   mounted() {
     this.initMounted();
+    let a = {"returnId":["70b892c930684116bf5e31fced2d7299","afb3d7403f5e442392ccc97f86fc7cc3","1e4774137506432e82466357a2f29fb3","63abd54451cc4ce1b8e3e87e64a4b6a9","2cc87ed2be374c939ca2a4b757264885","93fc4f42849f4831b35ca8ac7fff0294","e34268db4f684242bdcdea182a17a88f","454ebec2901a43e7b74687476f8c3117","193fa90f70804df7aa3370e7a715912e","437748acf89b4c1488eec9370fac0283","add335cb12dc431aa475cfbd9352e8e8","e9d4e79a81f548c59d2615d9104db5fa","c408bba74ce949f9b50698153064039c"],"returnName":["蹦擦擦","德云社","风景树","姆巴佩电动车","礸礸礸","godV","阿布扎比","郜飞机","卡卡卡","克罗地亚的小姐姐","辽宁鸿运","哈德森","上海德比"],"data":[{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"赛文哥的小木屋","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"77","193fa90f70804df7aa3370e7a715912e":"","project_id":"0c41735b66c74dca80aff65e4888201b","437748acf89b4c1488eec9370fac0283":"77","add335cb12dc431aa475cfbd9352e8e8":"777","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"7777"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"巴拉巴拉小魔仙","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"09","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"9","project_id":"14d8753f6a0642c2ad703e0f1e942a1d","437748acf89b4c1488eec9370fac0283":"6","add335cb12dc431aa475cfbd9352e8e8":"7","e9d4e79a81f548c59d2615d9104db5fa":"8","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"252","63abd54451cc4ce1b8e3e87e64a4b6a9":"242","project_name":"足球球队一共几个人","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"222","193fa90f70804df7aa3370e7a715912e":"","project_id":"33ff621534a049238aefeea1da4e0a17","437748acf89b4c1488eec9370fac0283":"212","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"232"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"韩德君","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"23","193fa90f70804df7aa3370e7a715912e":"","project_id":"53df0ae0fac34237aa6f36ef024a046b","437748acf89b4c1488eec9370fac0283":"21","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"eeee","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"120","193fa90f70804df7aa3370e7a715912e":"","project_id":"646e818e1be546a3b08f602246627a3d","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"22"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"潍坊(๑ŐдŐ)b","2cc87ed2be374c939ca2a4b757264885":"101","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"6dfe7b3022f14ea8aefea83a322613b6","437748acf89b4c1488eec9370fac0283":"1","add335cb12dc431aa475cfbd9352e8e8":"83","e9d4e79a81f548c59d2615d9104db5fa":"930","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"七夕一个不让进","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"75ba564891664e98a19c6faaf70f67d6","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"1","e9d4e79a81f548c59d2615d9104db5fa":"3","c408bba74ce949f9b50698153064039c":"2"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"老詹不容易","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"8b71363076764a0092809912fe18727c","437748acf89b4c1488eec9370fac0283":"123","add335cb12dc431aa475cfbd9352e8e8":"124","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"8","63abd54451cc4ce1b8e3e87e64a4b6a9":"6","project_name":"巴西10号爱打滚","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"2","193fa90f70804df7aa3370e7a715912e":"7","project_id":"8cd7fec2e35b408ca4beaafa81e98150","437748acf89b4c1488eec9370fac0283":"1","add335cb12dc431aa475cfbd9352e8e8":"3","e9d4e79a81f548c59d2615d9104db5fa":"5","c408bba74ce949f9b50698153064039c":"4"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"2","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"范尼斯特鲁伊","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"3","e34268db4f684242bdcdea182a17a88f":"1","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"971b8f31e47b4ad4b9ac846679a8f47f","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"情人节不开业","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"2","193fa90f70804df7aa3370e7a715912e":"","project_id":"a1118876f6a742edbd5d219b02fae39c","437748acf89b4c1488eec9370fac0283":"1","add335cb12dc431aa475cfbd9352e8e8":"3","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"4"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"赛文哥教你回旋踢","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"30","project_id":"b051c902231740b4b870701a713b0e4d","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"12"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"7","1e4774137506432e82466357a2f29fb3":"5","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"范巴斯滕","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"6","e34268db4f684242bdcdea182a17a88f":"8","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"c1be999e571d43e9af4b3c3456da206e","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"31","project_name":"changqq","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"32","project_id":"d23b44b0415447ebbdbf0f00d4a35047","437748acf89b4c1488eec9370fac0283":"21","add335cb12dc431aa475cfbd9352e8e8":"22","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"65","project_name":"我们总是冠军","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"45","193fa90f70804df7aa3370e7a715912e":"","project_id":"da939d60673d4e70bc5e6b97b117c9da","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"55","c408bba74ce949f9b50698153064039c":"555"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"克罗地亚首都是哪","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"dc70c84dc3614daca34b742f207c84d4","437748acf89b4c1488eec9370fac0283":"90","add335cb12dc431aa475cfbd9352e8e8":"91","e9d4e79a81f548c59d2615d9104db5fa":"92","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"21","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"范布隆特霍斯特","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"22","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"f82b5d60fb5744fca37db40a1d091459","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""}],"page":{"total":17,"pages":0}}
+    console.log(a)
   }
 };
 </script>
