@@ -73,6 +73,18 @@ export const otherRouter = {
         { path: 'AppOrderinfoModel', title: 'App详情', name: 'AppOrderinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/AppOrderinfo.vue'], resolve); } },
         { path: 'RefundListinfoModel', title: '退款单详情', name: 'RefundListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/RefundListinfo.vue'], resolve); } },
         { path: 'CheckoutListinfoModel', title: '退房单详情', name: 'CheckoutListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/CheckoutListinfo.vue'], resolve); } },        
+        {
+            path: '/order/batchOrderDeal',
+            name: 'batchOrderDeal',
+            title: '处理后',
+            component: resolve => { require(['@/views/order/batchOrderDeal.vue'], resolve); }
+        },
+        {
+            path: '/order/applyDeal',
+            name: 'applyDeal',
+            title: '申请受理',
+            component: resolve => { require(['@/views/order/applyDeal.vue'], resolve); }
+        },
     ]
 };
 
@@ -126,10 +138,10 @@ export const appRouter = [
                 component: resolve => { require(['@/views/systemManagement/hotCityManagement.vue'], resolve); }
             },
             {
-                path: 'evaluationSettingModel',
-                name: 'evaluationSettingModel',
-                title: '评价设置',
-                component: resolve => { require(['@/views/systemManagement/evaluationSetting.vue'], resolve); }
+                path: 'evaluationManagementModel',
+                name: 'evaluationManagementModel',
+                title: '评价管理',
+                component: resolve => { require(['@/views/systemManagement/evaluationManagement.vue'], resolve); }
             },
             {
                 path: 'supportingFacilitiesModel',
@@ -186,18 +198,6 @@ export const appRouter = [
                 name: 'batchAuditModel',
                 title: '批量审核',
                 component: resolve => { require(['@/views/order/batchAudit.vue'], resolve); }
-            },
-            {
-                path: 'batchOrderDeal',
-                name: 'batchOrderDeal',
-                title: '处理后',
-                component: resolve => { require(['@/views/order/batchOrderDeal.vue'], resolve); }
-            },
-            {
-                path: 'applyDeal',
-                name: 'applyDeal',
-                title: '申请受理',
-                component: resolve => { require(['@/views/order/applyDeal.vue'], resolve); }
             },
             {
                 path: 'refundListModel',

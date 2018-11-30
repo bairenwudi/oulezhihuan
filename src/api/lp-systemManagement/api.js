@@ -83,6 +83,25 @@ const hotCityGetEditMessage = params => {
     return axios.post(`${baseUrl.base2}/Hot_city_managementController/selectHotCityByObj`, params);
 }
 
+// 评价管理列表
+const evaluationManagementList = params => {
+    return axios.post(`${baseUrl.base2}/Facilities_managementController/selectFacilities?startPos=${params.startPos}&pageSize=10`, params);
+};//暂无接口
+
+//评价管理-置顶
+const evaluationManagementTop = params => {
+    return axios.post(`${baseUrl.base2}/Facilities_managementController/deleteById`, params);
+};//暂无接口
+
+// 评价管理删除
+const evaluationManagementDel = params => {
+    return axios.post(`${baseUrl.base2}/Facilities_managementController/deleteById`, params);
+};//暂无接口
+
+// 评价管理模糊查询-机构标题下拉列表渲染
+const evaluationManagementTitleList = params => {
+    return axios.post(`${baseUrl.base2}/Orders_app/Select_org_name`, params);
+};//暂无接口
 
 
 
@@ -134,6 +153,10 @@ export {
     hotCityGetEditMessage,//热门城市管理点击编辑获取信息
     hotCityPList,//热门城市管理 省 列表渲染
     hotCityCList,//热门城市管理删除 市 列表渲染
+    evaluationManagementList,//评价管理列表  //暂无接口
+    evaluationManagementDel,//评价管理删除   //暂无接口
+    evaluationManagementTop,//评价管理-置顶  //暂无接口
+    evaluationManagementTitleList,//评价管理模糊查询-机构标题下拉列表渲染  //暂无接口
     supportingFacilitiesList, //配套设施管理列表
     supportingFacilitiesAdd,//配套设施管理添加
     supportingFacilitiesEdit,//配套设施管理编辑

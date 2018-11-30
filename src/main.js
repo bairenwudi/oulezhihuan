@@ -13,7 +13,6 @@ import VueI18n from 'vue-i18n';
 import axios from 'axios'
 import util from '@/libs/util';
 import { VueEditor } from "vue2-editor";
-
 Vue.config.productionTip = false;
 Vue.prototype._ = _;
 
@@ -43,12 +42,12 @@ new Vue({
     created () {
         let tagsList = [];
         appRouter.map((item) => {
-            console.log(item);
+            // console.log(item);
             if (item.children.length <= 1) {
                 tagsList.push(item.children[0]);
             } else {
                 tagsList.push(...item.children);
-                console.log(tagsList);
+                // console.log(tagsList);
             }
         });
         this.$store.commit('setTagsList', tagsList);

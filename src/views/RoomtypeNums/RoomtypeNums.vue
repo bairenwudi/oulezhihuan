@@ -36,6 +36,7 @@
       </FormItem>
     </Form>
 
+      <!-- @on-row-dblclick="tableClick" -->
     <TableM
       :columns="columns"
       :data="userData"
@@ -43,7 +44,6 @@
       :current.async="currentPageIndex"
       :total="total"
       @pageChange="pageChange"
-      @on-row-dblclick="tableClick"
     ></TableM>
 
     <!-- 新增提示框 -->
@@ -159,14 +159,14 @@ export default {
 
         {
           title: "剩余数量",
-          render: (h, { row, index }) => {
-            return h("input", {
-              on:{
-                dblclick:() => {
-                  this.tableClick(row);
-                }
-              }
-            }, row.number);
+          render: (h, { row, index, column }) => {
+            return (
+              <div>
+              <span class="roomNumBeforeBtn" onDblclick={ this.tableClick.bind(this, { row, index, column }) }>{row.number}间</span>
+                { this.edittingId === `${row.room_type_id}_${index}`? <i-input class="iptWidth" onBlur={ this.Inputblur.bind(this, { row }) } onInput={this.handleInput}></i-input>: '' }
+                <i-button type="primary" onClick={ this.editInputClick.bind(this, { row, index, column }) }>{ row.editName ? row.editName : `编辑` }</i-button>
+              </div>
+            )
           }
         }
       ],
@@ -194,11 +194,74 @@ export default {
 
       loading: false, // 定义loading为true
 
-      currentPage: 1 // 定义当前页
+      currentPage: 1, // 定义当前页
+
+      i_input: '',
+
+      edittingId: '',
+
+      editDesc: '编辑',
+
+      inputValue: '',
+
+      value: '',
+
+      tableIptNum:"",
+
     };
   },
 
   methods: {
+
+    editInputClick({row, index, column}) {
+      if(this.edittingId === `${row.room_type_id}_${index}`) {
+        this.edittingId = '';
+        row.editName = '编辑';
+      } else {
+        this.edittingId = `${row.room_type_id}_${index}`;
+        row.editName = '保存';
+      }
+      if(row.editName === "编辑"){
+        // 校验
+        var numberReg = /^[+]{0,1}(\d+)$/;
+
+        if(!numberReg.test(this.tableIptNum)){
+          this.$Message.error("请输入正整数");
+          return;
+        }
+        console.log(row);
+        var time = row.reserver_time.split(" ");
+        console.log(time[0]);
+        this.dbClickMsg.dbtime= time[0].replace("年","-").replace("月","-").replace("日","");
+        console.log(this.dbClickMsg.dbtime);
+        this.dbClickMsg.dbRoom_type_id = row.room_type_id;
+        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        
+        let param = {
+          numbers:this.tableIptNum,
+          adm_user_id,
+          start_time: this.dbClickMsg.dbtime,
+          end_time: this.dbClickMsg.dbtime,
+          room_type_ids: row.room_type_id
+        };
+        roomtypeNumsAdd(param).then(res => {
+          console.log(res);
+          if(res.data.data === 1){
+            this.$Message.success("修改成功");
+            this.getUser();
+          }else{
+            this.$Message.error(res.data.msg);
+          }
+          
+        })
+      }
+    },
+
+    handleInput(val) {
+      this.tableIptNum = val;
+      console.log(val);
+    },
+
     dataFormat(time) {
       return this.formatTime(time);
     },
@@ -263,10 +326,8 @@ export default {
           }
         }
       }
-      
-      
     },
-    tableClick(row){
+    tableClick({ row, index, column }){
       console.log(row);
       var time = row.reserver_time.split(" ");
       console.log(time[0]);
@@ -275,7 +336,48 @@ export default {
       this.dbClickMsg.dbRoom_type_id = row.room_type_id;
       var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
       
-      
+      if(this.edittingId === `${row.room_type_id}_${index}`) {
+        this.edittingId = '';
+        row.editName = '编辑';
+      } else {
+        this.edittingId = `${row.room_type_id}_${index}`;
+        row.editName = '保存';
+      }
+    },
+
+    Inputblur({ row }) {
+      console.log(1)
+        // 校验
+        var numberReg = /^[+]{0,1}(\d+)$/;
+        console.log('萨达')
+        if(!numberReg.test(this.tableIptNum)){
+          this.$Message.error("请输入正整数");
+          return;
+        }
+        console.log(row);
+        var time = row.reserver_time.split(" ");
+        console.log(time[0]);
+        this.dbClickMsg.dbtime= time[0].replace("年","-").replace("月","-").replace("日","");
+        console.log(this.dbClickMsg.dbtime);
+        this.dbClickMsg.dbRoom_type_id = row.room_type_id;
+        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        
+        let param = {
+          numbers:this.tableIptNum,
+          adm_user_id,
+          start_time: this.dbClickMsg.dbtime,
+          end_time: this.dbClickMsg.dbtime,
+          room_type_ids: row.room_type_id
+        };
+        roomtypeNumsAdd(param).then(res => {
+          console.log(res);
+          if(res.data.data === 1){
+            this.$Message.success("修改成功");
+            this.getUser();
+          }else{
+            this.$Message.error(res.data.msg);
+          }
+        })
         // let param = {
         //   numbers
         //   adm_user_id

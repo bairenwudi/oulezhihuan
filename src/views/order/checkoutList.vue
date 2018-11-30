@@ -79,7 +79,7 @@ import { formatTime } from "@/common/date/formatTime.js";
 import { formatTimeDay } from "@/common/date/formatTime.js";
 
 // 剩余入住天数
-import { DateDiff } from "@/common/date/formatTime.js";
+// import { DateDiff } from "@/common/date/formatTime.js";
 
 // 引入优化滚动插件
 import VirtualList from 'vue-virtual-scroll-list'
@@ -436,9 +436,9 @@ export default {
     },
 
      // 转化天数-剩余入住天数
-    dataFormatDays(time,time1) {
-        return DateDiff(time,time1);
-    },
+    // dataFormatDays(time,time1) {
+    //     return DateDiff(time,time1);
+    // },
 
     // 过滤订单状态
     SetStatusFilter(status) {
@@ -656,14 +656,18 @@ export default {
         console.log(data);
             console.log(data.content.list.length);
 
-         for (var i = 1; i < data.content.list.length; i++) { 
-           var days = ''
-           days = this.dataFormatDays(data.content.list[i].check_in_time, data.content.list[i].check_out_time);
-           var check_in_time = formatTimeDay(data.content.list[i].check_in_time)
-           var check_out_time = formatTimeDay(data.content.list[i].check_out_time)
-           var refund_time = formatTimeDay(data.content.list[i].refund_time)
-           console.log(days);
-        }
+        //  for (var i = 1; i < data.content.list.length; i++) { 
+        //    var days = ''
+        //    console.log(data.content.list[i].refund_time);
+        //    console.log(data.content.list[i].check_in_time);
+           
+           
+        //    days = this.dataFormatDays(data.content.list[i].check_in_time, data.content.list[i].check_out_time)-this.refund_time;
+        //    var check_in_time = formatTimeDay(data.content.list[i].check_in_time)
+        //    var check_out_time = formatTimeDay(data.content.list[i].check_out_time)
+        //    var refund_time = formatTimeDay(data.content.list[i].refund_time)
+        //    console.log(days);
+        // }
            
     }
   },
