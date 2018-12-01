@@ -29,6 +29,23 @@
         @pageChange="pageChange">
         </TableM>
 
+        <!-- 轮播图 -->
+        <Modal v-model="moreModal"
+                title="图片预览"
+                :mask-closable="false"
+                class="PictureBig"
+            >
+            <template class="PictureBig">
+                <Carousel autoplay v-model="carouselList"  loop >
+                    <CarouselItem v-for="item in visit" :key="item">
+                        <div>
+                            <img :src="base + '/' + item" alt=""  width="100%" height="100%">
+                        </div>                            
+                    </CarouselItem>
+                </Carousel>
+            </template>
+            <div slot="footer"></div>
+        </Modal>
     </div>
 </template>
 
@@ -49,9 +66,11 @@ export default {
   }, 
   data() {
     return {
-        moreModal:false,
+        moreModal: false,   // 控制走马灯显示
 
-        value2: 0,
+        carouselList: 6,   // 走马灯图片列表
+
+        visit: [],
 
         currentPageIndex: 1,    // 当前页
 
@@ -88,23 +107,20 @@ export default {
                 key: "action",
                 align: "center",
                 render: (h, {row, index}) => {
-                    return h('img', 
-                    {
-                        attrs:{
-                            src: this.imgFun(row)   
-                        },
-                        style:{
-                            width: "80px",
-                            height: "80px",
-                            padding:"12px",
-                            display:(this.imgFun(row) === "" ) ? "暂无" : "inline-block"
-                        },    
-                    }, 
+                    return (
+                        <div style="display: flex; flex-flow: column; justify-content: center;align-items: center;">
+                           <span v-show={ this.imgFun.bind(this, row) !== "" }>
+                                <img style="width: 80px; height: 80px;margin-top: 10px" src={ this.imgFun(row) }></img>
+                            </span>
+                            <span v-show={ this.imgFun.bind(this, row) === "" }>
+                                暂无
+                            </span>
+
+                            <i-button type="primary" style="margin-bottom: 10px" onClick={ this.moreClick.bind(this, row) }>预览图片</i-button>
+                        </div>
                     )
                 },
-                
             },
-
 
             {
                 title: "反馈时间",
@@ -136,9 +152,13 @@ export default {
 
   methods: {
     // 轮播图弹框
-    moreClick(params) {
+    moreClick(row) {
         this.moreModal = true;
-        // this.visit = row.visit;
+        console.log(row);
+        this.visit = row.visit;
+        console.log(this.visit);
+       
+        
     },
 
     resetTotal() {

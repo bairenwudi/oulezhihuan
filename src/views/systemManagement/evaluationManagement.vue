@@ -1,12 +1,14 @@
 <style scope lang="less">
-    @import './supportingFacilities.less';
+    @import './evaluationManagement.less';
 </style>
 <!-- 评价设置 -->
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
-            <FormItem prop="cus_account" label="基地名称" :label-width="50">
-                <Input type="text" clearable v-model="formInline.cus_account" placeholder="请输入账号"></Input>
+            <FormItem prop="org_name" label="机构标题" :label-width="60">
+               <Select v-model="formInline.org_name" clearable style="width:200px">
+                 <Option v-for="item in evaluationinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
+               </Select>
             </FormItem>
 
             <FormItem prop="cus_account" label="账号" :label-width="50">
@@ -52,55 +54,25 @@
 
 import TableM from "../../common/table/table.vue";
 import {
-    supportingFacilitiesList, //评价设置列表
-    supportingFacilitiesAdd,//评价设置添加
-    supportingFacilitiesEdit,//评价设置编辑
-    supportingFacilitiesDel,//评价设置删除
+    evaluationManagementList,//评价管理列表
+    evaluationManagementDel,//评价管理删除
+    evaluationManagementTop,//评价管理-置顶
+    evaluationManagementTitleList,//评价管理模糊查询-机构标题下拉列表渲染
 } from '../../api/lp-systemManagement/api.js'
 
 export default {
-  name: "supportingFacilitiesModel",
+  name: "evaluationManagementModel",
 
   components: {
     TableM
   }, 
   data() {
-    var DateValdate = (rule, value, callback) => {
-            if (value[0] === '') {
-                return callback(new Error('请填写完整'));
-            } else {
-                callback();
-            }
-        };
-
+    
     return {
+       evaluationinstitutionTitle:[
 
-        formValidate: {     // 定义新增表单的对象
-                module: '',
-                banner_title: '',
-                upLoad: '',
-                sort: [],
-            },
-        ruleValidate: {     // 定义表单的校验规则
-                banner_title: [
-                    { required: true, message: '请输入预订人', trigger: 'blur' }
-                ],
-
-                module: [
-                    { required: true, type: 'array', min: 1, message: '所属模块选择', trigger: 'change' },
-                    { type: 'array', max: 1, message: '至多选择一个', trigger: 'change' }
-                ],
-
-                sort: [
-                    { required: true, message: '请输入排序', trigger: 'blur' },
-                    { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }
-                ]
-            },
-
-        addModal: false,
+       ],
         
-        editModal: false,
-
         visible: false,
 
         delDilaog: false,   // 控制删除弹出框
@@ -111,7 +83,7 @@ export default {
 
         columns: [    // 表头信息
             {
-                title: "基地名称",
+                title: "机构标题",
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.facilities_name ? row.facilities_name : `暂无${index}`)
@@ -221,39 +193,6 @@ export default {
         this.total = 1;
     },
 
-    // 执行新增的事件
-    addClick() {
-            this.addModal = true;
-        },
-
-    // 点击确定按钮
-        ModalConfirm(name) {
-            this.$refs[name].validate((valid) => {
-                if (valid) {
-                    this.loading = true;
-                    setTimeout(() => {
-                        this.$Message.success('Success!');
-                        this.Modal = false;
-                        this.loading = false;
-                    }, 1000)
-                } else {
-                    this.$Message.error('Fail!');
-                }
-            })
-        },
-
-        // 点击框取消按钮
-        ModalCancel(name) {
-            this.$Message.info("Clicked ok");
-            this.$refs[name].resetFields();
-        },
-
-    // 执行table编辑的事件
-    editClick(params) {
-        this.editModal = true;
-        console.log(params);
-    },
-
     // 执行删除的事件
     delClick(params) {
         console.log(params);
@@ -288,6 +227,14 @@ export default {
         this.getUser();
     },
 
+    // 渲染机构标题下拉列表
+    async evaluationinstitutionTitleListFun() {
+        const { data } = await evaluationManagementTitleList();
+        data.shift(0);
+        this.evaluationinstitutionTitle = data;
+        console.log(this.evaluationinstitutionTitle)
+    },
+
     searchClick(filter) {
         this.resetTotal();
         if (filter) {
@@ -300,12 +247,12 @@ export default {
         this.getUser(filter);
     },
      
-    //Banner管理列表 
+    //评价管理列表 
     // 为了解决异步问题
-    async getUser(filter) {
+    async getUser(filter, pageIndex = 1) {
         let params = {
             pageSize: 10,
-            startPos: filter ? 1 : this.currentPage
+            startPos: filter ? pageIndex : this.currentPage
         };
 
         if (filter) {
@@ -313,7 +260,7 @@ export default {
         };
 
         this.loading = true;
-        let { data } = await supportingFacilitiesList(params);
+        let { data } = await evaluationManagementList(params);
         console.log(data)
         this.total = data[0].count;
         console.log(this.total)
@@ -325,6 +272,7 @@ export default {
   },
   mounted() {
     this.getUser();
+    this.evaluationinstitutionTitleListFun();
   }
 };
 </script>

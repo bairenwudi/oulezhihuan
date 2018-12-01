@@ -138,10 +138,10 @@ export const appRouter = [
                 component: resolve => { require(['@/views/systemManagement/hotCityManagement.vue'], resolve); }
             },
             {
-                path: 'evaluationSettingModel',
-                name: 'evaluationSettingModel',
-                title: '评价设置',
-                component: resolve => { require(['@/views/systemManagement/evaluationSetting.vue'], resolve); }
+                path: 'evaluationManagementModel',
+                name: 'evaluationManagementModel',
+                title: '评价管理',
+                component: resolve => { require(['@/views/systemManagement/evaluationManagement.vue'], resolve); }
             },
             {
                 path: 'supportingFacilitiesModel',
