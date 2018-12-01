@@ -4,6 +4,14 @@
     </a>
 </p>
 
+<!-- 
+    // "init": "webpack --progress --config build/webpack.dev.config.js",
+    // "dev": "webpack-dev-server --content-base ./ --open --inline --hot --compress --config build/webpack.dev.config.js",
+    // "build": "node build/build.js",
+    // "lint": "eslint --fix --ext .js,.vue src",
+    // "test": "npm run lint"
+ -->
+
 # iView Admin
 [![](https://img.shields.io/travis/iview/iview-admin.svg?style=flat-square)](https://travis-ci.org/iview/iview-admin)
 [![vue](https://img.shields.io/badge/vue-2.5.2-brightgreen.svg?style=flat-square)](https://github.com/vuejs/vue)

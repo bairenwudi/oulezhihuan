@@ -64,8 +64,8 @@ export default {
     data () {
         return {
             form: {
-                adm_account: 'changmeng',
-                adm_passwd: 'changmeng'
+                adm_account: '',
+                adm_passwd: ''
             },
 
             loading: false,

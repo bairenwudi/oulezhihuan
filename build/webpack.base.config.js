@@ -73,14 +73,20 @@ module.exports = {
                     fallback: 'style-loader'
                 }),
             },
+
             {
-                test: /\.(gif|jpg|png|woff|svg|eot|ttf)\??.*$/,
-                loader: 'url-loader?limit=1024'
+                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                loader: 'url-loader?limit=1024',
             },
+
             {
-                test: /\.(html|tpl|ejs)$/,
-                loader: 'html-loader'
-            },
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader?limit=1024',
+            }
+            // {
+            //     test: /\.(html|tpl|ejs)$/,
+            //     loader: 'html-loader'
+            // },
 
             // {
             //     test: /\.vue$/,
