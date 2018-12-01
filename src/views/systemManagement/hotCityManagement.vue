@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./hotCityManagement.less";
 </style>
 <!-- 热门城市管理 -->

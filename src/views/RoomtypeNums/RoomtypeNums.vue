@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./RoomtypeNums.less";
 </style>
 <!-- 房型可预订数 -->

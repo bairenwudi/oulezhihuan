@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './AppOrderinfo.less';
 </style>
 <!-- App订单详情 -->

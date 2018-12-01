@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './FeedbackManagement.less';
 </style>
 <!-- 意见反馈 -->

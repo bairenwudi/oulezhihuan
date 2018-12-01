@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./batchReservationOrder.less";
 </style>
 <!--批量预定订单 -->

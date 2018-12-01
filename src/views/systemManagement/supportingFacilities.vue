@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./supportingFacilities.less";
 </style>
  <!-- 配套设施管理 -->

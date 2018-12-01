@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./organizationalManagement.less";
 </style>
  <!-- 机构管理 -->

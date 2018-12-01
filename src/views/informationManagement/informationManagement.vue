@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './informationManagement.less';
 </style>
 <!-- 信息管理 -->

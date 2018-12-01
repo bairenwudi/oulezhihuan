@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './refundList.less';
 </style>
 <!-- 退款单 -->

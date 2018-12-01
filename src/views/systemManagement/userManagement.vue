@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './userManagement.less';
 </style>
 <!-- 用户管理 -->

@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './CheckoutListinfo.less';
 </style>
 <!-- 退房单详情 -->
