@@ -504,7 +504,10 @@ export default {
      // 执行table编辑的事件
     editClick(row) {
       this.editForm = Object.assign({}, row);
-      const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      // const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      const url = row.imgUrl;
+      console.log(row.imgUrl);
+      
       this.editFileList = [];
       this.editFileList.push({ url, name: url });
       this.editFile = [];
