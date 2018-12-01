@@ -197,7 +197,7 @@
                       <span>房间数量&nbsp;</span>
                       <Input
                         v-model="item.room_num"
-                        @on-blur="showPice"
+                        @on-blur="showPiceedit(item.room_num,item.default_priceB)"
                         placeholder="请输入房间数量"
                         class="inputWidth"
                       >
@@ -498,7 +498,8 @@ export default {
         check_time: "",
         jiday: "",
         roomCheckBox: [],
-        message: []
+        message: [],
+        ord_amount:""
       },
 
       bindingAddForm: {
@@ -1019,6 +1020,22 @@ export default {
 
       // this.$set(this.addForm.ord_amount,this.totalPrice)
     },
+    showPiceedit(roomNum,price){
+       console.log(this.editForm.message);
+      this.price = 0;
+      for (var i = 0; i < this.editForm.message.length; i++) {
+        this.price +=
+          (this.editForm.message[i].default_priceB - 0) *
+          (this.editForm.message[i].room_num - 0);
+      }
+      this.totalPrice = (this.price - 0) * (this.editForm.jiday - 0);
+      console.log(this.totalPrice, this.price, this.editForm.jiday);
+
+      this.editForm.ord_amount = this.totalPrice; //??????????
+      // console.log(this.editForm);
+
+      // this.$set(this.editForm.ord_amount,this.totalPrice)
+    },
     roomChange(val) {
       // 房型checkboxChange 的时候需先 判断 入住时间是否填写 和 目的地名称是否选择
 
@@ -1196,6 +1213,14 @@ export default {
           }
         }
         console.log(this.editForm.message);
+        this.price = 0;
+        for (var i = 0; i < this.editForm.message.length; i++) {
+          this.price += (this.editForm.message[i].default_priceB - 0) * (this.editForm.message[i].room_num - 0);
+        }
+        this.totalPrice = (this.price - 0) * (this.editForm.jiday - 0);
+        console.log(this.totalPrice, this.price, this.editForm.jiday);
+
+        this.editForm.ord_amount = this.totalPrice; //??????????
       }
     },
     roomChange1(val) {
