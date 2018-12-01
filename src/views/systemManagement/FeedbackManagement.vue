@@ -5,7 +5,6 @@
 <template>
     <div class="formView">
         <Form ref="formInline" :model="formInline" inline>
-
             <FormItem prop="cus_account" label="用户账号" :label-width="60">
                 <Input type="text" clearable v-model="formInline.cus_account" placeholder="请输入用户账号"></Input>
             </FormItem>
@@ -17,7 +16,6 @@
             <FormItem>
                 <Button type="primary" @click.stop="searchClick(formInline)">查询</Button>
             </FormItem>
-
         </Form>
 
         <TableM 
@@ -33,16 +31,24 @@
         <Modal v-model="moreModal"
                 title="图片预览"
                 :mask-closable="false"
-                class="PictureBig"
-            >
-            <template class="PictureBig">
-                <Carousel autoplay v-model="carouselList"  loop >
-                    <CarouselItem v-for="item in visit" :key="item">
-                        <div>
-                            <img :src="base + '/' + item" alt=""  width="100%" height="100%">
-                        </div>                            
-                    </CarouselItem>
-                </Carousel>
+        >
+            <template>
+                <el-carousel :interval="3000" arrow="always">
+                    <el-carousel-item v-for="item in visit" :key="item">
+                        <img :src="base + '/' + item" alt=""  width="100%" height="100%">
+                    </el-carousel-item>
+                    <!-- <el-carousel-item v-for="item in visit" :key="item">
+                        <img src="http://b.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=8eb4c2f98226cffc697fb7b68c3166a6/241f95cad1c8a786f0e6fe6e6709c93d71cf5085.jpg"  width="100%" height="100%">
+                    </el-carousel-item>
+
+                    <el-carousel-item v-for="item in visit" :key="item">
+                        <img src="http://bpic.588ku.com/element_origin_min_pic/16/06/29/1657738b9c9207a.jpg"  width="100%" height="100%">
+                    </el-carousel-item>
+
+                    <el-carousel-item v-for="item in visit" :key="item">
+                        <img src="http://pic.qjimage.com/ph033/high/ph1924-p00022.jpg"  width="100%" height="100%">
+                    </el-carousel-item> -->
+                </el-carousel>
             </template>
             <div slot="footer"></div>
         </Modal>
@@ -58,6 +64,9 @@ import {
     getBase, // 获取域名
 } from '../../api/lp-systemManagement/api.js'
 
+// 年月日分秒时 补充时间格式 不够10 补充 0
+import { formatTime } from "@/common/date/formatTime.js";
+
 export default {
   name: "FeedbackManagementModel",
 
@@ -66,9 +75,10 @@ export default {
   }, 
   data() {
     return {
+
         moreModal: false,   // 控制走马灯显示
 
-        carouselList: 6,   // 走马灯图片列表
+        carouselList: 0,   // 走马灯图片列表
 
         visit: [],
 
@@ -108,15 +118,14 @@ export default {
                 align: "center",
                 render: (h, {row, index}) => {
                     return (
-                        <div style="display: flex; flex-flow: column; justify-content: center;align-items: center;">
-                           <span v-show={ this.imgFun.bind(this, row) !== "" }>
-                                <img style="width: 80px; height: 80px;margin-top: 10px" src={ this.imgFun(row) }></img>
-                            </span>
-                            <span v-show={ this.imgFun.bind(this, row) === "" }>
-                                暂无
-                            </span>
-
-                            <i-button type="primary" style="margin-bottom: 10px" onClick={ this.moreClick.bind(this, row) }>预览图片</i-button>
+                        <div>
+                            <div v-show={ row.visit.length } style="display: flex; flex-flow: column; justify-content: center;align-items: center;">
+                                <span v-show={ this.imgFun.bind(this, row) !== "" }>
+                                    <img style="width: 80px; height: 80px;margin-top: 10px" src={ this.imgFun(row) }></img>
+                                </span>
+                                <i-button type="primary" style="margin-bottom: 10px" onClick={ this.moreClick.bind(this, row) }>预览图片</i-button>
+                            </div>
+                            <span v-show={ !row.visit.length }>暂无</span>
                         </div>
                     )
                 },
@@ -126,7 +135,7 @@ export default {
                 title: "反馈时间",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.suggestion_time ? row.suggestion_time : `暂无${index}`)
+                    }, this.dataFormat(row.suggestion_time) || `暂无`)
                 }
             },
 
@@ -154,11 +163,18 @@ export default {
     // 轮播图弹框
     moreClick(row) {
         this.moreModal = true;
-        console.log(row);
-        this.visit = row.visit;
-        console.log(this.visit);
-       
+        this.visit = [];
+        for(let i of row.visit) {
+            this.visit.push(i);
+        }
+        console.log(this.visit)
+        console.log(row.visit.length);
         
+    },
+
+     // 转化时间-年月日分秒时
+    dataFormat(time) {
+        return formatTime(time);
     },
 
     resetTotal() {
@@ -224,7 +240,6 @@ export default {
       console.log(getBase().base2);
       console.log(this.base);
       console.log(showUrl);
-      
       return showUrl;
     },
     
