@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./batchAudit.less";
 </style>
 <!--批量审核 -->

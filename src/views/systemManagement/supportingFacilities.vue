@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./supportingFacilities.less";
 </style>
  <!-- 配套设施管理 -->
@@ -88,33 +88,34 @@
 
               <FormItem label="设施图片" :label-width="85">
                 <el-upload
-                        ref="editUpload"
-                        name="upLoad"
-                        :action="editActionUrl"
-                        :file-list="editFileList"
-                        list-type="picture-card"
-                        :auto-upload="false"
-                        :on-change="EditOnChange"
-                        :on-preview="handlePictureCardPreview"
-                        :on-success="uploadSuccess"
-                        :on-error="uploadError"
-                        :on-exceed="uploadonExceed"
-                        :on-remove="handleRemove"
-                        :limit="1"
-                    >
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
+                    ref="editUpload"
+                    name="upLoad"
+                    :action="editActionUrl"
+                    :file-list="editFileList"
+                    list-type="picture-card"
+                    :auto-upload="false"
+                    :on-change="EditOnChange"
+                    :on-preview="handlePictureCardPreview"
+                    :on-success="uploadSuccess"
+                    :on-error="uploadError"
+                    :on-exceed="uploadonExceed"
+                    :on-remove="handleRemove"
+                    :limit="1"
+                >
+                    <i class="el-icon-plus"></i>
+                </el-upload>
 
-                    <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
-                        <img :src="imgUrl" v-if="visible" style="width: 100%">
-                    </Modal>
-                </FormItem>
-            </Form>
-                <div slot="footer" align="center">
-                    <Button type="primary" @click="EditModalConfirm('editForm')" :loading="loading">确定</Button>
-                    <Button @click="EditModalReset('editForm')" style="margin-left: 8px">取消</Button>
-                </div>
-        </Modal>
+                  <Modal :footer-hide="true" :transfer="false" title="预览图片" v-model="visible">
+                      <img :src="imgUrl" v-if="visible" style="width: 100%">
+                  </Modal>
+              </FormItem>
+          </Form>
+
+          <div slot="footer" align="center">
+              <Button type="primary" @click="EditModalConfirm('editForm')" :loading="loading">确定</Button>
+              <Button @click="EditModalReset('editForm')" style="margin-left: 8px">取消</Button>
+          </div>
+    </Modal>
 
     <!-- 删除提示框 -->
     <Modal v-model="delDilaog" width="360">
@@ -243,7 +244,7 @@ export default {
               "img",
                 {
                  attrs: {
-                    src: this.imgFun(row)
+                    src: row.imgUrl
                   },
                   style: {
                     width: "100px",
@@ -642,6 +643,7 @@ export default {
 
     // 处理带有盘符的img路径
     imgFun(val) {
+      console.log(this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name))
       return this.imgUrlFormat(val.facilities_pic_url, val.facilities_pic_name);
     },
 
@@ -649,8 +651,6 @@ export default {
     imgUrlFormat(facilities_pic_url, facilities_pic_name) {
       const afterUpload = facilities_pic_url.split("static/")[1];
       var showUrl = this.base + "/" + afterUpload + "/" + facilities_pic_name;
-      console.log(this.base);
-      
       return showUrl;
     },
 

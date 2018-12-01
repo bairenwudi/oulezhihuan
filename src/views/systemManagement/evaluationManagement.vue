@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './evaluationManagement.less';
 </style>
 <!-- 评价设置 -->

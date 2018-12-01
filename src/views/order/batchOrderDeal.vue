@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./batchOrderDeal.less";
 </style>
 <!--处理后 -->

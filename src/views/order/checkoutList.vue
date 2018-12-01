@@ -1,5 +1,5 @@
 
-<style scope lang="less">
+<style scoped lang="less">
     @import './checkoutList.less';
 </style>
 <!--退房单 -->

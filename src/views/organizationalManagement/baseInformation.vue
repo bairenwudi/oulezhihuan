@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import "./baseInformation.less";
 </style>
 
@@ -10,9 +10,7 @@
                 <Row>
                     <Col span="6">
                         <FormItem label="机构标题" prop="org_name" inline>
-                            <Select v-model="baseInfoList.org_name" placeholder="请选择">
-                                <Option v-for="(item, index) in InstitutionalTitle" :value="item.org_name" :key="index">{{ item.org_name }}</Option>
-                            </Select>
+                            <Input v-model="baseInfoList.org_name" placeholder="请输入机构标题"></Input>
                         </FormItem>
                     </Col>
 
@@ -32,9 +30,9 @@
                         </FormItem>
                     </Col>
 
-                    <Col span="4">  
+                    <Col span="4">  基地1,个人2,旅行社3
                         <FormItem label="标签" prop="adm_user_type">
-                            <Input v-model="baseInfoList.adm_user_type" placeholder="" disabled></Input>
+                            {{ baseInfoList.adm_user_type == 0 ? '基地' : baseInfoList.adm_user_type == 1 ? '个人' : '旅行社' }}
                         </FormItem>
                     </Col>
                 </Row>
@@ -478,7 +476,6 @@
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
-
             </Form>
                 <div slot="footer" align="center">
                     <Button type="primary" @click="addRoomModalClick('roomAddForm', 0)" :loading="loading">保存</Button>
@@ -1084,36 +1081,42 @@ export default {
         let params = {
             org_id: local.org_id
         };
-        const { data } = await selectOrgByObj(params);
-        this.baseInfoList = data;
-        this.baseInfoList.adm_city_code = this.baseInfoList.adm_city_code - 0;
-        this.baseInfoList.adm_province_code = this.baseInfoList.adm_province_code - 0;
 
-        let org_imags = JSON.parse(this.baseInfoList.org_imags);
+        try {
+            const { data } = await selectOrgByObj(params);
+            this.baseInfoList = data;
+            this.baseInfoList.adm_city_code = this.baseInfoList.adm_city_code - 0;
+            this.baseInfoList.adm_province_code = this.baseInfoList.adm_province_code - 0;
 
-        this.org_imags = [];
-        for (let i of org_imags) {
-            this.org_imags.push({ url: i.images, pic_id: i.pic_id });
+            let org_imags = JSON.parse(this.baseInfoList.org_imags);
+
+            this.org_imags = [];
+            for (let i of org_imags) {
+                this.org_imags.push({ url: i.images, pic_id: i.pic_id });
+            }
+            
+            if(this.baseInfoList.cover !== '') {
+                this.defaultImageList = [{ url: this.baseInfoList.cover }];
+            }
+            
+            // 根据获取基地信息的机构设施字段来获取机构设施图片集合
+            this.social = [];
+
+            if(this.baseInfoList.org_facilities === '') {
+                return
+            };
+            
+            let org_facilities = this.baseInfoList.org_facilities.split(',');
+
+            for(let i of org_facilities) {
+                this.social.push(
+                    this.allFacilitiesList.find(item => item.facilities_id === i).facilities_name
+                )
+            }
+        } catch(err) {
+            console.log('wocao')
         }
         
-        if(this.baseInfoList.cover !== '') {
-            this.defaultImageList = [{ url: this.baseInfoList.cover }];
-        }
-        
-        // 根据获取基地信息的机构设施字段来获取机构设施图片集合
-        this.social = [];
-
-        if(this.baseInfoList.org_facilities === '') {
-            return
-        };
-        
-        let org_facilities = this.baseInfoList.org_facilities.split(',');
-
-        for(let i of org_facilities) {
-            this.social.push(
-                this.allFacilitiesList.find(item => item.facilities_id === i).facilities_name
-            )
-        }
     },
 
     // 渲染机构标题下拉列表

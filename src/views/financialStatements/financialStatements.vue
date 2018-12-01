@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
     @import './financialStatements.less';
 </style>
 <!-- 财务报表 -->

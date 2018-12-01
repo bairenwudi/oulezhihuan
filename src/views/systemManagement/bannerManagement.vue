@@ -1,4 +1,4 @@
-<style scope lang="less">
+<style scoped lang="less">
 @import "./bannerManagement.less";
 </style>
  <!-- banner管理 -->
@@ -12,6 +12,11 @@
         </Form>
 
         <TableM :columns="columns" :data="userData" :loading="loading" :current.async="currentPageIndex" :total="total" @pageChange="pageChange"></TableM>
+        
+        
+        <form :action="actionUrl" id="addForm" method="post" target="posthere" enctype="multipart/form-data"></form>
+        <iframe name="posthere" style="position: absolute; top: -100px;" height="50" width="50"></iframe>
+
         <!-- 新增提示框 -->
         <Modal v-model="addModal"
                 title="新增"
@@ -24,9 +29,6 @@
                 <FormItem label="banner名称" prop="banner_title">
                     <Input v-model="formValidate.banner_title" placeholder="请输入banner名称"></Input>
                 </FormItem>
-                <form :action="actionUrl" id="addForm" method="post" target="posthere" enctype="multipart/form-data"></form>
-                <iframe name="posthere" height="0" width="0"></iframe>
-
 
                 <FormItem label="所属模块选择" prop="module" :label-width="100">
                     <Select v-model="formValidate.module" placeholder="请选择">
@@ -98,6 +100,9 @@
                 </div>
         </Modal>
 
+        <form :action="editUrl" style="display: none" id="editForm" method="post" target="posthere" enctype="multipart/form-data"></form>
+        <iframe name="posthere" style="position: absolute; top: -100px;" height="50" width="50"></iframe>
+    
      <!--  编辑提示框 -->
         <Modal v-model="editModal"
                 title="编辑"
@@ -115,8 +120,7 @@
                        <Option value="zhfw">置换-房屋</Option>
                     </Select>
                 </FormItem>
-                <form :action="editUrl" id="editForm" method="post" target="posthere" enctype="multipart/form-data"></form>
-                <iframe name="posthere" height="0" width="0"></iframe>
+                
                 <FormItem label="banner图" prop="upLoad" width='100' class="uploadImg">
                     <el-upload
                         ref="editUpload"
@@ -173,8 +177,6 @@
                 <FormItem label="轮播顺序" prop="sort">
                     <Input v-model="editForm.sort" placeholder="请输入轮播顺序"></Input>
                 </FormItem>
-
-            </Form>
             </Form>
                 <div slot="footer" align="center">
                     <Button type="primary" @click="edit('editForm')" :loading="loading">确定</Button>
