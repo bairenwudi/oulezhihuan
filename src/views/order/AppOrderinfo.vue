@@ -139,7 +139,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_date ? this.dataFormatDay(row.ord_date) : `暂无${index}`)
+                    }, row.ord_date ? this.dataFormatDay(row.ord_date) : `暂无`)
                 }
             },
   
@@ -147,7 +147,7 @@ export default {
                 title: "数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无`)
                 }
             },
 
@@ -155,7 +155,7 @@ export default {
                 title: "价格",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_price ? row.ord_room_price : `暂无${index}`)
+                    }, row.ord_room_price ? row.ord_room_price : `暂无`)
                 }
             },
 
@@ -166,7 +166,7 @@ export default {
                 title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.acc_realname ? row.acc_realname : `暂无${index}`)
+                    }, row.acc_realname ? row.acc_realname : `暂无`)
                 }
             },
   
@@ -182,7 +182,7 @@ export default {
                 title: "证件号码",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.acc_id_cardno ? row.acc_id_cardno : `暂无${index}`)
+                    }, row.acc_id_cardno ? row.acc_id_cardno : `暂无`)
                 }
             },
 
@@ -190,7 +190,7 @@ export default {
                 title: "联系电话",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.acc_phonenum ? row.acc_phonenum : `暂无${index}`)
+                    }, row.acc_phonenum ? row.acc_phonenum : `暂无`)
                 }
             }
 

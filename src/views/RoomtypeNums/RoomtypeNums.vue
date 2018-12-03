@@ -141,7 +141,7 @@ export default {
             return h(
               "span",
               {},
-              row.room_name ? row.room_name : `暂无${index}`
+              row.room_name ? row.room_name : `暂无`
             );
           }
         },
@@ -152,7 +152,7 @@ export default {
             return h(
               "span",
               {},
-              row.reserver_time ? row.reserver_time : `暂无${index}`
+              row.reserver_time ? row.reserver_time : `暂无`
             );
           }
         },

@@ -232,7 +232,7 @@ export default {
             return h(
               "span",
               {},
-              row.facilities_name ? row.facilities_name : `暂无${index}`
+              row.facilities_name ? row.facilities_name : `暂无`
             );
           }
         },
@@ -262,7 +262,7 @@ export default {
             return h(
               "span",
               {},
-              row.facilities_time ? row.facilities_time : `暂无${index}`
+              row.facilities_time ? row.facilities_time : `暂无`
             );
           }
         },
@@ -504,7 +504,10 @@ export default {
      // 执行table编辑的事件
     editClick(row) {
       this.editForm = Object.assign({}, row);
-      const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      // const url = this.imgUrlFormat(row.facilities_pic_url, row.facilities_pic_name);
+      const url = row.imgUrl;
+      console.log(row.imgUrl);
+      
       this.editFileList = [];
       this.editFileList.push({ url, name: url });
       this.editFile = [];
