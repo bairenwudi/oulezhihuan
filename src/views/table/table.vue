@@ -75,7 +75,7 @@ export default {
                 title: "昵称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_cus_nick_name ? row.cus_cus_nick_name : `暂无${index}`)
+                    }, row.cus_cus_nick_name ? row.cus_cus_nick_name : `暂无`)
                 }
             },
 
@@ -83,7 +83,7 @@ export default {
                 title: "来源",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_system ? row.p_system : `暂无${index}`)
+                    }, row.p_system ? row.p_system : `暂无`)
                 }
             },
 
@@ -91,7 +91,7 @@ export default {
                 title: "版本",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_version ? row.p_version : `暂无${index}`)
+                    }, row.p_version ? row.p_version : `暂无`)
                 }
             },
 
@@ -99,7 +99,7 @@ export default {
                 title: "机型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_type ? row.p_type : `暂无${index}`)
+                    }, row.p_type ? row.p_type : `暂无`)
                 }
             },
 

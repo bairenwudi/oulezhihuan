@@ -128,7 +128,7 @@ export default {
             return h(
               "span",
               {},
-              row.certificate_type ? row.certificate_type : `暂无${index}`
+              row.certificate_type ? row.certificate_type : `暂无`
             );
           }
         },
@@ -141,7 +141,7 @@ export default {
               {},
               row.identity_card_number
                 ? row.identity_card_number
-                : `暂无${index}`
+                : `暂无`
             );
           }
         },
@@ -149,7 +149,7 @@ export default {
         {
           title: "联系电话",
           render: (h, { row, index }) => {
-            return h("span", {}, row.contact_number ? row.contact_number : `暂无${index}`);
+            return h("span", {}, row.contact_number ? row.contact_number : `暂无`);
           }
         },
 

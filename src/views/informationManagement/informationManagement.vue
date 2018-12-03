@@ -32,7 +32,7 @@ export default {
                 title: "短信类型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.third_code ? row.third_code : `暂无${index}`)
+                    }, row.third_code ? row.third_code : `暂无`)
                 }
             },
 
@@ -40,7 +40,7 @@ export default {
                 title: "短信内容",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.third_code ? row.third_code : `暂无${index}`)
+                    }, row.third_code ? row.third_code : `暂无`)
                 }
             },
 

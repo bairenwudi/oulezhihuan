@@ -325,7 +325,7 @@ export default {
             return h(
               "span",
               {
-                // }, row.module ? row.module : `暂无${index}`)
+                // }, row.module ? row.module : `暂无`)
               },
               row.module === "zhfw" ? "置换-房屋" : ""
             );
@@ -338,7 +338,7 @@ export default {
             return h(
               "span",
               {},
-              row.banner_title ? row.banner_title : `暂无${index}`
+              row.banner_title ? row.banner_title : `暂无`
             );
           }
         },
@@ -372,7 +372,7 @@ export default {
         {
           title: "轮播排序",
           render: (h, { row, index }) => {
-            return h("span", {}, row.sort ? row.sort : `暂无${index}`);
+            return h("span", {}, row.sort ? row.sort : `暂无`);
           }
         },
 

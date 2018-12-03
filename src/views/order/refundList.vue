@@ -169,7 +169,7 @@ export default {
                 title: "退款编号",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.third_code ? row.third_code : `暂无${index}`)
+                    }, row.third_code ? row.third_code : `暂无`)
                 }
             },
 
@@ -177,7 +177,7 @@ export default {
                 title: "预订人",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_customer ? row.ord_customer : `暂无${index}`)
+                    }, row.ord_customer ? row.ord_customer : `暂无`)
                 }
             },
 
@@ -187,7 +187,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.ord_phone_number ? row.ord_phone_number : `暂无${index}`)     
+                    row.ord_phone_number ? row.ord_phone_number : `暂无`)     
                 }
             },
 
@@ -195,7 +195,7 @@ export default {
                 title: "机构标题",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.org_name ? row.org_name : `暂无${index}`)
+                    }, row.org_name ? row.org_name : `暂无`)
                 }
             },
 
@@ -203,7 +203,7 @@ export default {
                 title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无`)
                 }
             },
 
@@ -211,7 +211,7 @@ export default {
                 title: "房间数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无`)
                 }
             },
 
@@ -219,7 +219,7 @@ export default {
                 title: "预定天数",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_days ? row.ord_days : `暂无${index}`)
+                    }, row.ord_days ? row.ord_days : `暂无`)
                 }
             },
 
@@ -251,7 +251,7 @@ export default {
                 title: "订单金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
+                    }, row.ord_amount ? row.ord_amount : `暂无`)
                 }
             },
 
@@ -266,7 +266,7 @@ export default {
                 title: "退款手续费",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_formalities ? row. refund_formalities: `暂无${index}`);
+                    }, row.refund_formalities ? row. refund_formalities: `暂无`);
                 }
             },
 
@@ -274,7 +274,7 @@ export default {
                 title: "退款滞纳金",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refunds ? row.refunds : `暂无${index}`)
+                    }, row.refunds ? row.refunds : `暂无`)
                 }
             },
 
@@ -282,7 +282,7 @@ export default {
                 title: "退款金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
+                    }, row.refund_amount ? row.refund_amount : `暂无`)
                 }
             },
 
@@ -480,11 +480,11 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
-        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
-            // adm_user_id
+            adm_user_id
         };
 
          if (filter) {

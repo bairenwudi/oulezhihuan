@@ -113,7 +113,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.reserve_destination ? row.reserve_destination : `暂无`)
                 }
             },
   
@@ -121,7 +121,7 @@ export default {
                 title: "数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无`)
                 }
             },
 
@@ -129,7 +129,7 @@ export default {
                 title: "价格",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.room_type_sort ? row.room_type_sort : `暂无`)
                 }
             }
 
@@ -140,7 +140,7 @@ export default {
                 title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.reserve_destination ? row.reserve_destination : `暂无${index}`)
+                    }, row.reserve_destination ? row.reserve_destination : `暂无`)
                 }
             },
   
@@ -148,7 +148,7 @@ export default {
                 title: "证件类型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无`)
                 }
             },
 
@@ -156,7 +156,7 @@ export default {
                 title: "证件号码",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.room_type_sort ? row.room_type_sort : `暂无`)
                 }
             },
 
@@ -164,7 +164,7 @@ export default {
                 title: "联系电话",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_type_sort ? row.room_type_sort : `暂无${index}`)
+                    }, row.room_type_sort ? row.room_type_sort : `暂无`)
                 }
             }
 
