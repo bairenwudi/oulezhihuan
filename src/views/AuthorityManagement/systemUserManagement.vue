@@ -292,10 +292,6 @@ export default {
         currentPageIndex: 1,    // 当前页
 
         columns: [    // 系统用户管理表头信息
-            {
-                title: "序号",
-                key: "reserve_id",
-            },
 
             {
                 title: "用户名",
@@ -324,6 +320,7 @@ export default {
 
             {
                 title: "角色",
+                width: 180,
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, row.adm_role_name ? row.adm_role_name : `暂无${index}`)

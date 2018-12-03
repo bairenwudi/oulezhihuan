@@ -3,7 +3,9 @@
 </style>
 
 <template>
-      <Tabs type="card" :value="defaultName">
+
+      <Tabs type="card" :value="defaultName" @on-click="tabPaneClick">
+          
           <!-- 基地信息 -->
         <TabPane label="基地信息" name="base">
              <Form ref="baseInfoList" :model="baseInfoList" :rules="baseInfoListRule" :label-width="80" >
@@ -15,24 +17,24 @@
                     </Col>
 
                     <Col span="6">
-                        <FormItem label="省份" prop="province_name">
+                        <FormItem label="省份" prop="adm_province_code">
                             <Select v-model="baseInfoList.adm_province_code" @on-change="provinceChange" clearable style="width:200px">
-                                <Option v-for="item in ProvinceTitle" :value="item.code" :key="item.id">{{ item.name }}</Option>
+                                <Option v-for="item in ProvinceTitle" :value="item.code" :label="item.name" :key="item.id"></Option>
                             </Select>
                         </FormItem>
                     </Col>
-                    
+
                     <Col span="6">
-                        <FormItem label="城市" prop="city_name">
+                        <FormItem label="城市" prop="adm_city_code">
                             <Select v-model="baseInfoList.adm_city_code" clearable style="width:200px">
                                 <Option v-for="item in CityTitle" :value="item.code" :label="item.name" :key="item.id"></Option>
                             </Select>
                         </FormItem>
                     </Col>
 
-                    <Col span="4">  基地1,个人2,旅行社3
+                    <Col span="4"> 
                         <FormItem label="标签" prop="adm_user_type">
-                            {{ baseInfoList.adm_user_type == 0 ? '基地' : baseInfoList.adm_user_type == 1 ? '个人' : '旅行社' }}
+                            {{ baseInfoList.adm_user_type == 1 ? '基地' : baseInfoList.adm_user_type == 2 ? '个人' : '旅行社' }}
                         </FormItem>
                     </Col>
                 </Row>
@@ -48,16 +50,17 @@
                             <Input v-model="baseInfoList.adm_phonenum" placeholder="" disabled></Input>
                         </FormItem>
                     </Col>
-
-                    <form :action="actionUrl" id="form1" method="post" target="posthere" enctype="multipart/form-data"></form>
-                    <iframe name="posthere" height="0" width="0"></iframe>
-
                 </Row>
+
+                <form :action="actionUrl" id="form1" method="post" target="posthere" enctype="multipart/form-data"></form>
+                <iframe class="form1" name="posthere" height="0" width="0"></iframe>
+
+
                     <FormItem label="机构介绍" prop="org_introduction">
                         <vue-editor v-model="baseInfoList.org_introduction"></vue-editor>
                     </FormItem>
 
-                    <FormItem label="机构设施" prop="org_facilities" id="org_facilities">
+                    <FormItem label="机构设施" id="org_facilities">
                         <div class="institutionalFacilities">
                             <CheckboxGroup v-model="social">
                                 <Checkbox v-for="(item, index) in allFacilitiesList" :key="index" :label="item.facilities_name">
@@ -68,15 +71,15 @@
                         </div>
                     </FormItem>
 
-                    <FormItem label="其他设施" prop="org_other_facilities">
+                    <FormItem label="其他设施">
                         <Input v-model="baseInfoList.org_other_facilities" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入其他设施"></Input>
                     </FormItem>
 
-                    <FormItem label="机构特色" prop="room_type_sort">
+                    <FormItem label="机构特色" prop="org_featrue">
                         <vue-editor v-model="baseInfoList.org_featrue"></vue-editor>
                     </FormItem>
                     
-                    <FormItem label="机构封面" prop="org_cover">
+                    <FormItem label="机构封面">
                         <el-upload
                             ref="coverUpload"
                             :action="coverAddUrl"
@@ -99,7 +102,7 @@
                         </Modal>
                     </FormItem>
 
-                    <FormItem label="机构图片" prop="org_pic_name">
+                    <FormItem label="机构图片">
                         <el-upload
                             ref="imgsUpload"
                             :action="coverAddUrl"
@@ -716,7 +719,15 @@ export default {
         } else {
             callback();
         }
-    }
+    };
+
+    const codeValid = (rule, value, callback) => {
+        if(!value) {
+            return callback(new Error('请选择完整'));
+        } else {
+            callback();
+        }
+    };
 
     return {
 
@@ -732,7 +743,21 @@ export default {
 
         baseInfoList: {}, // 基地信息
 
-        baseInfoListRule: {}, // 基地详情规则
+        baseInfoListRule: {     // 基地详情规则
+            org_name: [{ required: true, message: '请填写完整', trigger: 'blur' }],
+
+            adm_province_code: [{ validator: codeValid, message: '请填写完整', trigger: 'change' }],
+
+            adm_city_code: [{ validator: codeValid, message: '请填写完整', trigger: 'change' }],
+
+            org_addr: [{ required: true, message: '请填写完整', trigger: 'blur' }],
+
+            adm_phonenum: [{ required: true, message: '请填写完整', trigger: 'blur' }],
+
+            org_introduction: [{ required: true, message: '请填写完整', trigger: 'change' }],
+
+            org_featrue: [{ required: true, message: '请填写完整', trigger: 'change' }],
+        },
 
         roomTypeAddForm: {}, // 房间类型新增表单
 
@@ -949,7 +974,7 @@ export default {
 
         currentPricekeys: [],     // 存储当前价格的key
 
-        pricePricePage: 0,     // 价格方案当前页
+        pricePricePage: 1,     // 价格方案当前页
 
         pricePricePlan: 0,      // 价格方案总页数
         
@@ -1002,6 +1027,16 @@ export default {
 
   methods: {
     /**
+     * @param 点击获取tab的当前name
+     * 
+     */
+
+    tabPaneClick(name) {
+        this.defaultName = name;
+        this.initCreated();
+    },
+
+    /**
      * @param 基地信息
      */
 
@@ -1012,14 +1047,32 @@ export default {
 
     // 在渲染完之前 获取数据
     initCreated() {
-        this.InstitutionalTitleListFun();
-        this.selectAllFacilitiesFun();
-        this.ProvinceTitleListFun();
-        this.CityTitleListFun();
-        this.selectZoneFun();
-        this.slectCurrentPrice();
-        this.selectPricePlanFun();
-        this.getDefaultPrice();
+        switch(this.defaultName) {
+            case 'base':
+                this.InstitutionalTitleListFun();
+                this.selectAllFacilitiesFun();
+                this.selectOrgByObjFun();
+                this.ProvinceTitleListFun();
+                this.CityTitleListFun();
+                break;
+            case 'roomType':
+                this.selectRoomTypeFun();
+                this.selectBuildingsFun();
+                break;
+            case 'area':
+                this.selectZoneFun();
+                this.selectBuildingsFun();
+                break;
+            case 'priceSet':
+                this.slectCurrentPrice();
+                this.selectPricePlanFun();
+                break;
+            case 'defaultPrice':
+                this.getDefaultPrice();
+                break;
+            default:
+                break;
+        }
     },
 
     // 在渲染完之后 初始化多个富文本传值
@@ -1029,25 +1082,22 @@ export default {
         this.actionUrl = `${this.base}/organ/updateById`;
         this.addRoomUrl = `${this.base}/Zh_room_infoController/save`;
         this.coverAddUrl = `${this.base}/Picture_DictController/insertPicture`
+
         this.coverData = {
             pic_property: 1,
             org_id: JSON.parse(localStorage.user).org_id
-        },
+        }
+
         this.imgsData = {
             pic_property: 2,
             org_id: JSON.parse(localStorage.user).org_id
-        },
-        this.selectRoomTypeFun();
-        this.selectOrgByObjFun();
-        this.selectBuildingsFun();
+        }
     },
 
     //省下拉框 选择触发
     provinceChange(p_code) {
       console.log(p_code);
       this.CityTitle = [];
-      this.baseInfoList.adm_province_code = p_code;
-      this.baseInfoList.adm_city_code = "";
       this.CityTitleListFun(p_code);
     },
 
@@ -1084,6 +1134,7 @@ export default {
 
         try {
             const { data } = await selectOrgByObj(params);
+            console.log(data);
             this.baseInfoList = data;
             this.baseInfoList.adm_city_code = this.baseInfoList.adm_city_code - 0;
             this.baseInfoList.adm_province_code = this.baseInfoList.adm_province_code - 0;
@@ -1114,9 +1165,8 @@ export default {
                 )
             }
         } catch(err) {
-            console.log('wocao')
+            this.$Message.error(`${error.data.content.msg}`);
         }
-        
     },
 
     // 渲染机构标题下拉列表
@@ -1147,54 +1197,58 @@ export default {
     handleSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const _this = this;
-          let formData = new FormData($("form1")[0]);
-
-          for (let i in this.baseInfoList) {
-            if(i !== 'org_facilities') {
-                formData.append(i, this.baseInfoList[i]);
+            if(!this.CoverfileList.length && !this.defaultImageList.length) {
+                this.$Message.warning(`请选择机构封面`);
+                return 
             }
-          }
 
-          let social = [];
-          for (let i of this.social) {
-            social.push( 
-              this.allFacilitiesList.find(item => item.facilities_name === i).facilities_id
-            )
-          }
-
-          formData.append("org_facilities", social); // 多选过滤掉其他 覆盖之前的属性
-          if (this.CoverfileList.length >= 1) {
-            formData.append("file", this.CoverfileList[0].raw);
-          }
-
-          if (this.ImgsfileList.length >= 1) {
-            for (let i of this.ImgsfileList) {
-              if (i.raw) {
-                formData.append("files_s", i.raw);
-              }
+            if(!this.ImgsfileList.length && !this.org_imags.length) {
+                this.$Message.warning(`请选择机构图片`);
+                return 
             }
-          }
 
-          setTimeout(() => {
-            $.ajax({
-              type: "POST",
-              url: `${_this.actionUrl}`,
-              data: formData,
-              dataType: "JSON",
-              cache: false, // 不缓存
-              processData: false, // jQuery不要去处理发送的数据
-              contentType: false
-            }).success(function(res) {
-                if(res.code === 'success') {
-                    _this.$Message.success('成功');
-                } else {
-                    _this.$Message.error('失败');
+            if(!this.social.length) {
+                this.$Message.warning('请选择机构设施');
+                return false;
+            }
+
+            const _this = this;
+            let formData = new FormData($("form1")[0]);
+
+            for (let i in this.baseInfoList) {
+                if(i !== 'org_facilities') {
+                    formData.append(i, this.baseInfoList[i]);
                 }
-            }).error(function(err) {
-                console.log(err);
-            });
-          }, 200);
+            }
+
+            let social = [];
+            for (let i of this.social) {
+                social.push( 
+                this.allFacilitiesList.find(item => item.facilities_name === i).facilities_id
+                )
+            }
+
+            formData.append("org_facilities", social); // 多选过滤掉其他 覆盖之前的属性
+
+            setTimeout(() => {
+                $.ajax({
+                type: "POST",
+                url: `${_this.actionUrl}`,
+                data: formData,
+                dataType: "JSON",
+                cache: false, // 不缓存
+                processData: false, // jQuery不要去处理发送的数据
+                contentType: false
+                }).success(function(res) {
+                    if(res.code === 'success') {
+                        _this.$Message.success('成功');
+                    } else {
+                        _this.$Message.error('失败');
+                    }
+                }).error(function(err) {
+                    console.log(err);
+                });
+            }, 200);
         }
       });
     },
@@ -1217,7 +1271,7 @@ export default {
 
     // 图片上传之前的钩子
     onChangeImgs(file, fileList) {
-       
+       this.ImgsfileList = fileList;
     },
 
     // 房间上传图片
@@ -2178,17 +2232,23 @@ export default {
             startPos: this.pricePricePage,
             org_id: JSON.parse(localStorage.user).org_id
         }
-        const { data } = await showRoomPriceList(params);
-        this.pricePlanList = data.data;
-        this.pricePricePlan = data.page.total;
-        console.log(data);
+        try {
+            const { data } = await showRoomPriceList(params);
+            console.log(data)
+            this.pricePlanList = data.data;
+            
+            this.pricePricePlan = data.page.total;
 
-        for(let i = 0; i < data.returnName.length; i++) {
-            this.pricePlanColumns.push({
-                title: data.returnName[i],
-                align: 'center',
-                key: data.returnId[i]
-            });
+            for(let i = 0; i < data.returnName.length; i++) {
+                this.pricePlanColumns.push({
+                    title: data.returnName[i],
+                    align: 'center',
+                    key: data.returnId[i]
+                });
+            }
+        } catch(error) {
+            console.log(error)
+            this.$Message.error(`${error.data.content.msg}`);
         }
     },
 
@@ -2277,11 +2337,14 @@ export default {
         let params = {
             startPos: this.defaultPricePage
         };
-        const { data } = await selectRoomTypeDefaultPrice(params);
-        this.defaultPriceTotal = data[0].count;
-        data.shift(0);
-        this.defaultPriceList = data;
-        console.log(this.defaultPriceList)
+        try {
+            const { data } = await selectRoomTypeDefaultPrice(params);
+            this.defaultPriceTotal = data[0].count;
+            data.shift(0);
+            this.defaultPriceList = data;
+        } catch(error) {
+            this.$Message.error(`${error.data.content.msg}`);
+        }
     },
 
     // 默认价格改变分页
@@ -2331,8 +2394,6 @@ export default {
 
   mounted() {
     this.initMounted();
-    let a = {"returnId":["70b892c930684116bf5e31fced2d7299","afb3d7403f5e442392ccc97f86fc7cc3","1e4774137506432e82466357a2f29fb3","63abd54451cc4ce1b8e3e87e64a4b6a9","2cc87ed2be374c939ca2a4b757264885","93fc4f42849f4831b35ca8ac7fff0294","e34268db4f684242bdcdea182a17a88f","454ebec2901a43e7b74687476f8c3117","193fa90f70804df7aa3370e7a715912e","437748acf89b4c1488eec9370fac0283","add335cb12dc431aa475cfbd9352e8e8","e9d4e79a81f548c59d2615d9104db5fa","c408bba74ce949f9b50698153064039c"],"returnName":["蹦擦擦","德云社","风景树","姆巴佩电动车","礸礸礸","godV","阿布扎比","郜飞机","卡卡卡","克罗地亚的小姐姐","辽宁鸿运","哈德森","上海德比"],"data":[{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"赛文哥的小木屋","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"77","193fa90f70804df7aa3370e7a715912e":"","project_id":"0c41735b66c74dca80aff65e4888201b","437748acf89b4c1488eec9370fac0283":"77","add335cb12dc431aa475cfbd9352e8e8":"777","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"7777"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"巴拉巴拉小魔仙","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"09","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"9","project_id":"14d8753f6a0642c2ad703e0f1e942a1d","437748acf89b4c1488eec9370fac0283":"6","add335cb12dc431aa475cfbd9352e8e8":"7","e9d4e79a81f548c59d2615d9104db5fa":"8","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"252","63abd54451cc4ce1b8e3e87e64a4b6a9":"242","project_name":"足球球队一共几个人","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"222","193fa90f70804df7aa3370e7a715912e":"","project_id":"33ff621534a049238aefeea1da4e0a17","437748acf89b4c1488eec9370fac0283":"212","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"232"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"韩德君","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"23","193fa90f70804df7aa3370e7a715912e":"","project_id":"53df0ae0fac34237aa6f36ef024a046b","437748acf89b4c1488eec9370fac0283":"21","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"eeee","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"120","193fa90f70804df7aa3370e7a715912e":"","project_id":"646e818e1be546a3b08f602246627a3d","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"22"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"潍坊(๑ŐдŐ)b","2cc87ed2be374c939ca2a4b757264885":"101","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"6dfe7b3022f14ea8aefea83a322613b6","437748acf89b4c1488eec9370fac0283":"1","add335cb12dc431aa475cfbd9352e8e8":"83","e9d4e79a81f548c59d2615d9104db5fa":"930","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"七夕一个不让进","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"75ba564891664e98a19c6faaf70f67d6","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"1","e9d4e79a81f548c59d2615d9104db5fa":"3","c408bba74ce949f9b50698153064039c":"2"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"老詹不容易","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"8b71363076764a0092809912fe18727c","437748acf89b4c1488eec9370fac0283":"123","add335cb12dc431aa475cfbd9352e8e8":"124","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"8","63abd54451cc4ce1b8e3e87e64a4b6a9":"6","project_name":"巴西10号爱打滚","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"2","193fa90f70804df7aa3370e7a715912e":"7","project_id":"8cd7fec2e35b408ca4beaafa81e98150","437748acf89b4c1488eec9370fac0283":"1","add335cb12dc431aa475cfbd9352e8e8":"3","e9d4e79a81f548c59d2615d9104db5fa":"5","c408bba74ce949f9b50698153064039c":"4"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"2","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"范尼斯特鲁伊","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"3","e34268db4f684242bdcdea182a17a88f":"1","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"971b8f31e47b4ad4b9ac846679a8f47f","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"情人节不开业","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"2","193fa90f70804df7aa3370e7a715912e":"","project_id":"a1118876f6a742edbd5d219b02fae39c","437748acf89b4c1488eec9370fac0283":"1","add335cb12dc431aa475cfbd9352e8e8":"3","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"4"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"赛文哥教你回旋踢","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"30","project_id":"b051c902231740b4b870701a713b0e4d","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":"12"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"7","1e4774137506432e82466357a2f29fb3":"5","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"范巴斯滕","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"6","e34268db4f684242bdcdea182a17a88f":"8","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"c1be999e571d43e9af4b3c3456da206e","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"31","project_name":"changqq","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"32","project_id":"d23b44b0415447ebbdbf0f00d4a35047","437748acf89b4c1488eec9370fac0283":"21","add335cb12dc431aa475cfbd9352e8e8":"22","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"65","project_name":"我们总是冠军","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"45","193fa90f70804df7aa3370e7a715912e":"","project_id":"da939d60673d4e70bc5e6b97b117c9da","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"55","c408bba74ce949f9b50698153064039c":"555"},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"克罗地亚首都是哪","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"dc70c84dc3614daca34b742f207c84d4","437748acf89b4c1488eec9370fac0283":"90","add335cb12dc431aa475cfbd9352e8e8":"91","e9d4e79a81f548c59d2615d9104db5fa":"92","c408bba74ce949f9b50698153064039c":""},{"70b892c930684116bf5e31fced2d7299":"","afb3d7403f5e442392ccc97f86fc7cc3":"21","1e4774137506432e82466357a2f29fb3":"","63abd54451cc4ce1b8e3e87e64a4b6a9":"","project_name":"范布隆特霍斯特","2cc87ed2be374c939ca2a4b757264885":"","93fc4f42849f4831b35ca8ac7fff0294":"","e34268db4f684242bdcdea182a17a88f":"22","454ebec2901a43e7b74687476f8c3117":"","193fa90f70804df7aa3370e7a715912e":"","project_id":"f82b5d60fb5744fca37db40a1d091459","437748acf89b4c1488eec9370fac0283":"","add335cb12dc431aa475cfbd9352e8e8":"","e9d4e79a81f548c59d2615d9104db5fa":"","c408bba74ce949f9b50698153064039c":""}],"page":{"total":17,"pages":0}}
-    console.log(a)
   }
 };
 </script>
