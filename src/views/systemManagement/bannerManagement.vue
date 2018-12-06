@@ -85,9 +85,9 @@
                     </Modal>
                 </FormItem>
 
-                <FormItem label="第三方地址" prop="third_url">
+                <!-- <FormItem label="第三方地址" prop="third_url">
                     <Input v-model="formValidate.third_url" placeholder="请输入第三方地址"></Input>
-                </FormItem>
+                </FormItem> -->
 
                 <FormItem label="轮播顺序" prop="sort">
                     <Input v-model="formValidate.sort" placeholder="请输入轮播顺序"></Input>
@@ -170,10 +170,10 @@
                     </Modal>
                 </FormItem>
 
-                <FormItem label="第三方地址" prop="third_url">
+                <!-- <FormItem label="第三方地址" prop="third_url">
                     <Input v-model="editForm.third_url" placeholder="请输入第三方地址"></Input>
-                </FormItem>
-
+                </FormItem> -->
+          
                 <FormItem label="轮播顺序" prop="sort">
                     <Input v-model="editForm.sort" placeholder="请输入轮播顺序"></Input>
                 </FormItem>
@@ -311,8 +311,6 @@ export default {
       imgUrl: "",
 
       H5fileName:"",
-
-      visible: false,
 
       actionUrl: "",
       editUrl:"",
@@ -584,7 +582,7 @@ export default {
     },
 
     // 执行新增的事件
-    addClick() {
+    addClick(name) {
       this.addModal = true;
       this.H5fileName = "";
       this.imgList = [];
@@ -629,6 +627,8 @@ export default {
                 _this.$Message.success('成功');
                 _this.addModal = false;
                 _this.getUser();
+                _this.$refs[name].resetFields();
+
               } else {
                 _this.$Message.error('失败');
               }
@@ -642,7 +642,7 @@ export default {
           //   this.loading = false;
           // }, 1000);
         }else{
-          this.$Message.error('你能传上去个屁')
+          this.$Message.error('上传失败')
         }
       });
     },
@@ -710,14 +710,13 @@ export default {
           //   this.loading = false;
           // }, 1000);
         }else{
-          this.$Message.error('你能传上去个屁')
+          this.$Message.error('上传失败')
         }
       });
     },
 
     // 点击框取消按钮
     ModalCancel(name) {
-      this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
     },
     imgFun(val) {

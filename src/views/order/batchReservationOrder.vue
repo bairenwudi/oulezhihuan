@@ -67,23 +67,21 @@
                 </FormItem>
 
                 <FormItem label="预定机构" prop="org_name2">
-                    <!-- <Input v-model="addForm.org_name" disabled></Input> -->
                     <span>{{ addForm.org_name }}</span>
                 </FormItem>
 
                 <FormItem label="机构手机" prop="org_name1">
-                    <!-- <Input v-model="addForm.adm_phonenum" disabled></Input> -->
                     {{ addForm.adm_phonenum }}
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
-                  <Select v-model="addForm.reserve_destination" clearable style="width:200px">
+                  <Select v-model="addForm.reserve_destination" @on-change="reserve_destinationChange" clearable style="width:200px">
                     <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
                   </Select>
                 </FormItem>
 
                 <FormItem prop="check_time" label="入离时间">              
-                  <DatePicker type="daterange" placeholder="请选择日期" v-model="liveTimeadd"  @on-change="dateChange"></DatePicker>
+                  <DatePicker type="daterange" :options="addtimePicker" placeholder="请选择日期" v-model="liveTimeadd"  @on-change="dateChange"></DatePicker>
                 </FormItem>
 
                 <FormItem label="入住天数" prop="org_name2">
@@ -166,7 +164,7 @@
                 </FormItem>
 
                 <FormItem prop="check_time" label="入离时间"> 
-                  <DatePicker type="daterange" placeholder="请选择日期" :value="liveTime" v-model="liveTime" @on-change="editDateChange"></DatePicker>
+                  <DatePicker type="daterange" :options="edittimePicker" placeholder="请选择日期" :value="liveTime" v-model="liveTime" @on-change="editDateChange"></DatePicker>
                 </FormItem>
 
                 <FormItem label="入住天数" prop="org_name">
@@ -197,7 +195,7 @@
                       <span>房间数量&nbsp;</span>
                       <Input
                         v-model="item.room_num"
-                        @on-blur="showPiceedit(item.room_num,item.default_priceB)"
+                        @on-blur="showPriceedit(item.room_num,item.default_priceB)"
                         placeholder="请输入房间数量"
                         class="inputWidth"
                       >
@@ -440,16 +438,18 @@ export default {
         }
       }
     };
-    const sss = (rule, value, callback) => {
-      console.log(value);
-      if (!value) {
-        return callback(new Error("房间数量不能为空"));
-      } else {
-        callback();
-      }
-    };
 
     return {
+      addtimePicker:{
+        disabledDate(time){
+          return time.getTime() < Date.now() - 8.64e6;
+        }
+      },
+      edittimePicker:{
+        disabledDate(time){
+          return time.getTime() < Date.now() - 8.64e6;
+        }
+      },
       addModal: false,
 
       editModal: false,
@@ -628,7 +628,7 @@ export default {
             return h(
               "span",
               {},
-              row.reserve_person_name ? row.reserve_person_name : `暂无${index}`
+              row.reserve_person_name ? row.reserve_person_name : ``
             );
           }
         },
@@ -642,7 +642,7 @@ export default {
               {},
               row.reserve_persion_phone
                 ? row.reserve_persion_phone
-                : `暂无${index}`
+                : ` `
             );
           }
         },
@@ -654,7 +654,7 @@ export default {
             return h(
               "span",
               {},
-              row.yu_org_name ? row.yu_org_name : `暂无${index}`
+              row.yu_org_name ? row.yu_org_name : ` `
             );
           }
         },
@@ -664,7 +664,7 @@ export default {
           width: 130,
 
           render: (h, { row, index }) => {
-            return h("span", {}, row.org_name ? row.org_name : `暂无${index}`);
+            return h("span", {}, row.org_name ? row.org_name : ` `);
           }
         },
 
@@ -685,7 +685,7 @@ export default {
             return h(
               "span",
               {},
-              row.begin_time ? row.begin_time : `暂无${index}`
+              row.begin_time ? row.begin_time : ` `
             );
           }
         },
@@ -695,7 +695,7 @@ export default {
           width: 130,
 
           render: (h, { row, index }) => {
-            return h("span", {}, row.end_time ? row.end_time : `暂无${index}`);
+            return h("span", {}, row.end_time ? row.end_time : ` `);
           }
         },
 
@@ -707,7 +707,7 @@ export default {
             return h(
               "span",
               {},
-              row.ord_amount ? `￥${row.ord_amount}` : `暂无${index}`
+              row.ord_amount ? `￥${row.ord_amount}` : ` `
             );
           }
         },
@@ -847,7 +847,7 @@ export default {
           title: "姓名",
           width: 85,
           render: (h, { row, index }) => {
-            return h("span", {}, row.name ? row.name : `暂无${index}`);
+            return h("span", {}, row.name ? row.name : ` `);
           }
         },
 
@@ -858,7 +858,7 @@ export default {
             return h(
               "span",
               {},
-              row.certificate_type ? row.certificate_type : `暂无${index}`
+              row.certificate_type ? row.certificate_type : ` `
             );
           }
         },
@@ -872,7 +872,7 @@ export default {
               {},
               row.identity_card_number
                 ? row.identity_card_number
-                : `暂无${index}`
+                : ` `
             );
           }
         },
@@ -884,7 +884,7 @@ export default {
             return h(
               "span",
               {},
-              row.contact_number ? row.contact_number : `暂无${index}`
+              row.contact_number ? row.contact_number : ` `
             );
           }
         },
@@ -1020,7 +1020,7 @@ export default {
 
       // this.$set(this.addForm.ord_amount,this.totalPrice)
     },
-    showPiceedit(roomNum,price){
+    showPriceedit(roomNum,price){
        console.log(this.editForm.message);
       this.price = 0;
       for (var i = 0; i < this.editForm.message.length; i++) {
@@ -1268,6 +1268,7 @@ export default {
       return Y + M + D + h + m + s;
     },
 
+
     // 清除图片列表动作
     handleResetFile() {},
 
@@ -1279,7 +1280,12 @@ export default {
     // 执行新增的事件
     addClick() {
       this.addModal = true;
-      this.getCheckbox();
+    },
+    reserve_destinationChange(val){
+      console.log(val);
+      
+      this.getCheckbox(val);
+
     },
     tableChange(val) {
       console.log(val);
@@ -1360,7 +1366,7 @@ export default {
           this.addModal = false;
           this.loading = false;
         } else {
-          this.$Message.error("Fail!5");
+          // this.$Message.error("Fail!5");
         }
       });
     },
@@ -1379,6 +1385,7 @@ export default {
       console.log(row);
       this.delReserve_id = params.row.reserve_id;
       this.editForm.reserve_destination = row.reserve_destination;
+      
       // for(var i = 0;i<this.destinationTitle.length;i++){
       //   if(this.destinationTitle[i].org_name === params.row.reserve_destination){
       //     this.editForm.reserve_destination = this.destinationTitle[i].org_id;
@@ -1410,7 +1417,7 @@ export default {
       this.liveTime = [];
       this.liveTime.push(strtime);
       this.liveTime.push(strtime1);
-      this.getCheckbox();
+      this.getCheckbox(this.editForm.reserve_destination);
 
       // let params = {
       //   startTime:params.row.begin_time,
@@ -1493,7 +1500,7 @@ export default {
           this.addModal = false;
           this.loading = false;
         } else {
-          this.$Message.error("Fail!1");
+          // this.$Message.error("Fail!1");
         }
       });
     },
@@ -1586,7 +1593,7 @@ export default {
             this.loading = false;
           }, 1000);
         } else {
-          this.$Message.error("Fail!2");
+          // this.$Message.error("Fail!2");
         }
       });
     },
@@ -1630,7 +1637,7 @@ export default {
             }
           });
         } else {
-          this.$Message.error("Fail!3");
+          // this.$Message.error("Fail!3");
         }
       });
     },
@@ -1658,7 +1665,7 @@ export default {
             }
           });
         } else {
-          this.$Message.error("Fail!4");
+          // this.$Message.error("Fail!4");
         }
       });
     },
@@ -1734,9 +1741,8 @@ export default {
       this.getUser();
     },
     //
-    async getCheckbox() {
-      var org_id = JSON.parse(localStorage.getItem("user")).org_id;
-      const { data } = await destinationCheckbox();
+    async getCheckbox(org_id) {
+      const { data } = await destinationCheckbox({org_id});
       console.log(data);
       data.shift(0);
       this.roomName = data;
