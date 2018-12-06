@@ -18,7 +18,7 @@
       </template>
     </el-table-column>
     <slot name="column"></slot>
-    <slot/>
+    <slot name="el-footer"></slot>
   </el-table>
 </template>
 

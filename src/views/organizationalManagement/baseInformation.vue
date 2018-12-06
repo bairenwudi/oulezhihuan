@@ -57,7 +57,11 @@
 
 
                     <FormItem label="机构介绍" prop="org_introduction">
-                        <vue-editor v-model="baseInfoList.org_introduction"></vue-editor>
+                        <div style="background: #fff">
+                            <Editor
+                                v-model="baseInfoList.org_introduction"
+                            ></Editor>
+                        </div>
                     </FormItem>
 
                     <FormItem label="机构设施" id="org_facilities">
@@ -76,7 +80,11 @@
                     </FormItem>
 
                     <FormItem label="机构特色" prop="org_featrue">
-                        <vue-editor v-model="baseInfoList.org_featrue"></vue-editor>
+                        <div style="background: #fff">
+                            <Editor
+                                v-model="baseInfoList.org_featrue"
+                            ></Editor>
+                        </div>
                     </FormItem>
                     
                     <FormItem label="机构封面">
@@ -447,7 +455,7 @@
                 </FormItem>
 
                 <FormItem label="电话分机：" prop="room_telphone">
-                    <Input type="text" v-model.number="roomAddForm.room_telphone" placeholder="请输入排序"></Input>
+                    <Input type="text" v-model="roomAddForm.room_telphone" placeholder="请输入排序"></Input>
                 </FormItem>
 
                 <FormItem label="房间特色：" prop="room_characteristics">
@@ -633,8 +641,7 @@
 <script>
 import tinymce from "tinymce";
 import TableM from "@/common/table/table.vue";
-import { VueEditor } from "vue2-editor";
-
+import Editor from '@/components/Editor.vue'
 // 引入api接口
 import {
   selectOrgByObj,
@@ -684,7 +691,7 @@ export default {
 
   components: {
     TableM,
-    VueEditor
+    Editor
   },
 
   data() {
@@ -730,6 +737,10 @@ export default {
     };
 
     return {
+
+        editorOption1: { /* quill options */ },
+
+        editorOption2: { /* quill options */ },
 
         AreaList: [],           // 区域列表radio
 
@@ -1165,7 +1176,8 @@ export default {
                 )
             }
         } catch(err) {
-            this.$Message.error(`${error.data.content.msg}`);
+            console.log(err);
+            // this.$Message.error(`${err.data.content.msg}`);
         }
     },
 
@@ -2132,13 +2144,20 @@ export default {
         this.roomAddModal = true;
     },
 
+    // 房间表单清除动作
+    clearRoomActionFun() {
+        if(this.$refs.roomAddForm) {
+            this.$refs.roomAddForm.resetFields();
+        }
+    },
+
     // 房间弹出框确定按钮
     addRoomModalClick(formName) {
         this.$refs[formName].validate((valid) => {
             if(valid) {
                 let formData = new FormData();
                 let _this = this;
-                
+                this[formName].room_telphone = this[formName].room_telphone - 0;
                 for(let i in this[formName]) {
                     formData.append(i, this[formName][i])
                 }
@@ -2164,9 +2183,10 @@ export default {
                             _this.$Message.success('成功');
                             _this.getRoomTypeFun();
                             _this.selectRoomsFun();
+                            _this.clearRoomActionFun();
                             _this.roomAddModal = false;
                         } else {
-                            _this.$Message.error('失败');
+                            _this.$Message.error(`${res.data.content.msg}`);
                         }
                     }).error(function(err) {
                         console.log(err);
@@ -2178,7 +2198,8 @@ export default {
 
     // 房间弹出框取消按钮
     addRoomModalCancelClick() {
-
+        this.clearRoomActionFun();
+        this.roomAddModal = false;
     },
 
     // 获取楼层
@@ -2384,8 +2405,6 @@ export default {
             this.defaultPriceModal = false;
         })
     }
-
-
   },
 
   created() {

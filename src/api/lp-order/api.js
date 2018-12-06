@@ -245,7 +245,6 @@ export {
     batchReservationOrderList, //批量预定订单列表
     batchReservationOrderSearch, //批量预定订单模糊查询
     destinationTitleList,// 批量预定订单模糊查询-目的地下拉列表渲染
-    batchAuditSearch,//批量审核模糊查询
     batchinstitutionTitleList,// 批量审核模糊查询-预定机构下拉列表渲染
     refundList, //退款单列表
     refundListSearch, //退款单模糊查询

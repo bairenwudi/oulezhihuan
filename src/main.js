@@ -12,14 +12,20 @@ import _ from 'lodash'
 import VueI18n from 'vue-i18n';
 import axios from 'axios'
 import util from '@/libs/util';
-import { VueEditor } from "vue2-editor";
+import $ from 'jquery';
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+
 Vue.config.productionTip = false;
 Vue.prototype._ = _;
 
 Vue.use(VueI18n);
 Vue.use(iView);
 Vue.use(ElementUI);
-Vue.use(VueEditor);
+Vue.use(VueQuillEditor);
 
 new Vue({
     el: '#app',
