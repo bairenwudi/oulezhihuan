@@ -16,6 +16,7 @@ export const CorrectpathObj = {
   // },
 
   // 开发环境(本地)
+
   // Correctpath: {
   //   base1: 'http://test.zkjiashijie.com:8080',
 
