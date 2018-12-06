@@ -91,7 +91,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.ord_phone_number ? row.ord_phone_number : `暂无${index}`)     
+                    row.ord_phone_number ? row.ord_phone_number : `暂无`)     
                 }
             },
 
@@ -99,7 +99,7 @@ export default {
                 title: "机构标题",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.org_name ? row.org_name : `暂无${index}`)
+                    }, row.org_name ? row.org_name : `暂无`)
                 }
             },
 
@@ -107,7 +107,7 @@ export default {
                 title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无`)
                 }
             },
 
@@ -115,7 +115,7 @@ export default {
                 title: "房间数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无`)
                 }
             },
 
@@ -123,7 +123,7 @@ export default {
                 title: "入住日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_in_time ? row.check_in_time : `暂无${index}`)
+                    }, row.check_in_time ? row.check_in_time : `暂无`)
                 }
             },
 
@@ -131,7 +131,7 @@ export default {
                 title: "离开日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.check_out_time ? row.check_out_time : `暂无${index}`)
+                    }, row.check_out_time ? row.check_out_time : `暂无`)
                 }
             },
 
@@ -139,7 +139,7 @@ export default {
                 title: "订单金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
+                    }, row.ord_amount ? row.ord_amount : `暂无`)
                 }
             },
 
@@ -154,7 +154,7 @@ export default {
                 title: "扣点",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.point_deduction ? row.point_deduction : `暂无${index}`)
+                    }, row.point_deduction ? row.point_deduction : `暂无`)
                 }
             },
 
@@ -162,7 +162,7 @@ export default {
                 title: "机构结算",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.org_balance ? row.org_balance : `暂无${index}`)
+                    }, row.org_balance ? row.org_balance : `暂无`)
                 }
             },
 
@@ -324,11 +324,11 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1) {
-        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
-            // adm_user_id
+            adm_user_id
         };
 
         if (filter) {

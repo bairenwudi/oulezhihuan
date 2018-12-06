@@ -76,7 +76,7 @@ export default {
                 title: "账号",
                render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_account ? row.cus_account : `暂无${index}`)
+                    }, row.cus_account ? row.cus_account : `暂无`)
                 }
             },
 
@@ -84,7 +84,7 @@ export default {
                 title: "昵称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_nick_name ? row.cus_nick_name : `暂无${index}`)
+                    }, row.cus_nick_name ? row.cus_nick_name : `暂无`)
                 }
             },
 
@@ -93,7 +93,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.p_system ? row.p_system : `暂无${index}`)     
+                    row.p_system ? row.p_system : `暂无`)     
                 }
             },
 
@@ -101,7 +101,7 @@ export default {
                 title: "机型",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_type ? row.p_type : `暂无${index}`)
+                    }, row.p_type ? row.p_type : `暂无`)
                 }
             },
 
@@ -109,7 +109,7 @@ export default {
                 title: "版本",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.p_version ? row.p_version : `暂无${index}`)
+                    }, row.p_version ? row.p_version : `暂无`)
                 }
             },
 
@@ -117,7 +117,7 @@ export default {
                 title: "创建时间",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_create_date ? row.cus_create_date : `暂无${index}`)
+                    }, row.cus_create_date ? row.cus_create_date : `暂无`)
                 }
             },
 
@@ -125,7 +125,7 @@ export default {
                 title: "上次登录",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.cus_last_login_date_live ? row.cus_last_login_date_live : `暂无${index}`)
+                    }, row.cus_last_login_date_live ? row.cus_last_login_date_live : `暂无`)
                 }
             },
 

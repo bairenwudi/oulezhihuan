@@ -158,7 +158,7 @@ export default {
             return h(
               "span",
               {},
-              row.province_name ? row.province_name : `暂无${index}`
+              row.province_name ? row.province_name : `暂无`
             );
           }
         },
@@ -169,7 +169,7 @@ export default {
             return h(
               "span",
               {},
-              row.city_name ? row.city_name : `暂无${index}`
+              row.city_name ? row.city_name : `暂无`
             );
           }
         },
@@ -180,7 +180,7 @@ export default {
             return h(
               "span",
               {},
-              row.adm_phonenum ? row.adm_phonenum : `暂无${index}`
+              row.adm_phonenum ? row.adm_phonenum : `暂无`
             );
           }
         },
@@ -191,7 +191,7 @@ export default {
             return h(
               "span",
               {},
-              row.org_login_time ? row.org_login_time : `暂无${index}`
+              row.org_login_time ? row.org_login_time : `暂无`
             );
           }
         },
@@ -202,7 +202,7 @@ export default {
             return h(
               "span",
               {},
-              // row.org_status ? row.org_status : `暂无${index}`
+              // row.org_status ? row.org_status : `暂无`
               row.org_status === 1 ? `说说已上线` : `已下线`
             );
           }

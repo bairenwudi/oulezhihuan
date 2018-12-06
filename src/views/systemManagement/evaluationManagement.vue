@@ -86,7 +86,7 @@ export default {
                 title: "机构标题",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.facilities_name ? row.facilities_name : `暂无${index}`)
+                    }, row.facilities_name ? row.facilities_name : `暂无`)
                 }
             },
 
@@ -94,7 +94,7 @@ export default {
                 title: "账号",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.banner_title ? row.banner_title : `暂无${index}`)
+                    }, row.banner_title ? row.banner_title : `暂无`)
                 }
             }, 
 
@@ -103,7 +103,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.upLoad ? row.upLoad : `暂无${index}`)     
+                    row.upLoad ? row.upLoad : `暂无`)     
                 }
             },
 
@@ -111,7 +111,7 @@ export default {
                 title: "评价内容",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.banner_title ? row.banner_title : `暂无${index}`)
+                    }, row.banner_title ? row.banner_title : `暂无`)
                 }
             }, 
 
@@ -120,7 +120,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.upLoad ? row.upLoad : `暂无${index}`)     
+                    row.upLoad ? row.upLoad : `暂无`)     
                 }
             },
 

@@ -222,21 +222,21 @@ export default {
         {
           title: "省份",
           render: (h, { row, index }) => {
-            return h("span", {}, row.p_name ? row.p_name : `暂无${index}`);
+            return h("span", {}, row.p_name ? row.p_name : `暂无`);
           }
         },
 
         {
           title: "城市",
           render: (h, { row, index }) => {
-            return h("span", {}, row.c_name ? row.c_name : `暂无${index}`);
+            return h("span", {}, row.c_name ? row.c_name : `暂无`);
           }
         },
 
         {
           title: "排序",
           render: (h, { row, index }) => {
-            return h("span", {}, row.hcm_sort ? row.hcm_sort : `暂无${index}`);
+            return h("span", {}, row.hcm_sort ? row.hcm_sort : `暂无`);
           }
         },
 
@@ -246,7 +246,7 @@ export default {
             return h(
               "span",
               {},
-              row.create_date ? row.create_date : `暂无${index}`
+              row.create_date ? row.create_date : `暂无`
             );
           }
         },

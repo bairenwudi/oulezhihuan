@@ -121,7 +121,7 @@ export default {
             return h(
               "span",
               {},
-              row.reserve_person_name ? row.reserve_person_name : `暂无${index}`
+              row.reserve_person_name ? row.reserve_person_name : `暂无`
             );
           }
         },
@@ -135,7 +135,7 @@ export default {
               {},
               row.reserve_persion_phone
                 ? row.reserve_persion_phone
-                : `暂无${index}`
+                : `暂无`
             );
           }
         },
@@ -144,7 +144,7 @@ export default {
           title: "预定机构",
           width: 140,
           render: (h, { row, index }) => {
-            return h("span", {}, row.yu_org_name ? row.yu_org_name : `暂无${index}`);
+            return h("span", {}, row.yu_org_name ? row.yu_org_name : `暂无`);
           }
         },
 
@@ -155,7 +155,7 @@ export default {
             return h(
               "span",
               {},
-              row.org_name ? row.org_name : `暂无${index}`
+              row.org_name ? row.org_name : `暂无`
             );
           }
         },
@@ -180,7 +180,7 @@ export default {
             return h(
               "span",
               {},
-              row.begin_time ? row.begin_time : `暂无${index}`
+              row.begin_time ? row.begin_time : `暂无`
             );
           }
         },
@@ -189,7 +189,7 @@ export default {
           title: "离开日期",
           width: 140,
           render: (h, { row, index }) => {
-            return h("span", {}, row.end_time ? row.end_time : `暂无${index}`);
+            return h("span", {}, row.end_time ? row.end_time : `暂无`);
           }
         },
 
@@ -201,7 +201,7 @@ export default {
             return h(
               "span",
               {},
-              row.ord_amount ? `￥${row.ord_amount}` : `暂无${index}`
+              row.ord_amount ? `￥${row.ord_amount}` : `暂无`
             );
           }
         },

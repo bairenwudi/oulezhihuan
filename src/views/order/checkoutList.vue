@@ -179,7 +179,7 @@ export default {
                 title: "退房编号",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.third_code ? row.third_code : `暂无${index}`)
+                    }, row.third_code ? row.third_code : `暂无`)
                 }
             },
 
@@ -187,7 +187,7 @@ export default {
                 title: "预订人",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_customer ? row.ord_customer : `暂无${index}`)
+                    }, row.ord_customer ? row.ord_customer : `暂无`)
                 }
             },
 
@@ -197,7 +197,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.ord_phone_number ? row.ord_phone_number : `暂无${index}`)     
+                    row.ord_phone_number ? row.ord_phone_number : `暂无`)     
                 }
             },
 
@@ -205,7 +205,7 @@ export default {
                 title: "机构标题",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.org_name ? row.org_name : `暂无${index}`)
+                    }, row.org_name ? row.org_name : `暂无`)
                 }
             },
 
@@ -213,7 +213,7 @@ export default {
                 title: "房型名称",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.room_name ? row.room_name : `暂无${index}`)
+                    }, row.room_name ? row.room_name : `暂无`)
                 }
             },
 
@@ -221,7 +221,7 @@ export default {
                 title: "房间数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, row.ord_room_numbers ? row.ord_room_numbers : `暂无`)
                 }
             },
 
@@ -229,7 +229,7 @@ export default {
                 title: "预定天数",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_days ? row.ord_days : `暂无${index}`)
+                    }, row.ord_days ? row.ord_days : `暂无`)
                 }
             },
 
@@ -238,7 +238,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.check_in_time ? row.check_in_time : `暂无${index}`)
+                    row.check_in_time ? row.check_in_time : `暂无`)
                 }
             },
 
@@ -247,7 +247,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.check_out_time ? row.check_out_time : `暂无${index}`)
+                    row.check_out_time ? row.check_out_time : `暂无`)
                 }
             },
 
@@ -257,7 +257,7 @@ export default {
                     return h('span', {
                     }, 
                     row.refund_time ? this.dataFormat(row.refund_time) : `暂无`)
-                    // row.refund_time ? row.refund_time : `暂无${index}`)
+                    // row.refund_time ? row.refund_time : `暂无`)
                 }
             },
 
@@ -265,7 +265,7 @@ export default {
                 title: "剩余入住天数",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.days ? this.row.days : `暂无${index}`)
+                    }, row.days ? this.row.days : `暂无`)
                 }
             },
 
@@ -273,7 +273,7 @@ export default {
                 title: "订单金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.ord_amount ? row.ord_amount : `暂无${index}`)
+                    }, row.ord_amount ? row.ord_amount : `暂无`)
                 }
             },
 
@@ -291,7 +291,7 @@ export default {
                 title: "退房手续费",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                    }, row.refund_formalities ? row.refund_formalities : `暂无`)
                 }
             },
 
@@ -299,7 +299,7 @@ export default {
                 title: "退房滞纳金",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refunds ? row.refunds : `暂无${index}`)
+                    }, row.refunds ? row.refunds : `暂无`)
                 }
             },
 
@@ -307,7 +307,7 @@ export default {
                 title: "退房金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.refund_amount ? row.refund_amount : `暂无${index}`)
+                    }, row.refund_amount ? row.refund_amount : `暂无`)
                 }
             },
 
@@ -625,12 +625,12 @@ export default {
 
     // 为了解决异步问题
     async getUser(filter, pageIndex = 1 ) {
-        // var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         console.log(pageIndex)
         let params = {
             pageSize: 10,
             startPos: filter ? pageIndex : this.currentPage,
-            // adm_user_id
+            adm_user_id
         };
 
         if (filter) {

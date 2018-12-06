@@ -175,7 +175,7 @@ export default {
                 title: "日期",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '总计' : row.ord_date ? this.dataFormatDay(row.ord_date) : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '总计' : row.ord_date ? this.dataFormatDay(row.ord_date) : `暂无`)
                 }
             },
   
@@ -183,7 +183,7 @@ export default {
                 title: "数量",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '' : row.ord_room_numbers ? row.ord_room_numbers : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.ord_room_numbers ? row.ord_room_numbers : `暂无`)
                 }
             },
 
@@ -191,7 +191,7 @@ export default {
                 title: "价格",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '' : row.ord_room_price ? row.ord_room_price : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.ord_room_price ? row.ord_room_price : `暂无`)
                 }
             },
 
@@ -199,7 +199,7 @@ export default {
                 title: "退房手续费",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '' : row.refund_formalities ? row.refund_formalities : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.refund_formalities ? row.refund_formalities : `暂无`)
                 }
             },
 
@@ -207,7 +207,7 @@ export default {
                 title: "退房滞纳金",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? '' : row.refunds ? row.refunds : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? '' : row.refunds ? row.refunds : `暂无`)
                 }
             },
 
@@ -215,7 +215,7 @@ export default {
                 title: "退房金额",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, index === this.userData.length - 1 ? this.totalPrice : row.refund_amount ? row.refund_amount : `暂无${index}`)
+                    }, index === this.userData.length - 1 ? this.totalPrice : row.refund_amount ? row.refund_amount : `暂无`)
                 }
             }
 
@@ -226,7 +226,7 @@ export default {
                 title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.acc_realname ? row.acc_realname : `暂无${index}`)
+                    }, row.acc_realname ? row.acc_realname : `暂无`)
                 }
             },
   
@@ -242,7 +242,7 @@ export default {
                 title: "证件号码",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.acc_id_cardno ? row.acc_id_cardno : `暂无${index}`)
+                    }, row.acc_id_cardno ? row.acc_id_cardno : `暂无`)
                 }
             },
 
@@ -250,7 +250,7 @@ export default {
                 title: "联系电话",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.acc_phonenum ? row.acc_phonenum : `暂无${index}`)
+                    }, row.acc_phonenum ? row.acc_phonenum : `暂无`)
                 }
             }
 

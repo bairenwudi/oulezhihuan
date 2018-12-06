@@ -628,7 +628,7 @@ export default {
             return h(
               "span",
               {},
-              row.reserve_person_name ? row.reserve_person_name : ``
+              row.reserve_person_name ? row.reserve_person_name : `暂无`
             );
           }
         },
@@ -642,7 +642,7 @@ export default {
               {},
               row.reserve_persion_phone
                 ? row.reserve_persion_phone
-                : ` `
+                : `暂无`
             );
           }
         },
@@ -654,7 +654,7 @@ export default {
             return h(
               "span",
               {},
-              row.yu_org_name ? row.yu_org_name : ` `
+              row.yu_org_name ? row.yu_org_name : `暂无`
             );
           }
         },
@@ -664,7 +664,7 @@ export default {
           width: 130,
 
           render: (h, { row, index }) => {
-            return h("span", {}, row.org_name ? row.org_name : ` `);
+            return h("span", {}, row.org_name ? row.org_name : `暂无`);
           }
         },
 
@@ -685,7 +685,7 @@ export default {
             return h(
               "span",
               {},
-              row.begin_time ? row.begin_time : ` `
+              row.begin_time ? row.begin_time : `暂无`
             );
           }
         },
@@ -695,7 +695,7 @@ export default {
           width: 130,
 
           render: (h, { row, index }) => {
-            return h("span", {}, row.end_time ? row.end_time : ` `);
+            return h("span", {}, row.end_time ? row.end_time : `暂无`);
           }
         },
 
@@ -707,7 +707,7 @@ export default {
             return h(
               "span",
               {},
-              row.ord_amount ? `￥${row.ord_amount}` : ` `
+              row.ord_amount ? `￥${row.ord_amount}` : `暂无`
             );
           }
         },
@@ -847,7 +847,7 @@ export default {
           title: "姓名",
           width: 85,
           render: (h, { row, index }) => {
-            return h("span", {}, row.name ? row.name : ` `);
+            return h("span", {}, row.name ? row.name : `暂无`);
           }
         },
 
@@ -858,7 +858,7 @@ export default {
             return h(
               "span",
               {},
-              row.certificate_type ? row.certificate_type : ` `
+              row.certificate_type ? row.certificate_type : `暂无`
             );
           }
         },
@@ -872,7 +872,7 @@ export default {
               {},
               row.identity_card_number
                 ? row.identity_card_number
-                : ` `
+                : `暂无`
             );
           }
         },
@@ -884,7 +884,7 @@ export default {
             return h(
               "span",
               {},
-              row.contact_number ? row.contact_number : ` `
+              row.contact_number ? row.contact_number : `暂无`
             );
           }
         },

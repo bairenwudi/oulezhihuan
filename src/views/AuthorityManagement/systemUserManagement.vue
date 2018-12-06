@@ -292,16 +292,12 @@ export default {
         currentPageIndex: 1,    // 当前页
 
         columns: [    // 系统用户管理表头信息
-            {
-                title: "序号",
-                key: "reserve_id",
-            },
 
             {
                 title: "用户名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_account ? row.adm_account : `暂无${index}`)
+                    }, row.adm_account ? row.adm_account : `暂无`)
                 }
             },
 
@@ -310,7 +306,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.adm_phonenum ? row.adm_phonenum : `暂无${index}`)     
+                    row.adm_phonenum ? row.adm_phonenum : `暂无`)     
                 }
             },
 
@@ -318,15 +314,16 @@ export default {
                 title: "姓名",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_real_name ? row.adm_real_name : `暂无${index}`)
+                    }, row.adm_real_name ? row.adm_real_name : `暂无`)
                 }
             },
 
             {
                 title: "角色",
+                width: 180,
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_role_name ? row.adm_role_name : `暂无${index}`)
+                    }, row.adm_role_name ? row.adm_role_name : `暂无`)
                 }
             },
 
@@ -334,7 +331,7 @@ export default {
                 title: "所属机构",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.department_name ? row.department_name : `暂无${index}`)
+                    }, row.department_name ? row.department_name : `暂无`)
                 }
             },
 
@@ -342,7 +339,7 @@ export default {
                 title: "业务员编号",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_clerk ? row.adm_clerk : `暂无${index}`)
+                    }, row.adm_clerk ? row.adm_clerk : `暂无`)
                 }
             },
 
@@ -350,7 +347,7 @@ export default {
                 title: "支付宝",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_alipay ? row.adm_alipay : `暂无${index}`)
+                    }, row.adm_alipay ? row.adm_alipay : `暂无`)
                 }
             },
 
@@ -358,7 +355,7 @@ export default {
                 title: "最近登录时间",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_last_login ? row.adm_last_login : `暂无${index}`)
+                    }, row.adm_last_login ? row.adm_last_login : `暂无`)
                 }
             },
 
@@ -366,7 +363,7 @@ export default {
                 title: "标签",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_user_type ? row.adm_user_type : `暂无${index}`)
+                    }, row.adm_user_type ? row.adm_user_type : `暂无`)
                 }
             },
 
@@ -374,7 +371,7 @@ export default {
                 title: "状态",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.adm_account_status ? row.adm_account_status : `暂无${index}`)
+                    }, row.adm_account_status ? row.adm_account_status : `暂无`)
                 }
             },
 

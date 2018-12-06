@@ -232,7 +232,7 @@ export default {
             return h(
               "span",
               {},
-              row.facilities_name ? row.facilities_name : `暂无${index}`
+              row.facilities_name ? row.facilities_name : `暂无`
             );
           }
         },
@@ -262,7 +262,7 @@ export default {
             return h(
               "span",
               {},
-              row.facilities_time ? row.facilities_time : `暂无${index}`
+              row.facilities_time ? row.facilities_time : `暂无`
             );
           }
         },

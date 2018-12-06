@@ -91,7 +91,7 @@ export default {
                 render: (h, {row, index}) => {
                     return h('span', {
                     }, 
-                    row.cus_account ? row.cus_account : `暂无${index}`)     
+                    row.cus_account ? row.cus_account : `暂无`)     
                 }
             },
 
@@ -99,7 +99,7 @@ export default {
                 title: "联系电话",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.contact_phone ? row.contact_phone : `暂无${index}`)
+                    }, row.contact_phone ? row.contact_phone : `暂无`)
                 }
             },
 
@@ -107,7 +107,7 @@ export default {
                 title: "反馈内容",
                 render: (h, {row, index}) => {
                     return h('span', {
-                    }, row.suggestion_details ? row.suggestion_details : `暂无${index}`)
+                    }, row.suggestion_details ? row.suggestion_details : `暂无`)
 
                 }
             },
