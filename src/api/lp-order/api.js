@@ -6,7 +6,7 @@ const baseUrl = CorrectpathObj.Correctpath;
 const baseObj = {
     base1: baseUrl.base1,
     base2: baseUrl.base2,
-    base2: baseUrl.base2,
+    base3: baseUrl.base3,
     base4: baseUrl.base4,
     base5: baseUrl.base5,
     base6: baseUrl.base6
@@ -149,9 +149,13 @@ const addOccupant = params => {
 const editOccupant = params => {
     return axios.post(`${baseUrl.base2}/Occupant_infoController/updateOccupant`, params);
 }
-//批量预定   删除入住人 
+//批量预定   删除入住人（多条删除） 
 const delOccupant = params => {
     return axios.post(`${baseUrl.base2}/Occupant_infoController/deleteBatchOccupant`, params);
+}
+//批量预定   删除入住人 （单条删除）
+const delOccupantSingle = params => {
+    return axios.post(`${baseUrl.base2}/Occupant_infoController/deleteOccupant`, params);
 }
 //批量预定   导入excel 
 const daoruExcel = params => {
@@ -261,6 +265,7 @@ export {
     addOccupant,
     editOccupant,
     delOccupant,
+    delOccupantSingle,
     daoruExcel,
     submit,
     addReserve,        //批量审核   新增 
