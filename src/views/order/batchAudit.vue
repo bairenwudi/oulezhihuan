@@ -167,7 +167,7 @@ export default {
             return h(
               "span",
               {},
-              this.formatTime(row.apply_date) || "暂无"
+              this.formatTime(row.reserver_time) || "暂无"
 
             );
           }

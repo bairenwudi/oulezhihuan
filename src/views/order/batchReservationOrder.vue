@@ -676,7 +676,7 @@ export default {
           width: 130,
 
           render: (h, { row, index }) => {
-            return h("span", {}, this.formatTime(row.apply_date) || "暂无");
+            return h("span", {}, this.formatTime(row.reserver_time) || "暂无");
           }
         },
 
@@ -1397,6 +1397,7 @@ export default {
               this.$Message.success("新增成功");
               this.addModal = false;
               this.getUser();
+              this.liveTimeadd = "";
             } else {
               this.$Message.error("新增失败");
             }
@@ -1414,6 +1415,7 @@ export default {
     AddModalReset(name) {
       this.handleResetFile();
       this.addModal = false;
+      this.liveTimeadd = "";
       this.clearFormFun("addForm");
     },
 
