@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import "../../plugins/ztree/js/jquery.ztree.core.js";
-import "../../plugins/ztree/js/jquery.ztree.excheck.min.js";
+import "@/plugins/ztree/js/jquery.ztree.core.js";
+import "@/plugins/ztree/js/jquery.ztree.excheck.min.js";
 export default {
   name: "z-tree",
   props: ["data"],
@@ -45,7 +45,7 @@ export default {
 </script>
 
 <style scoped>
-@import "~@/plugins/ztree/css/zTreeStyle/zTreeStyle.css";
+  @import "~@/plugins/ztree/css/zTreeStyle/zTreeStyle.css";
 .ztree {
   display: inline-block;
 }

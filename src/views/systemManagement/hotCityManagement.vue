@@ -367,6 +367,7 @@ export default {
             console.log(res);
             if(res.data === 1){
               this.$Message.success("新增成功");
+              this.$refs[name].resetFields();
               this.getUser();
               this.addModal = false;
             }else if(res.data === 2){
@@ -415,7 +416,6 @@ export default {
 
     // 点击框取消按钮
     editModalCancel(name) {
-      this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
       this.editModal = false;
     },
@@ -423,7 +423,6 @@ export default {
       this.delDilaog = false;
     },
     addModalCancel(name) {
-      this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
       this.addModal = false;
 

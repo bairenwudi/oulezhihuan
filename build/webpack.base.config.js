@@ -83,28 +83,6 @@ module.exports = {
                 test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
                 loader: 'url-loader?limit=1024',
             }
-            // {
-            //     test: /\.(html|tpl|ejs)$/,
-            //     loader: 'html-loader'
-            // },
-
-            // {
-            //     test: /\.vue$/,
-            //     use: [
-            //         {
-            //             loader: 'vue-loader',
-            //             options: {
-                            
-            //             }
-            //         },
-            //         {
-            //             loader: 'iview-loader',
-            //             options: {
-            //                 prefix: false
-            //             }
-            //         }
-            //     ]
-            // }
         ]
     },
     plugins: [
@@ -113,6 +91,12 @@ module.exports = {
             loaders: ['babel-loader'],
             threadPool: happyThreadPool,
             verbose: true
+        }),
+        new webpack.ProvidePlugin({
+            jQuery: "jquery",
+            jquery: "jquery",
+            $: "jquery",
+            "window.jQuery": "jquery"
         })
     ],
     resolve: {

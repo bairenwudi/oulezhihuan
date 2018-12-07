@@ -1,13 +1,15 @@
 {
-    "presets": [["es2015", { "modules": false }]],
+    "presets": [
+        ["es2015"]
+    ],
     "plugins": [
-        ["transform-vue-jsx"],
         [
             "component",
             {
                 "libraryName": "element-ui",
                 "styleLibraryName": "theme-chalk"
             }
-        ]
+        ],
+        ["transform-vue-jsx"]
     ]
 }

@@ -252,23 +252,23 @@ export const appRouter = [
         component: Main,
         children: [
             {
-                path: 'authorityManagementModel',
-                name: 'authorityManagementModel',
+                path: 'userManagement',
+                name: 'userManagement',
+                title: '用户权限',
+                component: resolve => { require(['@/views/authorityManagement/userManagement.vue'], resolve); }
+            },
+            {
+                path: 'roleManagement',
+                name: 'roleManagement',
+                title: '角色管理',
+                component: resolve => { require(['@/views/authorityManagement/roleManagement.vue'], resolve); }
+            },
+            {
+                path: 'rightsManagement',
+                name: 'rightsManagement',
                 title: '权限管理',
-                component: resolve => { require(['@/views/authorityManagement/authorityManagement.vue'], resolve); }
+                component: resolve => { require(['@/views/authorityManagement/rightsManagement.vue'], resolve); }
             },
-            {
-                path: 'routerManagementModel',
-                name: 'routerManagementModel',
-                title: '路由管理',
-                component: resolve => { require(['@/views/authorityManagement/rights.vue'], resolve); }
-            },
-            {
-                path: 'systemUserManagementModel',
-                name: 'systemUserManagementModel',
-                title: '系统用户管理',
-                component: resolve => { require(['@/views/authorityManagement/systemUserManagement.vue'], resolve); }
-            }
         ]
     }
 ];

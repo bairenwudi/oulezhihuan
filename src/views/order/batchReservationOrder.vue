@@ -67,23 +67,21 @@
                 </FormItem>
 
                 <FormItem label="预定机构" prop="org_name2">
-                    <!-- <Input v-model="addForm.org_name" disabled></Input> -->
                     <span>{{ addForm.org_name }}</span>
                 </FormItem>
 
                 <FormItem label="机构手机" prop="org_name1">
-                    <!-- <Input v-model="addForm.adm_phonenum" disabled></Input> -->
                     {{ addForm.adm_phonenum }}
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
-                  <Select v-model="addForm.reserve_destination" clearable style="width:200px">
+                  <Select v-model="addForm.reserve_destination" @on-change="reserve_destinationChange" clearable style="width:200px">
                     <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
                   </Select>
                 </FormItem>
 
                 <FormItem prop="check_time" label="入离时间">              
-                  <DatePicker type="daterange" placeholder="请选择日期" v-model="liveTimeadd"  @on-change="dateChange"></DatePicker>
+                  <DatePicker type="daterange" :options="addtimePicker" placeholder="请选择日期" v-model="liveTimeadd"  @on-change="dateChange"></DatePicker>
                 </FormItem>
 
                 <FormItem label="入住天数" prop="org_name2">
@@ -119,7 +117,8 @@
                 </FormItem>
 
                 <FormItem label="订单金额" prop="ord_amount">
-                    <Input v-model="addForm.ord_amount" placeholder=""></Input>
+                    <!-- <Input v-model="addForm.ord_amount" placeholder=""></Input> -->
+                    {{ addForm.ord_amount }}
                 </FormItem>
 
                 <FormItem label="备注" prop="comments">
@@ -160,13 +159,13 @@
                 </FormItem>
 
                 <FormItem label="目的地名称" prop="reserve_destination">
-                    <Select v-model="editForm.reserve_destination" clearable style="width:200px">
+                    <Select v-model="editForm.reserve_destination" clearable style="width:200px" @on-change="reserve_destinationChange">
                         <Option v-for="item in destinationTitle" :value="item.org_id" :key="item.org_id">{{ item.org_name }}</Option>
                     </Select>
                 </FormItem>
 
                 <FormItem prop="check_time" label="入离时间"> 
-                  <DatePicker type="daterange" placeholder="请选择日期" :value="liveTime" v-model="liveTime" @on-change="editDateChange"></DatePicker>
+                  <DatePicker type="daterange" :options="edittimePicker" placeholder="请选择日期" :value="liveTime" v-model="liveTime" @on-change="editDateChange"></DatePicker>
                 </FormItem>
 
                 <FormItem label="入住天数" prop="org_name">
@@ -197,7 +196,7 @@
                       <span>房间数量&nbsp;</span>
                       <Input
                         v-model="item.room_num"
-                        @on-blur="showPiceedit(item.room_num,item.default_priceB)"
+                        @on-blur="showPriceedit(item.room_num,item.default_priceB)"
                         placeholder="请输入房间数量"
                         class="inputWidth"
                       >
@@ -385,6 +384,7 @@ import {
   addOccupant, //批量预定   新增入住人
   editOccupant,
   delOccupant,
+  delOccupantSingle,
   submit, //批量预定   提交按钮
   addReserve,
   delReserve,
@@ -393,6 +393,7 @@ import {
   roomTypeNum, //批量预定   房型checkboxChange 查询房间数量
   getEditMsgReserve //批量预定   点击编辑获取id num
 } from "../../api/lp-order/api.js";
+
 import { getBase } from "../../api/lp-order/api.js";
 
 export default {
@@ -418,7 +419,7 @@ export default {
       if (!value) {
         return callback(new Error("联系电话不能为空"));
       } else {
-        var ph = /^1[3|5|7|8|][0-9]{9}$/; //手机号正则
+        var ph = /^1[3|5|6|7|8|9|][0-9]{9}$/; //手机号正则
         if (!ph.test(value)) {
           return callback(new Error("您输入手机号码有误"));
         } else {
@@ -440,16 +441,18 @@ export default {
         }
       }
     };
-    const sss = (rule, value, callback) => {
-      console.log(value);
-      if (!value) {
-        return callback(new Error("房间数量不能为空"));
-      } else {
-        callback();
-      }
-    };
 
     return {
+      addtimePicker:{
+        disabledDate(time){
+          return time.getTime() < Date.now() - 8.64e6;
+        }
+      },
+      edittimePicker:{
+        disabledDate(time){
+          return time.getTime() < Date.now() - 8.64e6;
+        }
+      },
       addModal: false,
 
       editModal: false,
@@ -542,7 +545,7 @@ export default {
         ],
 
         reserve_persion_phone: [
-          { validator: valiContact_number, trigger: "blur" }
+          {  required: true, validator: valiContact_number, trigger: "blur" }
         ],
 
         reserve_destination: [
@@ -582,11 +585,11 @@ export default {
         name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
 
         identity_card_number: [
-          { validator: valiIdCard, trigger: "blur" }
+          { validator: valiIdCard, required: true, trigger: "blur" }
         ],
 
         contact_number: [
-          { validator: valiContact_number, trigger: "blur" }
+          { validator: valiContact_number, required: true, trigger: "blur" }
         ]
       },
 
@@ -673,7 +676,7 @@ export default {
           width: 130,
 
           render: (h, { row, index }) => {
-            return h("span", {}, this.formatTime(row.apply_date) || "暂无");
+            return h("span", {}, this.formatTime(row.reserver_time) || "暂无");
           }
         },
 
@@ -954,9 +957,6 @@ export default {
     },
     //当选择 入离日期 显示天数差
     dateChange(val) {
-      console.log(this.liveTimeadd);
-      console.log(val);
-      
       this.liveTime = val;
       var d = new Date(val[0]);
       var D = new Date(val[1]);
@@ -1008,9 +1008,7 @@ export default {
       console.log(this.addForm.message);
       this.price = 0;
       for (var i = 0; i < this.addForm.message.length; i++) {
-        this.price +=
-          (this.addForm.message[i].default_priceB - 0) *
-          (this.addForm.message[i].room_num - 0);
+        this.price += (this.addForm.message[i].default_priceB - 0) * (this.addForm.message[i].room_num - 0);
       }
       this.totalPrice = (this.price - 0) * (this.addForm.jiday - 0);
       console.log(this.totalPrice, this.price, this.addForm.jiday);
@@ -1020,7 +1018,7 @@ export default {
 
       // this.$set(this.addForm.ord_amount,this.totalPrice)
     },
-    showPiceedit(roomNum,price){
+    showPriceedit(roomNum,price){
        console.log(this.editForm.message);
       this.price = 0;
       for (var i = 0; i < this.editForm.message.length; i++) {
@@ -1056,23 +1054,15 @@ export default {
           return;
         }
         console.log(this.addForm.roomCheckBox);
-
+        console.log(this.compareArr);
+        
         //当选择一个房型时会用this.compareArr与val比较  如果difference是空数组  就证明是新点出来的(checkbox为true)
         //如果difference不是空数组 证明是点下去的  checkbox为false  在后边要取到它的id 然后从this.message（this.message用来存放显示信息的数组）中移除它
         let a = new Set(this.compareArr);
         let b = new Set(val);
         let difference = Array.from(new Set([...a].filter(x => !b.has(x))));
         this.compareArr = val;
-        console.log(difference);
-        
-        // let params = {
-        //   start_time,
-        //   end_time,
-        //   room_type_id:this.addForm.roomCheckBox[this.addForm.roomCheckBox.length - 1]
-        // }
-        // roomTypeChange(params).then(res => {
-        //   console.log(res);
-        // })
+        console.log(this.addForm.roomCheckBox.length,this.length);
 
         if (this.addForm.roomCheckBox.length > this.length) {
           this.length = this.addForm.roomCheckBox.length;
@@ -1114,6 +1104,25 @@ export default {
               arr.push(this.addForm.message[i].room_type_id);
             }
             this.room_type_id = arr.join();
+
+
+
+            this.price = 0;
+            console.log(this.addForm.message.length);
+            
+            for (var i = 0; i < this.addForm.message.length; i++) {
+              console.log(this.addForm.message[i].default_priceB);
+              if(this.addForm.message[i].room_num === undefined){
+                this.addForm.message[i].room_num = 0;
+              }
+              this.price += (this.addForm.message[i].default_priceB - 0) * (this.addForm.message[i].room_num - 0);
+              // this.addForm.message[i].room_num === undefined ? 0 : this.addForm.message[i].room_num;
+              console.log(this.addForm.message[i].default_priceB);
+            }
+            this.totalPrice = (this.price - 0) * (this.addForm.jiday - 0);
+            console.log(this.price, this.addForm.jiday);
+
+            this.addForm.ord_amount = this.totalPrice; //??????????
           });
         } else {
           this.length--;
@@ -1122,16 +1131,21 @@ export default {
               this.addForm.message.splice(i, 1);
             }
           }
-        }
+          this.price = 0;
+          console.log(this.addForm.message.length);
+          
+          for (var i = 0; i < this.addForm.message.length; i++) {
+            this.price += (this.addForm.message[i].default_priceB - 0) * (this.addForm.message[i].room_num - 0);
+            console.log(this.addForm.message[i].default_priceB);
+            console.log(this.addForm.message[i].room_num);
+          }
+          this.totalPrice = (this.price - 0) * (this.addForm.jiday - 0);
+          console.log(this.price, this.addForm.jiday);
 
-        this.price = 0;
-        for (var i = 0; i < this.addForm.message.length; i++) {
-          this.price += (this.addForm.message[i].default_priceB - 0) * (this.addForm.message[i].room_num - 0);
+          this.addForm.ord_amount = this.totalPrice; //??????????
         }
-        this.totalPrice = (this.price - 0) * (this.addForm.jiday - 0);
-        console.log(this.totalPrice, this.price, this.addForm.jiday);
-
-        this.addForm.ord_amount = this.totalPrice; //??????????
+          
+        
       } else {
         var d = new Date(this.liveTime[0]);
         var D = new Date(this.liveTime[1]);
@@ -1203,6 +1217,18 @@ export default {
             this.editForm.message.push(msg);
             console.log(this.editForm.message);
 
+
+            this.price = 0;
+            for (var i = 0; i < this.editForm.message.length; i++) {
+              if(this.editForm.message[i].room_num === undefined){
+                this.editForm.message[i].room_num = 0;
+              }
+              this.price += (this.editForm.message[i].default_priceB - 0) * (this.editForm.message[i].room_num - 0);
+            }
+            this.totalPrice = (this.price - 0) * (this.editForm.jiday - 0);
+            console.log(this.totalPrice, this.price, this.editForm.jiday);
+
+            this.editForm.ord_amount = this.totalPrice; //??????????
           });
         } else {
           this.length--;
@@ -1211,16 +1237,22 @@ export default {
               this.editForm.message.splice(i, 1);
             }
           }
+
+
+          this.price = 0;
+          for (var i = 0; i < this.editForm.message.length; i++) {
+            if(this.editForm.message[i].room_num === undefined){
+              this.editForm.message[i].room_num = 0;
+            }
+            this.price += (this.editForm.message[i].default_priceB - 0) * (this.editForm.message[i].room_num - 0);
+          }
+          this.totalPrice = (this.price - 0) * (this.editForm.jiday - 0);
+          console.log(this.totalPrice, this.price, this.editForm.jiday);
+
+          this.editForm.ord_amount = this.totalPrice; //??????????
         }
         console.log(this.editForm.message);
-        this.price = 0;
-        for (var i = 0; i < this.editForm.message.length; i++) {
-          this.price += (this.editForm.message[i].default_priceB - 0) * (this.editForm.message[i].room_num - 0);
-        }
-        this.totalPrice = (this.price - 0) * (this.editForm.jiday - 0);
-        console.log(this.totalPrice, this.price, this.editForm.jiday);
 
-        this.editForm.ord_amount = this.totalPrice; //??????????
       }
     },
     roomChange1(val) {
@@ -1268,8 +1300,9 @@ export default {
       return Y + M + D + h + m + s;
     },
 
+
     // 清除图片列表动作
-    handleResetFile() {},
+    handleResetFile() { },
 
     resetTotal() {
       this.currentPage = 1;
@@ -1279,13 +1312,26 @@ export default {
     // 执行新增的事件
     addClick() {
       this.addModal = true;
-      this.getCheckbox();
+      this.$nextTick(() => {
+        this.roomName = [];
+      })
+    },
+    reserve_destinationChange(val){
+      this.addForm.message = [];
+      this.addForm.ord_amount = 0;
+      this.addForm.roomCheckBox = [];
+      this.editForm.message = [];
+      this.editForm.ord_amount = 0;
+      this.editForm.roomCheckBox = [];
+      this.length = 0;
+      this.addModal ? this.getCheckbox(val) : '';
+      this.editModal ? this.getCheckbox(val) : '';
     },
     tableChange(val) {
       console.log(val);
       this.delArr = [];
       for (var i = 0; i < val.length; i++) {
-        this.delArr.push(val[i].reserve_id);
+        this.delArr.push(val[i].occu_id);
       }
       console.log(this.delArr);
       this.postStr = this.delArr.join();
@@ -1312,7 +1358,6 @@ export default {
       var roomNumArr = [];
       var roomPriceArr = [];
       console.log(this.addForm.message);
-
       for (var m = 0; m < this.addForm.message.length; m++) {
         roomNumArr.push(this.addForm.message[m].room_num);
         roomPriceArr.push(this.addForm.message[m].default_priceB);
@@ -1352,6 +1397,7 @@ export default {
               this.$Message.success("新增成功");
               this.addModal = false;
               this.getUser();
+              this.liveTimeadd = "";
             } else {
               this.$Message.error("新增失败");
             }
@@ -1360,7 +1406,7 @@ export default {
           this.addModal = false;
           this.loading = false;
         } else {
-          this.$Message.error("Fail!5");
+          // this.$Message.error("Fail!5");
         }
       });
     },
@@ -1368,8 +1414,9 @@ export default {
     // 点击新增框取消按钮
     AddModalReset(name) {
       this.handleResetFile();
-      this.clearFormFun("addForm");
       this.addModal = false;
+      this.liveTimeadd = "";
+      this.clearFormFun("addForm");
     },
 
     // 执行table编辑的事件
@@ -1379,6 +1426,7 @@ export default {
       console.log(row);
       this.delReserve_id = params.row.reserve_id;
       this.editForm.reserve_destination = row.reserve_destination;
+      
       // for(var i = 0;i<this.destinationTitle.length;i++){
       //   if(this.destinationTitle[i].org_name === params.row.reserve_destination){
       //     this.editForm.reserve_destination = this.destinationTitle[i].org_id;
@@ -1410,7 +1458,7 @@ export default {
       this.liveTime = [];
       this.liveTime.push(strtime);
       this.liveTime.push(strtime1);
-      this.getCheckbox();
+      this.getCheckbox(this.editForm.reserve_destination);
 
       // let params = {
       //   startTime:params.row.begin_time,
@@ -1493,7 +1541,7 @@ export default {
           this.addModal = false;
           this.loading = false;
         } else {
-          this.$Message.error("Fail!1");
+          // this.$Message.error("Fail!1");
         }
       });
     },
@@ -1586,7 +1634,7 @@ export default {
             this.loading = false;
           }, 1000);
         } else {
-          this.$Message.error("Fail!2");
+          // this.$Message.error("Fail!2");
         }
       });
     },
@@ -1630,7 +1678,7 @@ export default {
             }
           });
         } else {
-          this.$Message.error("Fail!3");
+          // this.$Message.error("Fail!3");
         }
       });
     },
@@ -1658,7 +1706,7 @@ export default {
             }
           });
         } else {
-          this.$Message.error("Fail!4");
+          // this.$Message.error("Fail!4");
         }
       });
     },
@@ -1696,19 +1744,36 @@ export default {
     // 绑定- 删除确定按钮
     bindingdelConfrmClick() {
       this.delLoading = true;
-      delOccupant({ occids: this.delArr }).then(res => {
-        console.log(res);
-        if (res.data.success === "批量删除成功") {
-          this.$Message.success("删除成功");
-          this.bindingdelDilaog = false;
-          addCustomer({ reserve_id: this.reserve_id }).then(res => {
-            this.customerTotal = res.data.content.total;
-            this.customerData = res.data.content.list;
-          });
-        } else {
-          this.$Message.success("删除失败");
-        }
-      });
+      if(this.delArr.length > 1){
+        delOccupant({ occids: this.delArr }).then(res => {
+          console.log(res);
+          if (res.data.content.success === "删除成功") {
+            this.$Message.success("删除成功");
+            this.bindingdelDilaog = false;
+            addCustomer({ reserve_id: this.reserve_id }).then(res => {
+              this.customerTotal = res.data.content.total;
+              this.customerData = res.data.content.list;
+            });
+          } else {
+            this.$Message.success("删除失败");
+          }
+        });
+      }else if(this.delArr.length === 1){
+        delOccupantSingle({ occu_id: this.delArr[0] }).then(res => {
+          console.log(res);
+          if (res.data.content.success === "删除成功") {
+            this.$Message.success("删除成功");
+            this.bindingdelDilaog = false;
+            addCustomer({ reserve_id: this.reserve_id }).then(res => {
+              this.customerTotal = res.data.content.total;
+              this.customerData = res.data.content.list;
+            });
+          } else {
+            this.$Message.success("删除失败");
+          }
+        });
+      }
+
     },
 
     downloadClick() {},
@@ -1734,9 +1799,8 @@ export default {
       this.getUser();
     },
     //
-    async getCheckbox() {
-      var org_id = JSON.parse(localStorage.getItem("user")).org_id;
-      const { data } = await destinationCheckbox();
+    async getCheckbox(org_id) {
+      const { data } = await destinationCheckbox({org_id});
       console.log(data);
       data.shift(0);
       this.roomName = data;
@@ -1807,7 +1871,7 @@ export default {
   mounted() {
     this.getUser();
     this.destinationTitleFun();
-    this.base = getBase().base3;
+    this.base = getBase().base2;
     this.actionUrl = `${this.base}/Occupant_infoController/saveExcel`;
   }
 };
