@@ -293,7 +293,7 @@ export default {
             return h("span", {
 
             }, 
-            row.ord_status ? this.SetStatusFilter(row.ord_status) : `暂无`);
+            this.SetStatusFilter(row.ord_status) );
           }
         },
 
@@ -402,7 +402,10 @@ export default {
 
     // 过滤订单状态
     SetStatusFilter(status) {
+      console.log(status);
         switch(status) {
+          
+          
             case 0:
                 return '待付款';
                 break;
