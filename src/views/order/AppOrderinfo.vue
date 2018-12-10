@@ -34,7 +34,7 @@
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>{{ appOrderInfoForm.ord_time ? this.dataFormat(appOrderInfoForm.ord_time)  : '暂无'}}</dt>
+                    <dt>{{appOrderInfoForm.ord_time ? this.dataFormat(appOrderInfoForm.ord_time)  : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
