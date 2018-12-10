@@ -290,9 +290,8 @@ export default {
         {
           title: "订单状态",
           render: (h, { row, index }) => {
-            return h("span", {
-
-            }, 
+            return h("span", 
+            {}, 
             this.SetStatusFilter(row.ord_status) );
           }
         },

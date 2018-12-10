@@ -14,7 +14,7 @@
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>{{this.dataFormat(checkoutInfoForm.ord_payment_time || '暂无')}}</dt>
+                    <dt>{{checkoutInfoForm.ord_payment_time ? this.dataFormat(checkoutInfoForm.ord_payment_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -34,12 +34,12 @@
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>{{this.dataFormat(checkoutInfoForm.ord_time || '暂无')}}</dt>
+                    <dt>{{checkoutInfoForm.ord_time ? this.dataFormat(checkoutInfoForm.ord_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>{{this.dataFormatDay(checkoutInfoForm.check_in_time || '暂无')}}</dt>
+                    <dt>{{checkoutInfoForm.check_in_time ? this.dataFormatDay(checkoutInfoForm.check_in_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -54,7 +54,7 @@
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>{{this.SetStatusFilter(checkoutInfoForm.ord_status)}}</dt>
+                    <dt>{{checkoutInfoForm.ord_status ? this.SetStatusFilter(checkoutInfoForm.ord_status) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -64,7 +64,7 @@
 
                 <div class="TD-view">
                     <dd>离开日期：</dd>
-                    <dt>{{this.dataFormatDay(checkoutInfoForm.check_out_time || '暂无')}}</dt>
+                    <dt>{{checkoutInfoForm.check_out_time ? this.dataFormatDay(checkoutInfoForm.check_out_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -80,7 +80,7 @@
 
                 <div class="TD-view">
                     <dd>申请退房日期：</dd>
-                    <dt>{{this.dataFormat(checkoutInfoForm.refund_time)}}</dt>
+                    <dt>{{checkoutInfoForm.refund_time ? this.dataFormat(checkoutInfoForm.refund_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">

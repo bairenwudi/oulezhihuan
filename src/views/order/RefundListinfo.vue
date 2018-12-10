@@ -14,7 +14,7 @@
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>{{this.dataFormat(refundInfoForm.ord_payment_time)  || '暂无'}}</dt>
+                    <dt>{{refundInfoForm.ord_payment_time ? this.dataFormat(refundInfoForm.ord_payment_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -34,12 +34,12 @@
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>{{this.dataFormat(refundInfoForm.ord_time)  || '暂无'}}</dt>
+                    <dt>{{refundInfoForm.ord_time ? this.dataFormat(refundInfoForm.ord_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>{{this.dataFormatDay(refundInfoForm.check_in_time)  || '暂无'}}</dt>
+                    <dt>{{refundInfoForm.check_in_time ? this.dataFormatDay(refundInfoForm.check_in_time)  : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -49,7 +49,7 @@
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>{{SetStatusFilter(refundInfoForm.ord_status)  || '暂无'}}</dt>
+                    <dt>{{refundInfoForm.ord_status ? SetStatusFilter(refundInfoForm.ord_status) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -59,7 +59,7 @@
 
                 <div class="TD-view">
                     <dd>离开日期：</dd>
-                    <dt>{{this.dataFormatDay(refundInfoForm.check_out_time)  || '暂无'}}</dt>
+                    <dt>{{refundInfoForm.check_out_time ? this.dataFormatDay(refundInfoForm.check_out_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -74,7 +74,7 @@
 
                 <div class="TD-view">
                     <dd>申请退款日期：</dd>
-                    <dt>{{this.dataFormat(refundInfoForm.refund_time  || '暂无')}}</dt>
+                    <dt>{{refundInfoForm.refund_time ? this.dataFormat(refundInfoForm.refund_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">

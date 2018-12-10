@@ -14,7 +14,7 @@
 
                 <div class="TD-view">
                     <dd>订单支付时间：</dd>
-                    <dt>{{this.dataFormat(appOrderInfoForm.ord_payment_time  || '暂无')}}</dt>
+                    <dt>{{ appOrderInfoForm.ord_payment_time ? this.dataFormat(appOrderInfoForm.ord_payment_time) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -34,12 +34,12 @@
 
                 <div class="TD-view">
                     <dd>下单日期：</dd>
-                    <dt>{{this.dataFormat(appOrderInfoForm.ord_time  || '暂无')}}</dt>
+                    <dt>{{ appOrderInfoForm.ord_time ? this.dataFormat(appOrderInfoForm.ord_time)  : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
                     <dd>入住日期：</dd>
-                    <dt>{{this.dataFormatDay(appOrderInfoForm.check_in_time  || '暂无')}}</dt>
+                    <dt>{{appOrderInfoForm.check_in_time ? this.dataFormatDay(appOrderInfoForm.check_in_time)  : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -49,7 +49,7 @@
 
                 <div class="TD-view">
                     <dd>订单状态：</dd>
-                    <dt>{{this.SetStatusFilter(appOrderInfoForm.ord_status)  || '暂无'}}</dt>
+                    <dt>{{appOrderInfoForm.ord_status ? this.SetStatusFilter(appOrderInfoForm.ord_status) : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
@@ -59,7 +59,7 @@
 
                 <div class="TD-view">
                     <dd>离开日期：</dd>
-                    <dt>{{this.dataFormatDay(appOrderInfoForm.check_out_time  || '暂无')}}</dt>
+                    <dt>{{appOrderInfoForm.check_out_time ? this.dataFormatDay(appOrderInfoForm.check_out_time)  : '暂无'}}</dt>
                 </div>
 
                 <div class="TD-view">
