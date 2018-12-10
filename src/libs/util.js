@@ -7,6 +7,8 @@ import {
 } from '@/api/lp-login/api.js';
 import lazyLoading from './lazyLoading.js';
 
+import dbForAdminData from '@/data/db.json'
+
 let util = {
 
 };
@@ -326,12 +328,16 @@ util.initRouter = function (vm) {
         adm_decription: 1,
         adm_user_id: JSON.parse(localStorage.user).adm_user_id
     };
-
     let querystring = require("querystring");
 
     selectUserRightForVue(querystring.encode(params)).then(res => {
-        console.log(res);
-        var menuData = res.data;
+        var menuData;
+
+        if(JSON.parse(localStorage.user).adm_account === 'admins') {
+            menuData = dbForAdminData;
+        } else {
+            menuData = res.data;
+        };
 
         util.initRouterNode(constRoutes, menuData);
         util.initRouterNode(otherRoutes, otherRouter);

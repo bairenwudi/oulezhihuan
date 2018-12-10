@@ -39,7 +39,9 @@ new Vue({
     },
     mounted () {
         // 调用方法，动态生成路由
-        util.initRouter(this);
+        setTimeout(() => {
+            util.initRouter(this);
+        }, 10)
     }
 });
 
