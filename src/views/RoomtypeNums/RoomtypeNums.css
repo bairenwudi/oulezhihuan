@@ -1,27 +1,21 @@
-.ivu-modal {
+.formView .ivu-modal {
   width: 700px !important;
 }
-.inputWidth {
-  width: 100px;
-}
-.color {
-  color: red;
-}
-.roomName {
+.formView /deep/ .roomName {
   width: 80px;
   display: block;
   float: left;
 }
-.messageBox {
+.formView .messageBox {
   height: 40px;
 }
-.roomNumBeforeBtn {
+.formView /deep/ .roomNumBeforeBtn {
   display: block;
   float: left;
   width: 60px;
   line-height: 34px;
 }
-.iptWidth {
+.formView /deep/ .iptWidth {
   width: 100px;
   margin-right: 3px;
 }

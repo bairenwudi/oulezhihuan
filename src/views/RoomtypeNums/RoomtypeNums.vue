@@ -1,5 +1,5 @@
 <style scoped lang="less">
-@import "./RoomtypeNums.less";
+  @import "./RoomtypeNums.less";
 </style>
 <!-- 房型可预订数 -->
 <template>
@@ -458,7 +458,6 @@ export default {
 
     // 点击框取消按钮
     ModalCancel(name) {
-      // this.$Message.info("Clicked ok");
       this.$refs[name].resetFields();
       this.addModal = false;
     },
