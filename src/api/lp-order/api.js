@@ -14,12 +14,12 @@ const baseObj = {
 
 //App订单列表
 const appOrderList = params => {
-    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app?pageSize=10`, params);
 };
 
 //App订单模糊查询
 const appOrderSearch = params => {
-    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Orders_app/select_Orders_app?pageSize=10`, params);
 };
 
 // 机构设置-房间类型列表(App订单、退款单、退房单 模糊查询-房型下拉列表渲染)
@@ -40,19 +40,19 @@ const appOrderListinfo = params => {
 
 // App订单详情列表-入住人
 const appOrderListCustomerinfo = params => {
-    return axios.post(`${baseUrl.base2}/Orders_app/customerList?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Orders_app/customerList?pageSize=10`, params);
 };
 
 
 
 //批量预定订单列表
 const batchReservationOrderList = params => {
-    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?pageNum=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?pageSize=10`, params);
 };
 
 //批量预定订单模糊查询
 const batchReservationOrderSearch = params => {
-    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/BatchReserveController/reserveList?pageSize=10`, params);
 };
 
 // 批量预定订单模糊查询-目的地下拉列表渲染
