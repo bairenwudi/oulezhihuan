@@ -1724,8 +1724,7 @@ export default {
       console.log(params);
       this.bindingEditForm.name = params.row.name;
       this.bindingEditForm.bindingEditId = params.row.occu_id;
-      this.bindingEditForm.identity_card_number =
-        params.row.identity_card_number;
+      this.bindingEditForm.identity_card_number = params.row.identity_card_number;
       this.bindingEditForm.contact_number = params.row.contact_number;
     },
 
@@ -1790,12 +1789,24 @@ export default {
       console.log(pageIndex);
       // 改变当前页
       this.currentPage = pageIndex;
-      for (let i in this.formInline) {
-        if (this.formInline[i] !== undefined || this.formInline[i] !== "") {
-          this.getUser(this.formInline);
-          return false;
-        }
+      // for (let i in this.formInline) {
+      //   if (this.formInline[i] !== "" || this.formInline[i] !== undefined) {
+          
+      //   console.log(this.formInline[i]);
+      //     this.getUser(this.formInline, pageIndex);
+      //     return false;
+      //   }
+      // }
+      for(let i in this.formInline) {
+          if (this.formInline[i] === "" || this.formInline[i] === undefined) {
+            this.getUser();
+            return
+          } else {
+            this.getUser(this.formInline, pageIndex);
+            return
+          }
       }
+      
       this.getUser();
     },
     //
@@ -1850,11 +1861,13 @@ export default {
 
     //批量预定订单列表
     // 为了解决异步问题
-    async getUser(filter) {
+    async getUser(filter, pageIndex = 1) {
       var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
+      console.log(filter);
+      
       let params = {
         pageSize: 10,
-        pageNum: filter ? 1 : this.currentPage,
+        startPos: filter ? pageIndex : this.currentPage,
         adm_user_id
       };
       let { data } = await batchReservationOrderList(params);
