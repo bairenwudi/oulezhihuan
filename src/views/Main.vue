@@ -8,8 +8,6 @@
                 :shrink="shrink"
                 @on-change="handleSubmenuChange"
                 :theme="menuTheme" 
-                :before-push="beforePush"
-                :open-names="openedSubmenuArr"
                 :menu-list="menuList">
                 <div slot="top" class="logo-con">
                     <span class="FshrinkDesc" v-show="!shrink" :style="{ color: spanTheme }">置换后台管理系统</span>
@@ -127,15 +125,10 @@
         methods: {
             init () {
                 let pathArr = util.setCurrentPath(this, this.$route.name);
-                this.$store.commit('updateMenulist');
                 if (pathArr.length >= 2) {
                     this.$store.commit('addOpenSubmenu', pathArr[1].name);
                 }
                 this.userName = Cookies.get('user');
-                let messageCount = 3;
-                this.messageCount = messageCount.toString();
-                this.checkTag(this.$route.name);
-                this.$store.commit('setMessageCount', 3);
             },
             toggleClick () {
                 this.shrink = !this.shrink;
@@ -148,11 +141,11 @@
                     });
                 } else if (name === 'loginout') {
                     // 退出登录
-                    this.$store.commit('logout', this);
-                    this.$store.commit('clearOpenedSubmenu');
+                    sessionStorage.removeItem('token');
                     this.$router.push({
                         name: 'login'
                     });
+                    this.$Message.success(`退出成功`);
                 }
             },
             checkTag (name) {
@@ -197,9 +190,5 @@
         mounted () {
             this.init();
         },
-        created () {
-            // 显示打开的页面的列表
-            this.$store.commit('setOpenedList');
-        }
     };
 </script>

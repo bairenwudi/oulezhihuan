@@ -290,10 +290,9 @@ export default {
         {
           title: "订单状态",
           render: (h, { row, index }) => {
-            return h("span", {
-
-            }, 
-            row.ord_status ? this.SetStatusFilter(row.ord_status) : `暂无`);
+            return h("span", 
+            {}, 
+            this.SetStatusFilter(row.ord_status) );
           }
         },
 
@@ -402,7 +401,10 @@ export default {
 
     // 过滤订单状态
     SetStatusFilter(status) {
+      console.log(status);
         switch(status) {
+          
+          
             case 0:
                 return '待付款';
                 break;

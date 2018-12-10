@@ -1,19 +1,20 @@
 import Vue from 'vue';
 import iView from 'iview';
 import { router } from './router/index';
-import { appRouter } from './router/router';
+import hasPermission from '@/libs/hasPermission.js';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import store from './store';
 import App from './app.vue';
 import '@/locale';
 import 'iview/dist/styles/iview.css';
+import '@/styles/iconfont.css'
 import _ from 'lodash'
 import VueI18n from 'vue-i18n';
 import axios from 'axios'
 import util from '@/libs/util';
 import $ from 'jquery';
-import VueQuillEditor from 'vue-quill-editor'
+import VueQuillEditor from 'vue-quill-editor';
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
@@ -26,6 +27,7 @@ Vue.use(VueI18n);
 Vue.use(iView);
 Vue.use(ElementUI);
 Vue.use(VueQuillEditor);
+Vue.use(hasPermission);
 
 new Vue({
     el: '#app',
@@ -36,27 +38,10 @@ new Vue({
         currentPageName: ''
     },
     mounted () {
-        this.currentPageName = this.$route.name;
-        // 显示打开的页面的列表
-        this.$store.commit('setOpenedList');
-        this.$store.commit('initCachepage');
-        // 权限菜单过滤相关
-        this.$store.commit('updateMenulist');
-        // iview-admin检查更新
-        // util.checkUpdate(this);
-    },
-    created () {
-        let tagsList = [];
-        appRouter.map((item) => {
-            // console.log(item);
-            if (item.children.length <= 1) {
-                tagsList.push(item.children[0]);
-            } else {
-                tagsList.push(...item.children);
-                // console.log(tagsList);
-            }
-        });
-        this.$store.commit('setTagsList', tagsList);
+        // 调用方法，动态生成路由
+        setTimeout(() => {
+            util.initRouter(this);
+        }, 10)
     }
 });
 

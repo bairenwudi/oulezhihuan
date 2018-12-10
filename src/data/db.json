@@ -1,0 +1,229 @@
+[
+    {
+        "path": "/organizationalManagement",
+        "icon": "social-buffer",
+        "name": "organizationalManagement",
+        "title": "机构管理",
+        "component": "Main",
+        "children": [
+            {
+                "path": "organizationalManagementModel",
+                "name": "organizationalManagementModel",
+                "title": "机构管理",
+                "component": "organizationalManagement/organizationalManagement",
+                "children": []
+            },
+            {
+                "path": "baseInformationModel",
+                "name": "baseInformationModel",
+                "title": "机构设置",
+                "component": "organizationalManagement/baseInformation",
+                "children": []
+            }
+        ]
+    },
+
+    {
+        "path": "/systemManagement",
+        "icon": "gear-b",
+        "name": "systemManagement",
+        "title": "系统管理",
+        "component": "Main",
+        "children": [
+            {
+                "path": "userManagementModel",
+                "name": "userManagementModel",
+                "title": "用户管理",
+                "component": "systemManagement/userManagement",
+                "children": []
+            },
+            {
+                "path": "bannerManagementModel",
+                "name": "bannerManagementModel",
+                "title": "banner管理",
+                "component": "systemManagement/bannerManagement",
+                "children": []
+            },
+            {
+                "path": "hotCityManagementModel",
+                "name": "hotCityManagementModel",
+                "title": "热门城市管理",
+                "component": "systemManagement/hotCityManagement",
+                "children": []
+            },
+            {
+                "path": "evaluationManagementModel",
+                "name": "evaluationManagementModel",
+                "title": "评价管理",
+                "component": "systemManagement/evaluationManagement",
+                "children": []
+            },
+            {
+                "path": "supportingFacilitiesModel",
+                "name": "supportingFacilitiesModel",
+                "title": "配套设施设置",
+                "component": "systemManagement/supportingFacilities",
+                "children": []
+            },
+            {
+                "path": "FeedbackManagementModel",
+                "name": "FeedbackManagementModel",
+                "title": "意见反馈管理",
+                "component": "systemManagement/FeedbackManagement",
+                "children": []
+            }
+        ]
+    },
+    
+    {
+        "path": "/RoomtypeNums",
+        "icon": "stats-bars",
+        "name": "RoomtypeNums",
+        "title": "房型可预订数",
+        "component": "Main",
+        "children": [
+            {
+                "path": "RoomtypeNumstModel",
+                "name": "RoomtypeNumsModel",
+                "title": "房型可预订数",
+                "component": "RoomtypeNums/RoomtypeNums",
+                "children": []
+            }
+        ]
+    },
+    
+    {
+        "path": "/order",
+        "icon": "drag",
+        "name": "order",
+        "title": "订单管理",
+        "component": "Main",
+        "children": [
+            {
+                "path": "appOrderModel",
+                "name": "appOrderModel",
+                "title": "app订单",
+                "component": "order/appOrder",
+                "children": []
+            },
+            {
+                "path": "batchReservationOrderModel",
+                "name": "batchReservationOrderModel",
+                "title": "批量预定",
+                "component": "order/batchReservationOrder",
+                "children": []
+            },
+            {
+                "path": "batchAuditModel",
+                "name": "batchAuditModel",
+                "title": "批量审核",
+                "component": "order/batchAudit",
+                "children": []
+            },
+            {
+                "path": "refundListModel",
+                "name": "refundListModel",
+                "title": "退款单",
+                "component": "order/refundList",
+                "children": []
+            },
+            {
+                "path": "checkoutListModel",
+                "name": "checkoutListModel",
+                "title": "退房单",
+                "component": "order/checkoutList",
+                "children": []
+            }
+        ]
+    },
+    {
+        "path": "/informationManagement",
+        "icon": "chatboxes",
+        "name": "informationManagement",
+        "title": "信息管理",
+        "component": "Main",
+        "children": [
+            {
+                "path": "informationManagementModel",
+                "name": "informationManagementModel",
+                "title": "信息管理",
+                "component": "informationManagement/informationManagement",
+                "children": []
+            }
+        ]
+    },
+    {
+        "path": "/financialStatements",
+        "icon": "social-yen-outline",
+        "name": "financialStatements",
+        "title": "财务报表",
+        "component": "Main",
+        "children": [
+            {
+                "path": "financialStatementsModel",
+                "name": "financialStatementsModel",
+                "title": "财务报表",
+                "component": "financialStatements/financialStatements",
+                "children": []
+            }
+        ]
+    },
+    {
+        "path": "/authorityManagement",
+        "icon": "ios-people",
+        "name": "authorityManagement",
+        "title": "权限管理",
+        "component": "Main",
+        "children": [
+            {
+                "path": "userManagement",
+                "name": "userManagement",
+                "title": "用户权限",
+                "component": "authorityManagement/userManagement",
+                "children": []
+            },
+            {
+                "path": "roleManagement",
+                "name": "roleManagement",
+                "title": "角色管理",
+                "component": "authorityManagement/roleManagement",
+                "children": []
+            },
+            {
+                "path": "rightsManagement",
+                "name": "rightsManagement",
+                "title": "权限管理",
+                "component": "authorityManagement/rightsManagement",
+                "children": []
+            },
+            {
+                "path": "organizationManagement",
+                "name": "organizationManagement",
+                "title": "机构管理",
+                "component": "authorityManagement/organizationManagement",
+                "children": []
+            },
+            {
+                "path": "appVersion",
+                "name": "appVersion",
+                "title": "app版本更新",
+                "component": "authorityManagement/appVersion",
+                "children": []
+            },
+            {
+                "path": "appUser",
+                "name": "appUser",
+                "title": "app权限",
+                "component": "authorityManagement/appUser",
+                "children": []
+            },
+            {
+                "path": "appVersionRecord",
+                "name": "appVersionRecord",
+                "title": "app版本更新记录",
+                "component": "authorityManagement/appVersionRecord",
+                "children": []
+            }
+        ]
+    }
+]
