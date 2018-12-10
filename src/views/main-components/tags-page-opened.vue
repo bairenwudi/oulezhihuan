@@ -4,8 +4,8 @@
 
 <template>
     <div ref="scrollCon" @DOMMouseScroll="handlescroll" @mousewheel="handlescroll" class="tags-outer-scroll-con">
-        <!-- <div class="close-all-tag-con"> -->
-            <!-- <Dropdown transfer @on-click="handleTagsOption">
+        <div class="close-all-tag-con">
+            <Dropdown transfer @on-click="handleTagsOption">
                 <Button size="small" type="primary">
                     标签选项
                     <Icon type="arrow-down-b"></Icon>
@@ -14,8 +14,8 @@
                     <DropdownItem name="clearAll">关闭所有</DropdownItem>
                     <DropdownItem name="clearOthers">关闭其他</DropdownItem>
                 </DropdownMenu>
-            </Dropdown> -->
-        <!-- </div> -->
+            </Dropdown>
+        </div>
         <div ref="scrollBody" class="tags-inner-scroll-body" :style="{left: tagBodyLeft + 'px'}">
             <transition-group name="taglist-moving-animation">
                 <Tag 
@@ -28,7 +28,7 @@
                     @click.native="linkTo(item)"
                     :closable="item.name==='home_index'?false:true"
                     :color="item.children?(item.children[0].name===currentPageName?'blue':'default'):(item.name===currentPageName?'blue':'default')"
-                >{{ itemTitle(item) }}</Tag>
+                >{{ item.name === 'home_index' ? '首页' : itemTitle(item) }}</Tag>
             </transition-group>
         </div>
     </div>
@@ -67,11 +67,7 @@ export default {
     },
     methods: {
         itemTitle (item) {
-            if (typeof item.title === 'object') {
-                return this.$t(item.title.i18n);
-            } else {
-                return item.title;
-            }
+            return item.title;
         },
         closePage (event, name) {
             let pageOpenedList = this.$store.state.app.pageOpenedList;

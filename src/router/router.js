@@ -5,7 +5,7 @@ export const loginRouter = {
     path: '/login',
     name: 'login',
     meta: {
-        title: 'Login - 登录'
+        title: '置换平台 - 登录'
     },
     component: resolve => { require(['@/views/login.vue'], resolve); }
 };
@@ -14,7 +14,7 @@ export const registerRouter = {
     path: '/register',
     name: 'register',
     meta: {
-        title: 'Register - 注册'
+        title: '置换平台 - 注册'
     },
     component: resolve => { require(['@/views/register.vue'], resolve); }
 };
@@ -23,7 +23,7 @@ export const forgetRouter = {
     path: '/forget',
     name: 'forget',
     meta: {
-        title: 'Forget - 忘记密码'
+        title: '置换平台 - 忘记密码'
     },
     component: resolve => { require(['@/views/forget.vue'], resolve); }
 };
@@ -32,7 +32,7 @@ export const page404 = {
     path: '/*',
     name: 'error-404',
     meta: {
-        title: '404-页面不存在'
+        title: '置换平台 404-页面不存在'
     },
     component: resolve => { require(['@/views/error-page/404.vue'], resolve); }
 };
@@ -40,7 +40,7 @@ export const page404 = {
 export const page403 = {
     path: '/403',
     meta: {
-        title: '403-权限不足'
+        title: '置换平台 403-权限不足'
     },
     name: 'error-403',
     component: resolve => { require(['@//views/error-page/403.vue'], resolve); }
@@ -49,7 +49,7 @@ export const page403 = {
 export const page500 = {
     path: '/500',
     meta: {
-        title: '500-服务端错误'
+        title: '置换平台 500-服务端错误'
     },
     name: 'error-500',
     component: resolve => { require(['@/views/error-page/500.vue'], resolve); }
@@ -68,7 +68,7 @@ export const otherRouter = {
     redirect: '/home',
     component: Main,
     children: [
-        { path: 'home', title: {i18n: 'home'}, name: 'home_index', component: resolve => { require(['@/views/home/home.vue'], resolve); } },
+        { path: 'home', title: '首页', name: 'home_index', component: resolve => { require(['@/views/home/home.vue'], resolve); } },
         { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: resolve => { require(['@/views/own-space/own-space.vue'], resolve); } },
         { path: 'AppOrderinfoModel', title: 'App详情', name: 'AppOrderinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/AppOrderinfo.vue'], resolve); } },
         { path: 'RefundListinfoModel', title: '退款单详情', name: 'RefundListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/RefundListinfo.vue'], resolve); } },
@@ -211,7 +211,6 @@ export const appRouter = [
                 title: '退房单',
                 component: resolve => { require(['@/views/order/checkoutList.vue'], resolve); }
             }
-            
         ]
     },
     {
@@ -269,6 +268,30 @@ export const appRouter = [
                 title: '权限管理',
                 component: resolve => { require(['@/views/authorityManagement/rightsManagement.vue'], resolve); }
             },
+            {
+                path: 'organizationManagement',
+                name: 'organizationManagement',
+                title: '机构管理',
+                component: resolve => { require(['@/views/authorityManagement/organizationManagement.vue'], resolve); }
+            },
+            {
+                path: 'appVersion',
+                name: 'appVersion',
+                title: 'app版本更新',
+                component: resolve => { require(['@/views/authorityManagement/appVersion.vue'], resolve); }
+            },
+            {
+                path: 'appUser',
+                name: 'appUser',
+                title: 'app权限',
+                component: resolve => { require(['@/views/authorityManagement/appUser.vue'], resolve); }
+            },
+            {
+                path: 'appVersionRecord',
+                name: 'appVersionRecord',
+                title: 'app版本更新记录',
+                component: resolve => { require(['@/views/authorityManagement/appVersionRecord.vue'], resolve); }
+            },
         ]
     }
 ];
@@ -284,7 +307,4 @@ export const routers = [
     page500,
     page403,
     page404,
-    // hotCity,
-    // bannerMana,
-    // facilities
 ];

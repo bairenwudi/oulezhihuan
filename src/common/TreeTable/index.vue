@@ -2,6 +2,7 @@
   <el-table 
     :data="formatData"
     highlight-current-row
+    @select-all="selsAllChange"
     @selection-change="selsChange"
     :row-style="showRow"
     v-loading="listLoading"
@@ -86,6 +87,10 @@ export default {
     },
     // 发射checkbox选择事件
     selsChange(sels) {
+      this.sels = sels;
+      this.$emit("selsChange", this.sels);
+    },
+    selsAllChange(sels) {
       this.sels = sels;
       this.$emit("selsChange", this.sels);
     },

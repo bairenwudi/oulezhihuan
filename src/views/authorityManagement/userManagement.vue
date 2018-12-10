@@ -22,6 +22,7 @@
                     placeholder="选择开始时间和结束时间" 
                     style="width: 300px"
                     v-model="filters.adm_last_login"
+                    clearable
                 ></DatePicker>
             </FormItem>
 
@@ -538,19 +539,21 @@ export default {
 
     //获取用户列表
     getUsersFun(filters, type) {
+      let filter = filters || '';
       let indexPage = 1;
       let params = {
         startPos: type === 1 ? indexPage : this.page,
       };
       if (filters) {
-        if (filters.adm_last_login[0] != '') {
-            filters.start_time = filters.adm_last_login[0];
-            filters.end_time = filters.adm_last_login[1];
-            delete filters.adm_last_login;
+        if (filter.adm_last_login[0] != '') {
+            filter.start_time = filter.adm_last_login[0];
+            filter.end_time = filter.adm_last_login[1];
+        } else {
+            filter.start_time = '';
+            filter.end_time = '';
         }
         params = Object.assign(params, filters)
       }
-      console.log(params);
       userList(params).then(res => {
         this.total = res.data[0].count;
         console.log(
