@@ -144,7 +144,7 @@
 
 .icon-dianhuaqiaguzhang:before { content: "\e6ff"; }
 
-.icon-duihuaxinxi:before { content: "\e700"; }
+.icon-informationManagement:before { content: "\e700"; }
 
 .icon-rili1:before { content: "\e701"; }
 
@@ -206,7 +206,7 @@
 
 .icon-biaoqian:before { content: "\e74b"; }
 
-.icon-chongzhi:before { content: "\e74d"; }
+.icon-financialStatements:before { content: "\e74d"; }
 
 .icon-duigou1:before { content: "\e750"; }
 
@@ -440,7 +440,7 @@
 
 .icon-supplierfeatures:before { content: "\e6f5"; }
 
-.icon-similarproduct:before { content: "\e6f6"; }
+.icon-organizationalManagement:before { content: "\e6f6"; }
 
 .icon-link:before { content: "\e6f7"; }
 
@@ -514,7 +514,9 @@
 
 .icon-skip:before { content: "\e718"; }
 
-.icon-zhanghuguanli:before { content: "\e692"; }
+.icon-xitong:before { content: "\e692"; }
+
+.icon-systemManagement:before { content: "\e692"; }
 
 .icon-iconfontplay2:before { content: "\e719"; }
 
@@ -784,7 +786,7 @@
 
 .icon-logistic:before { content: "\e811"; }
 
-.icon-Calculator:before { content: "\e812"; }
+.icon-RoomtypeNums:before { content: "\e812"; }
 
 .icon-liuliangqianbao:before { content: "\e7d0"; }
 
@@ -1144,7 +1146,7 @@
 
 .icon-addressbook_fill:before { content: "\e819"; }
 
-.icon-addressbook:before { content: "\e81a"; }
+.icon-authorityManagement:before { content: "\e81a"; }
 
 .icon-password:before { content: "\e82b"; }
 
@@ -1374,7 +1376,7 @@
 
 .icon-lianxikefu:before { content: "\e809"; }
 
-.icon-quanbudingdan:before { content: "\e80a"; }
+.icon-order:before { content: "\e80a"; }
 
 .icon-wode1:before { content: "\e80b"; }
 
@@ -1388,7 +1390,7 @@
 
 .icon-zuo:before { content: "\e810"; }
 
-.icon-yudingwenti:before { content: "\e813"; }
+.icon-RoomtypeNums:before { content: "\e813"; }
 
 .icon-zhifuwenti:before { content: "\e814"; }
 

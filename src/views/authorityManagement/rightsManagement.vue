@@ -18,15 +18,14 @@
 
         <el-table-column label="等级" prop="_level"></el-table-column>
 
-        <el-table-column
-          align="center"
-          label="操作">
-              <template slot-scope="scope">
-                <Button type="primary" @click="editShowDialogClick(scope.row)">编 辑</Button>
-                <Button type="error" @click="delClick(scope.row)">删 除</Button>
-              </template>
+        <el-table-column align="center" label="操作">
+          <template slot-scope="scope">
+            <span style="margin-right: 5px">
+              <Button type="primary" @click="editShowDialogClick(scope.row)">编 辑</Button>
+            </span>
+            <Button type="error" @click="delClick(scope.row)">删 除</Button>
+          </template>
         </el-table-column>
-
       </template>
     </tree-table>
 
@@ -141,7 +140,7 @@ export default {
         adm_right_name: '',
         vue_component: '',
         adm_url: '',
-        adm_decription: 2
+        adm_decription: 1
       },
 
       addRule: {
@@ -161,7 +160,7 @@ export default {
       editForm: {
         adm_right_name: '',
         vue_component: '',
-        adm_decription: 2,
+        adm_decription: 1,
         adm_url: ''
       },
 
@@ -252,7 +251,7 @@ export default {
       this.listLoading = true;
       let params = {
         adm_user_id: JSON.parse(localStorage.user).adm_user_id,
-        adm_decription: 2
+        adm_decription: 1
       };
       selectUserRight(params).then(res => {
         this.data = res.data;

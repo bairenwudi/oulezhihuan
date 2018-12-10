@@ -1,7 +1,11 @@
 import axios from 'axios';
-import env from '../../build/env';
-import semver from 'semver';
-import packjson from '../../package.json';
+import {
+    loginRouter
+} from '@/router/router.js';
+import {
+    selectUserRightForVue
+} from '@/api/lp-login/api.js';
+import lazyLoading from './lazyLoading.js';
 
 let util = {
 
@@ -11,20 +15,9 @@ util.title = function (title) {
     window.document.title = title;
 };
 
-// const ajaxUrl = env === 'development'
-//     ? 'http://127.0.0.1:8888'
-//     : env === 'production'
-//         ? 'https://www.url.com'
-//         : 'https://debug.url.com';
-
-// util.ajax = axios.create({
-//     baseURL: ajaxUrl,
-//     timeout: 30000
-// });
-
 util.inOf = function (arr, targetArr) {
     let res = true;
-    arr.forEach(item => {
+    arr.map(item => {
         if (targetArr.indexOf(item) < 0) {
             res = false;
         }
@@ -41,7 +34,7 @@ util.oneOf = function (ele, targetArr) {
 };
 
 util.showThisRoute = function (itAccess, currentAccess) {
-    if (typeof itAccess === 'object' && Array.isArray(itAccess)) {
+    if (typeof itAccess === 'object' && itAccess.isArray()) {
         return util.oneOf(currentAccess, itAccess);
     } else {
         return itAccess === currentAccess;
@@ -49,29 +42,33 @@ util.showThisRoute = function (itAccess, currentAccess) {
 };
 
 util.getRouterObjByName = function (routers, name) {
-    if (!name || !routers || !routers.length) {
-        return null;
-    }
-    // debugger;
-    let routerObj = null;
-    for (let item of routers) {
-        if (item.name === name) {
-            return item;
+    let routerObj = {};
+    routers.forEach(item => {
+        if (item.name === 'otherRouter') {
+            item.children.forEach((child, i) => {
+                if (child.name === name) {
+                    routerObj = item.children[i];
+                }
+            });
+        } else {
+            if (item.children.length === 1) {
+                if (item.children[0].name === name) {
+                    routerObj = item.children[0];
+                }
+            } else {
+                item.children.forEach((child, i) => {
+                    if (child.name === name) {
+                        routerObj = item.children[i];
+                    }
+                });
+            }
         }
-        routerObj = util.getRouterObjByName(item.children, name);
-        if (routerObj) {
-            return routerObj;
-        }
-    }
-    return null;
+    });
+    return routerObj;
 };
 
 util.handleTitle = function (vm, item) {
-    if (typeof item.title === 'object') {
-        return vm.$t(item.title.i18n);
-    } else {
-        return item.title;
-    }
+    return item.title;
 };
 
 util.setCurrentPath = function (vm, name) {
@@ -98,16 +95,13 @@ util.setCurrentPath = function (vm, name) {
     });
     let currentPathArr = [];
     if (name === 'home_index') {
-        currentPathArr = [
-            {
-                title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
-                path: '',
-                name: 'home_index'
-            }
-        ];
+        currentPathArr = [{
+            title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
+            path: '',
+            name: 'home_index'
+        }];
     } else if ((name.indexOf('_index') >= 0 || isOtherRouter) && name !== 'home_index') {
-        currentPathArr = [
-            {
+        currentPathArr = [{
                 title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
                 path: '/home',
                 name: 'home_index'
@@ -135,48 +129,53 @@ util.setCurrentPath = function (vm, name) {
                 return false;
             }
         })[0];
-        if (currentPathObj.children.length <= 1 && currentPathObj.name === 'home') {
-            currentPathArr = [
-                {
+
+        if(currentPathObj) {
+            if (currentPathObj.children.length <= 1 && currentPathObj.name === 'home') {
+                currentPathArr = [{
                     title: '首页',
                     path: '',
                     name: 'home_index'
-                }
-            ];
-        } else if (currentPathObj.children.length <= 1 && currentPathObj.name !== 'home') {
-            currentPathArr = [
-                {
-                    title: '首页',
-                    path: '/home',
-                    name: 'home_index'
-                },
-                {
-                    title: currentPathObj.title,
-                    path: '',
-                    name: name
-                }
-            ];
+                }];
+            } else if (currentPathObj.children.length <= 1 && currentPathObj.name !== 'home') {
+                currentPathArr = [{
+                        title: '首页',
+                        path: '/home',
+                        name: 'home_index'
+                    },
+                    {
+                        title: currentPathObj.title,
+                        path: '',
+                        name: name
+                    }
+                ];
+            } else {
+                let childObj = currentPathObj.children.filter((child) => {
+                    return child.name === name;
+                })[0];
+                currentPathArr = [{
+                        title: '首页',
+                        path: '/home',
+                        name: 'home_index'
+                    },
+                    {
+                        title: currentPathObj.title,
+                        path: '',
+                        name: currentPathObj.name
+                    },
+                    {
+                        title: childObj.title,
+                        path: currentPathObj.path + '/' + childObj.path,
+                        name: name
+                    }
+                ];
+            }
         } else {
-            let childObj = currentPathObj.children.filter((child) => {
-                return child.name === name;
-            })[0];
-            currentPathArr = [
-                {
-                    title: '首页',
-                    path: '/home',
-                    name: 'home_index'
-                },
-                {
-                    title: currentPathObj.title,
-                    path: '',
-                    name: currentPathObj.name
-                },
-                {
-                    title: childObj.title,
-                    path: currentPathObj.path + '/' + childObj.path,
-                    name: name
-                }
-            ];
+            currentPathArr = [{
+                title: '首页',
+                path: '',
+                name: 'home_index'
+            }];
         }
     }
     vm.$store.commit('setCurrentPath', currentPathArr);
@@ -185,7 +184,11 @@ util.setCurrentPath = function (vm, name) {
 };
 
 util.openNewPage = function (vm, name, argu, query) {
+    if (vm.$store === undefined) {
+        return;
+    }
     let pageOpenedList = vm.$store.state.app.pageOpenedList;
+
     let openedPageLen = pageOpenedList.length;
     let i = 0;
     let tagHasOpened = false;
@@ -201,9 +204,10 @@ util.openNewPage = function (vm, name, argu, query) {
         }
         i++;
     }
+
     if (!tagHasOpened) {
         let tag = vm.$store.state.app.tagsList.filter((item) => {
-            if (item.children) {
+            if (item.children && item.children.length > 0) {
                 return name === item.children[0].name;
             } else {
                 return name === item.name;
@@ -211,13 +215,14 @@ util.openNewPage = function (vm, name, argu, query) {
         });
         tag = tag[0];
         if (tag) {
-            tag = tag.children ? tag.children[0] : tag;
+            tag = tag.children && tag.children.length > 0 ? tag.children[0] : tag;
             if (argu) {
                 tag.argu = argu;
             }
             if (query) {
                 tag.query = query;
             }
+            console.log(tag);
             vm.$store.commit('increateTag', tag);
         }
     }
@@ -245,32 +250,132 @@ util.toDefaultPage = function (routers, name, route, next) {
 };
 
 util.fullscreenEvent = function (vm) {
-    vm.$store.commit('initCachepage');
     // 权限菜单过滤相关
     vm.$store.commit('updateMenulist');
-    // 全屏相关
 };
 
-util.checkUpdate = function (vm) {
-    axios.get('https://api.github.com/repos/iview/iview-admin/releases/latest').then(res => {
-        let version = res.data.tag_name;
-        vm.$Notice.config({
-            duration: 0
-        });
-        if (semver.lt(packjson.version, version)) {
-            // vm.$Notice.info({
-            //     title: 'iview-admin更新啦',
-            //     desc: '<p>iView-admin更新到了' + version + '了，去看看有哪些变化吧</p><a style="font-size:13px;" href="https://github.com/iview/iview-admin/releases" target="_blank">前往github查看</a>'
-            // });
+util.initRouter = function (vm) {
+    const constRoutes = [];
+    const otherRoutes = [];
+
+    // 404路由需要和动态路由一起注入
+    const otherRouter = [{
+            path: '/*',
+            name: 'error-404',
+            meta: {
+                title: '404-页面不存在'
+            },
+            component: 'error-page/404'
+        },
+        {
+            path: '/login',
+            name: 'login',
+            meta: {
+                title: '置换平台 - 登录'
+            },
+            component: 'login.vue'
+        },
+        {
+            path: '/register',
+            name: 'register',
+            meta: {
+                title: '置换平台 - 注册'
+            },
+            component: 'register.vue'
+        },
+        {
+            path: '/forget',
+            name: 'forget',
+            meta: {
+                title: '置换平台 - 忘记密码'
+            },
+            component: 'forget.vue'
+        },
+        {
+            path: '/*',
+            name: 'error-404',
+            meta: {
+                title: '置换平台 404-页面不存在'
+            },
+            component: 'error-page/404.vue'
+        },
+        {
+            path: '/403',
+            meta: {
+                title: '置换平台 403-权限不足'
+            },
+            name: 'error-403',
+            component: 'error-page/403.vue'
+        },
+        {
+            path: '/500',
+            meta: {
+                title: '置换平台 500-服务端错误'
+            },
+            name: 'error-500',
+            component: 'error-page/500.vue'
+        },
+        {
+            path: '/locking',
+            name: 'locking',
+            component: 'main-components/lockscreen/components/locking-page.vue'
         }
-    });
+    ];
+    // 模拟异步请求
+    let params = {
+        adm_decription: 1,
+        adm_user_id: JSON.parse(localStorage.user).adm_user_id
+    };
+
+    let querystring = require("querystring");
+
+    selectUserRightForVue(querystring.encode(params)).then(res => {
+        console.log(res);
+        var menuData = res.data;
+
+        util.initRouterNode(constRoutes, menuData);
+        util.initRouterNode(otherRoutes, otherRouter);
+        // 添加主界面路由
+        console.log(constRoutes);
+        vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children ? item.children.length > 0 : ''));
+        // 添加全局路由
+        vm.$store.commit('updateDefaultRouter', otherRoutes);
+        // 刷新界面菜单
+        vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children ? item.children.length > 0 : ''));
+
+        let tagsList = [];
+
+        vm.$store.state.app.routers.map((item) => {
+            if (item.children.length <= 1) {
+                tagsList.push(item.children[0]);
+            } else {
+                tagsList.push(...item.children);
+            }
+        });
+        vm.$store.commit('setTagsList', tagsList);
+    })
 };
 
-// 处理盘符
-util.handleDrive = function (base, facilities_pic_url, facilities_pic_name) {
-    const afterUpload = facilities_pic_url.split("static/")[1];
-    const showUrl = base + "/" + afterUpload + "/" + facilities_pic_name;
-    return showUrl;
-}
+// 生成路由节点
+util.initRouterNode = function (routers, data) {
+    for (var item of data) {
+        let menu = Object.assign({}, item);
+        // menu.component = import(`@/views/${menu.component}.vue`);
+        menu.component = lazyLoading(menu.component);
+
+        if (item.children && item.children.length > 0) {
+            menu.children = [];
+            util.initRouterNode(menu.children, item.children);
+        }
+        let meta = {};
+        // 给页面添加标题
+        meta.permission = menu.permission ? menu.permission : null;
+        meta.title = menu.title ? menu.title : null;
+
+        menu.meta = meta;
+
+        routers.push(menu);
+    }
+};
 
 export default util;

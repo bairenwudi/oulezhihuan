@@ -4,10 +4,10 @@
       <div style="margin-bottom: 15px;">
         <Button type="primary" @click="addRoleClick">添加角色</Button>
       </div>
-      
+
       <div class="main-continer">
           <div class="ztreeView" v-if="isLoading">
-              <ztree-component v-if="isSle" :data="folder" :isenable="true" :enable="enable" @clickNode="ztreeChange"></ztree-component>
+            <ztree-component v-if="isSle" :data="folder" :isenable="true" :enable="enable" @clickNode="ztreeChange"></ztree-component>
           </div>
           <div class="tableView">
               <!-- 调取table模板例子 -->
@@ -164,6 +164,7 @@ export default {
     // 获取checked数据
     selsChange(val) {
       this.selsRow = val;
+      console.log(val);
     },
 
     toggleSel(rows) {
@@ -181,7 +182,7 @@ export default {
       this.userRight = [];
       let params = {
         adm_user_id: user_id ? user_id : JSON.parse(localStorage.user).adm_user_id,
-        adm_decription: 2,
+        adm_decription: 1,
       };
       const res = await selectUserRight(params);
       this.userRight = res.data;
@@ -220,7 +221,7 @@ export default {
       this.userRight = [];
       let params1 = {
         adm_user_id: JSON.parse(localStorage.user).adm_user_id,
-        adm_decription: 2,
+        adm_decription: 1,
       };
       const res1 = await selectUserRight(params1);
       this.userRight = res1.data;
@@ -231,11 +232,9 @@ export default {
         adm_role_id: row.adm_role_id
       };
       const res2 = await selectRightOfRole(params2);
-      console.log(res2);
       let arr = [];
       let arr1 = [];
       // 做一下遍历操作  把父级和子级的id遍历
-      console.log(this.userRight)
       res2.data.forEach(item => {
         for (let i of this.userRight) {
           if (item.adm_right_id === i.id) {

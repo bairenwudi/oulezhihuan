@@ -4,7 +4,7 @@
             v-for="item in currentPath" 
             :href="item.path" 
             :key="item.name"
-        >{{ itemTitle(item) }}</BreadcrumbItem>
+        >{{ item.name === 'home_index' ? '首页' : itemTitle(item) }}</BreadcrumbItem>
     </Breadcrumb>
 </template>
 
@@ -16,11 +16,7 @@ export default {
     },
     methods: {
         itemTitle (item) {
-            if (typeof item.title === 'object') {
-                return this.$t(item.title.i18n);
-            } else {
-                return item.title;
-            }
+            return item.title;
         }
     }
 };
