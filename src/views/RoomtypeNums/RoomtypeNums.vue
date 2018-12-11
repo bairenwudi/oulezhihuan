@@ -85,8 +85,10 @@
                 v-model="i.room_num"
                 placeholder="请输入房间数量"
                 class="inputWidth"
+                style="width:100px"
               >
               </Input>
+              <span>间</span>
             </div>
         </FormItem>
       </Form>
@@ -117,7 +119,26 @@ export default {
     VirtualList
   },
   data() {
+    let check_timeValidate = (rule, value, callback) => {
+      console.log(value);
+      
+      if (!value[0]||!value[1]) {
+        return callback(new Error('请选择入离时间'));
+      } else {
+        callback();
+      }
+    };
+    let room_nameValidate = (rule, value, callback) => {
+      console.log(value);
+      
+      if (value.length <= 0) {
+        return callback(new Error('请选择使用房型'));
+      } else {
+        callback();
+      }
+    };
     return {
+      adm_user_id:"",
       formValidate: {
         // 定义新增表单的对象
         room_type: [],
@@ -125,12 +146,12 @@ export default {
         message: [],
       },
       ruleValidate: {
-        // room_type:{
-        //   required: true, message: '请选择房型', trigger: 'change'
-        // },
-        // check_time:{
-        //   required: true, message: '请选择入离时间', trigger: 'change'
-        // },
+        room_type:[
+          { required: true, validator:room_nameValidate, trigger: 'change' }
+        ],
+        check_time:[
+          { required: true, validator:check_timeValidate, trigger: 'change' }
+        ],
       },
 
       columns: [
@@ -162,7 +183,7 @@ export default {
           render: (h, { row, index, column }) => {
             return (
               <div>
-              <span class="roomNumBeforeBtn" onDblclick={ this.tableClick.bind(this, { row, index, column }) }>{row.number}间</span>
+              <span class="roomNumBeforeBtn" style={{'color': row.color}}  onDblclick={ this.tableClick.bind(this, { row, index, column }) }>{row.number}间</span>
                 { this.edittingId === `${row.room_type_id}_${index}`? <i-input class="iptWidth" onBlur={ this.Inputblur.bind(this, { row }) } onInput={this.handleInput}></i-input>: '' }
                 <i-button type="primary" onClick={ this.editInputClick.bind(this, { row, index, column }) }>{ row.editName ? row.editName : `编辑` }</i-button>
               </div>
@@ -235,11 +256,10 @@ export default {
         this.dbClickMsg.dbtime= time[0].replace("年","-").replace("月","-").replace("日","");
         console.log(this.dbClickMsg.dbtime);
         this.dbClickMsg.dbRoom_type_id = row.room_type_id;
-        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         
         let param = {
           numbers:this.tableIptNum,
-          adm_user_id,
+          adm_user_id:this.adm_user_id,
           start_time: this.dbClickMsg.dbtime,
           end_time: this.dbClickMsg.dbtime,
           room_type_ids: row.room_type_id
@@ -330,11 +350,9 @@ export default {
     tableClick({ row, index, column }){
       console.log(row);
       var time = row.reserver_time.split(" ");
-      console.log(time[0]);
       this.dbClickMsg.dbtime= time[0].replace("年","-").replace("月","-").replace("日","");
       console.log(this.dbClickMsg.dbtime);
       this.dbClickMsg.dbRoom_type_id = row.room_type_id;
-      var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
       
       if(this.edittingId === `${row.room_type_id}_${index}`) {
         this.edittingId = '';
@@ -349,7 +367,6 @@ export default {
       console.log(1)
         // 校验
         var numberReg = /^[+]{0,1}(\d+)$/;
-        console.log('萨达')
         if(!numberReg.test(this.tableIptNum)){
           this.$Message.error("请输入正整数");
           return;
@@ -360,11 +377,10 @@ export default {
         this.dbClickMsg.dbtime= time[0].replace("年","-").replace("月","-").replace("日","");
         console.log(this.dbClickMsg.dbtime);
         this.dbClickMsg.dbRoom_type_id = row.room_type_id;
-        var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
         
         let param = {
           numbers:this.tableIptNum,
-          adm_user_id,
+          adm_user_id:this.adm_user_id,
           start_time: this.dbClickMsg.dbtime,
           end_time: this.dbClickMsg.dbtime,
           room_type_ids: row.room_type_id
@@ -378,18 +394,6 @@ export default {
             this.$Message.error(res.data.msg);
           }
         })
-        // let param = {
-        //   numbers
-        //   adm_user_id
-        //   startTime: start_time,
-        //   endTime: end_time,
-        //   room_type_id: this.formValidate.room_type[this.formValidate.room_type.length - 1]
-        // };
-        // roomtypeNumsList(param).then(res => {
-        //   console.log(res);
-          
-        // })
-      
     },
     resetTotal() {
       this.currentPage = 1;
@@ -400,6 +404,7 @@ export default {
     addClick() {
       this.addModal = true;
       this.getCheckbox();
+      this.formValidate.message = [];
     },
     async getCheckbox(){
       var org_id = JSON.parse(localStorage.getItem("user")).org_id;
@@ -419,7 +424,6 @@ export default {
 
       this.$refs[name].validate(valid => {
         if (valid) {
-          var adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
 
           var dd = new Date(this.formValidate.check_time[0]);
           var DD = new Date(this.formValidate.check_time[1]);
@@ -429,7 +433,7 @@ export default {
           var end_time =
             DD.getFullYear() + "-" + (DD.getMonth() + 1) + "-" + DD.getDate();
           let params = {
-            adm_user_id,
+            adm_user_id:this.adm_user_id,
             start_time,
             end_time,
             room_type_ids: this.room_type_id,
@@ -525,7 +529,18 @@ export default {
       let { data } = await roomtypeNumsList(params);
       console.log(data);
       this.total = data.count;
-      this.userData = data.data;
+      var arr = data.data;
+      arr.map(function(val,index,arr){
+        console.log(val);
+        if(val.number === 0){
+          console.log(val);
+          arr = Object.assign(val,{"color":"red"});
+          return arr
+        }
+      })
+      console.log(arr);
+      this.userData = arr;
+     
       this.loading = false;
     },
     formatTime(date) {
@@ -545,6 +560,7 @@ export default {
   mounted() {
     this.getUser();
     this.roomtypeListFun();
+    this.adm_user_id = JSON.parse(localStorage.getItem("user")).adm_user_id;
   }
 };
 </script>
