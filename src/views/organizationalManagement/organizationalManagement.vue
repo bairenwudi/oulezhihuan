@@ -323,10 +323,12 @@ export default {
     },
 
     // 进入编辑详情
-    goToEditInfo(params) {
+    goToEditInfo(row) {
       this.$router.push({
         path: "/organizationalManagement/baseInformationModel",
-        data: params
+        query: {
+          data: JSON.stringify(row)
+        }
       });
     },
 

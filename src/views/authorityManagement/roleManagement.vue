@@ -180,11 +180,7 @@ export default {
     // 获取权限数据
     async selectUserRightFun(user_id) {
       this.userRight = [];
-      let params = {
-        adm_user_id: user_id ? user_id : JSON.parse(localStorage.user).adm_user_id,
-        adm_decription: 1,
-      };
-      const res = await selectUserRight(params);
+      const res = await selectUserRight();
       this.userRight = res.data;
     },
     // 确定角色关联按钮
@@ -220,9 +216,8 @@ export default {
       this.currentRow = row;
       this.userRight = [];
       let params1 = {
-        adm_user_id: JSON.parse(localStorage.user).adm_user_id,
-        adm_decription: 1,
-      };
+        adm_decription: 1
+      }
       const res1 = await selectUserRight(params1);
       this.userRight = res1.data;
       const { data } = await OrganizationTree({});

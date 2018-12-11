@@ -46,7 +46,6 @@ new Vue({
             ) {
                 return false;
             } else {
-                console.log('我操')
                 // 调用方法，动态生成路由
                 util.initRouter(this);
             }
