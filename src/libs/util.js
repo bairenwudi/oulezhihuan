@@ -1,13 +1,9 @@
-import axios from 'axios';
-import {
-    loginRouter
-} from '@/router/router.js';
 import {
     selectUserRightForVue
 } from '@/api/lp-login/api.js';
 import lazyLoading from './lazyLoading.js';
 
-import dbForAdminData from '@/data/db.json'
+import dbForAdminData from '@/data/db.json';
 
 let util = {
 
@@ -104,15 +100,15 @@ util.setCurrentPath = function (vm, name) {
         }];
     } else if ((name.indexOf('_index') >= 0 || isOtherRouter) && name !== 'home_index') {
         currentPathArr = [{
-                title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
-                path: '/home',
-                name: 'home_index'
-            },
-            {
-                title: title,
-                path: '',
-                name: name
-            }
+            title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
+            path: '/home',
+            name: 'home_index'
+        },
+        {
+            title: title,
+            path: '',
+            name: name
+        }
         ];
     } else {
         let currentPathObj = vm.$store.state.app.routers.filter(item => {
@@ -132,7 +128,7 @@ util.setCurrentPath = function (vm, name) {
             }
         })[0];
 
-        if(currentPathObj) {
+        if (currentPathObj) {
             if (currentPathObj.children.length <= 1 && currentPathObj.name === 'home') {
                 currentPathArr = [{
                     title: '首页',
@@ -141,35 +137,35 @@ util.setCurrentPath = function (vm, name) {
                 }];
             } else if (currentPathObj.children.length <= 1 && currentPathObj.name !== 'home') {
                 currentPathArr = [{
-                        title: '首页',
-                        path: '/home',
-                        name: 'home_index'
-                    },
-                    {
-                        title: currentPathObj.title,
-                        path: '',
-                        name: name
-                    }
+                    title: '首页',
+                    path: '/home',
+                    name: 'home_index'
+                },
+                {
+                    title: currentPathObj.title,
+                    path: '',
+                    name: name
+                }
                 ];
             } else {
                 let childObj = currentPathObj.children.filter((child) => {
                     return child.name === name;
                 })[0];
                 currentPathArr = [{
-                        title: '首页',
-                        path: '/home',
-                        name: 'home_index'
-                    },
-                    {
-                        title: currentPathObj.title,
-                        path: '',
-                        name: currentPathObj.name
-                    },
-                    {
-                        title: childObj.title,
-                        path: currentPathObj.path + '/' + childObj.path,
-                        name: name
-                    }
+                    title: '首页',
+                    path: '/home',
+                    name: 'home_index'
+                },
+                {
+                    title: currentPathObj.title,
+                    path: '',
+                    name: currentPathObj.name
+                },
+                {
+                    title: childObj.title,
+                    path: currentPathObj.path + '/' + childObj.path,
+                    name: name
+                }
                 ];
             }
         } else {
@@ -224,7 +220,6 @@ util.openNewPage = function (vm, name, argu, query) {
             if (query) {
                 tag.query = query;
             }
-            console.log(tag);
             vm.$store.commit('increateTag', tag);
         }
     }
@@ -262,78 +257,77 @@ util.initRouter = function (vm) {
 
     // 404路由需要和动态路由一起注入
     const otherRouter = [{
-            path: '/*',
-            name: 'error-404',
-            meta: {
-                title: '404-页面不存在'
-            },
-            component: 'error-page/404'
+        path: '/*',
+        name: 'error-404',
+        meta: {
+            title: '404-页面不存在'
         },
-        {
-            path: '/login',
-            name: 'login',
-            meta: {
-                title: '置换平台 - 登录'
-            },
-            component: 'login.vue'
+        component: 'error-page/404'
+    },
+    {
+        path: '/login',
+        name: 'login',
+        meta: {
+            title: '置换平台 - 登录'
         },
-        {
-            path: '/register',
-            name: 'register',
-            meta: {
-                title: '置换平台 - 注册'
-            },
-            component: 'register.vue'
+        component: 'login.vue'
+    },
+    {
+        path: '/register',
+        name: 'register',
+        meta: {
+            title: '置换平台 - 注册'
         },
-        {
-            path: '/forget',
-            name: 'forget',
-            meta: {
-                title: '置换平台 - 忘记密码'
-            },
-            component: 'forget.vue'
+        component: 'register.vue'
+    },
+    {
+        path: '/forget',
+        name: 'forget',
+        meta: {
+            title: '置换平台 - 忘记密码'
         },
-        {
-            path: '/*',
-            name: 'error-404',
-            meta: {
-                title: '置换平台 404-页面不存在'
-            },
-            component: 'error-page/404.vue'
+        component: 'forget.vue'
+    },
+    {
+        path: '/*',
+        name: 'error-404',
+        meta: {
+            title: '置换平台 404-页面不存在'
         },
-        {
-            path: '/403',
-            meta: {
-                title: '置换平台 403-权限不足'
-            },
-            name: 'error-403',
-            component: 'error-page/403.vue'
+        component: 'error-page/404.vue'
+    },
+    {
+        path: '/403',
+        meta: {
+            title: '置换平台 403-权限不足'
         },
-        {
-            path: '/500',
-            meta: {
-                title: '置换平台 500-服务端错误'
-            },
-            name: 'error-500',
-            component: 'error-page/500.vue'
+        name: 'error-403',
+        component: 'error-page/403.vue'
+    },
+    {
+        path: '/500',
+        meta: {
+            title: '置换平台 500-服务端错误'
         },
-        {
-            path: '/locking',
-            name: 'locking',
-            component: 'main-components/lockscreen/components/locking-page.vue'
-        }
+        name: 'error-500',
+        component: 'error-page/500.vue'
+    },
+    {
+        path: '/locking',
+        name: 'locking',
+        component: 'main-components/lockscreen/components/locking-page.vue'
+    }
     ];
     // 模拟异步请求
     let params = {
         adm_decription: 1,
         adm_user_id: JSON.parse(localStorage.user).adm_user_id
     };
-    let querystring = require("querystring");
 
-    selectUserRightForVue(querystring.encode(params)).then(res => {
+    selectUserRightForVue(params).then(res => {
         var menuData;
 
-        if(JSON.parse(localStorage.user).adm_account === 'admins') {
+        if (JSON.parse(localStorage.user).adm_account === 'admins') {
             menuData = dbForAdminData;
         } else {
             menuData = res.data;
@@ -342,7 +336,6 @@ util.initRouter = function (vm) {
         util.initRouterNode(constRoutes, menuData);
         util.initRouterNode(otherRoutes, otherRouter);
         // 添加主界面路由
-        console.log(constRoutes);
         vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children ? item.children.length > 0 : ''));
         // 添加全局路由
         vm.$store.commit('updateDefaultRouter', otherRoutes);
@@ -359,7 +352,7 @@ util.initRouter = function (vm) {
             }
         });
         vm.$store.commit('setTagsList', tagsList);
-    })
+    });
 };
 
 // 生成路由节点

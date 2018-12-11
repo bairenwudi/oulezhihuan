@@ -72,7 +72,7 @@ export const otherRouter = {
         { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: resolve => { require(['@/views/own-space/own-space.vue'], resolve); } },
         { path: 'AppOrderinfoModel', title: 'App详情', name: 'AppOrderinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/AppOrderinfo.vue'], resolve); } },
         { path: 'RefundListinfoModel', title: '退款单详情', name: 'RefundListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/RefundListinfo.vue'], resolve); } },
-        { path: 'CheckoutListinfoModel', title: '退房单详情', name: 'CheckoutListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/CheckoutListinfo.vue'], resolve); } },        
+        { path: 'CheckoutListinfoModel', title: '退房单详情', name: 'CheckoutListinfoModel', meta: { notCache: true }, component: resolve => { require(['@/views/order/CheckoutListinfo.vue'], resolve); } },
         {
             path: '/order/batchOrderDeal',
             name: 'batchOrderDeal',
@@ -84,7 +84,7 @@ export const otherRouter = {
             name: 'applyDeal',
             title: '申请受理',
             component: resolve => { require(['@/views/order/applyDeal.vue'], resolve); }
-        },
+        }
     ]
 };
 
@@ -157,7 +157,7 @@ export const appRouter = [
             }
         ]
     },
-    
+
     {
         path: '/RoomtypeNums',
         icon: 'stats-bars',
@@ -173,7 +173,7 @@ export const appRouter = [
             }
         ]
     },
-    
+
     {
         path: '/order',
         icon: 'drag',
@@ -291,7 +291,7 @@ export const appRouter = [
                 name: 'appVersionRecord',
                 title: 'app版本更新记录',
                 component: resolve => { require(['@/views/authorityManagement/appVersionRecord.vue'], resolve); }
-            },
+            }
         ]
     }
 ];
@@ -306,5 +306,5 @@ export const routers = [
     ...appRouter,
     page500,
     page403,
-    page404,
+    page404
 ];

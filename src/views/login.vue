@@ -60,6 +60,8 @@ import {
 
 import { getBase } from '@/api/lp-login/api';
 
+import util from '@/libs/util';
+
 export default {
     data () {
         return {
@@ -163,6 +165,9 @@ export default {
                                         this.$router.push({
                                             name: 'home_index'
                                         });
+                                        setTimeout(() => {
+                                            util.initRouter(this);
+                                        }, 100)
                                     }
                                 });
                             })
