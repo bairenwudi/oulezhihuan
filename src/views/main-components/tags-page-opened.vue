@@ -22,12 +22,12 @@
                     type="dot"
                     v-for="(item, index) in pageTagsList" 
                     ref="tagsPageOpened"
-                    :key="item.name" 
+                    :key="`dot_${index}`" 
                     :name="item.name" 
                     @on-close="closePage"
                     @click.native="linkTo(item)"
                     :closable="item.name==='home_index'?false:true"
-                    :color="item.children?(item.children[0].name===currentPageName?'blue':'default'):(item.name===currentPageName?'blue':'default')"
+                    :color="item ? (item.name === currentPageName ? 'blue' : 'default') : 'default'"
                 >{{ item.name === 'home_index' ? '首页' : itemTitle(item) }}</Tag>
             </transition-group>
         </div>
