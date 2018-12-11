@@ -84,6 +84,12 @@ export const otherRouter = {
             name: 'applyDeal',
             title: '申请受理',
             component: resolve => { require(['@/views/order/applyDeal.vue'], resolve); }
+        },
+        {
+            path: '/organizationalManagement/baseInformationModel',
+            name: 'baseInformationModel',
+            title: '机构设置',
+            component: resolve => { require(['@/views/organizationalManagement/baseInformation.vue'], resolve); }
         }
     ]
 };
@@ -102,12 +108,6 @@ export const appRouter = [
                 name: 'organizationalManagementModel',
                 title: '机构管理',
                 component: resolve => { require(['@/views/organizationalManagement/organizationalManagement.vue'], resolve); }
-            },
-            {
-                path: 'baseInformationModel',
-                name: 'baseInformationModel',
-                title: '机构设置',
-                component: resolve => { require(['@/views/organizationalManagement/baseInformation.vue'], resolve); }
             }
         ]
     },
