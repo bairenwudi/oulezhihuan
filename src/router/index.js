@@ -16,9 +16,15 @@ export const router = new VueRouter(RouterConfig);
 
 router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
-    Util.title(to.meta.title);
-    Util.toDefaultPage(routers, to.name, router, next);
-    next();
+    if (!sessionStorage.token && to.name !== 'login' && to.name !== 'register' && to.name !== 'forget') {
+        next({
+            name: 'login'
+        });
+    } else {
+        Util.title(to.meta.title);
+        Util.toDefaultPage(routers, to.name, router, next);
+        next();
+    }
 });
 
 router.afterEach((to) => {
