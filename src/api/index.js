@@ -42,5 +42,19 @@ export const CorrectpathObj = {
   //   base5:'http://xiangsikai.e1.luyouxia.net:27912',//刘卓
     
   //   base6:'http://xiangsikai.e1.luyouxia.net:27912'//刘天杨
+  // },
+  
+  // Correctpath: {
+  //   base1:'http://192.168.1.44:8080',//刘天杨
+
+  //   base2:'http://192.168.1.44:8080',//常猛
+    
+  //   base3:'http://192.168.1.44:8080',//杨胜男
+    
+  //   base4:'http://192.168.1.44:8080',//常猛
+    
+  //   base5:'http://192.168.1.44:8080',//刘卓
+    
+  //   base6:'http://192.168.1.44:8080'//刘天杨
   // }
 };
