@@ -515,15 +515,6 @@ export default {
         this.getUser();
     },
 
-    // 渲染机构标题下拉列表
-    async checkoutInstitutionalTitleListFun() {
-        const { data } = await checkoutInstitutionalTitleList();
-        console.log(data);
-        
-        data.shift(0);
-        this.checkoutinstitutionTitle = data;
-        console.log(this.checkoutinstitutionTitle)
-    },
 
     // 操作同意按钮
     agreeClick(){
@@ -601,10 +592,20 @@ export default {
     },
 
 
+     // 渲染机构标题下拉列表
+    async checkoutInstitutionalTitleListFun() {
+        const { data } = await checkoutInstitutionalTitleList();
+        console.log(data);
+        
+        // data.shift(0);
+        this.checkoutinstitutionTitle = data;
+        console.log(this.checkoutinstitutionTitle)
+    },
+
     // 渲染房间名称下拉列表
     async roomnameListFun() {
         const { data } = await roomnameList();
-        data.shift(0);
+        // data.shift(0);
         this.roomName = data;
         console.log(this.roomName)
     },

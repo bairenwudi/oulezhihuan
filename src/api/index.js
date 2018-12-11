@@ -1,6 +1,6 @@
 
 export const CorrectpathObj = {
-    // 生产环境(测试)
+    // 生产环境(正式)
     // Correctpath: {
     //   base1: 'http://xyo.zkjiashijie.com:8080',
 
@@ -15,7 +15,8 @@ export const CorrectpathObj = {
     //   base6: 'http://xyo.zkjiashijie.com:8080'
     // },
 
-    // // 开发环境(本地)
+
+    // 开发环境(测试) 
     Correctpath: {
         base1: 'http://test.zkjiashijie.com:8080',
 
@@ -30,6 +31,8 @@ export const CorrectpathObj = {
         base6: 'http://test.zkjiashijie.com:8080'
     }
 
+
+    // 开发环境(本地)
     // Correctpath: {
     //     base1: 'http://192.168.1.42:8080', // 刘天杨
 
@@ -43,4 +46,5 @@ export const CorrectpathObj = {
 
     //     base6: 'http://192.168.1.42:8080' // 刘天杨
     // }
-};
+
+  };

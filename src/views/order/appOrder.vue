@@ -35,7 +35,7 @@
 
             <FormItem prop="org_name" label="机构标题" :label-width="60">
                <Select v-model="formInline.org_name" clearable style="width:200px">
-                 <Option v-for="item in AppinstitutionTitle" :value="item.org_name" :key="item.adm_user_type">{{ item.org_name }}</Option>
+                  <Option v-for="(item, index) in AppinstitutionTitle" :key="index" :value="item.org_name">{{ item.org_name }}</Option>
                </Select>
             </FormItem>
 
@@ -210,7 +210,8 @@ export default {
         {
           title: "机构标题",
           render: (h, { row, index }) => {
-            return h("span", {}, row.org_name ? row.org_name : `暂无`);
+            return h("span", {}, 
+            row.org_name ? row.org_name : `暂无`);
           }
         },
 
@@ -479,18 +480,24 @@ export default {
 
     // 渲染机构标题下拉列表
     async AppInstitutionalTitleListFun() {
-        const { data } = await AppInstitutionalTitleList();
-        data.shift(0);
-        this.AppinstitutionTitle = data;
-        console.log(this.AppinstitutionTitle)
+        let { data } = await AppInstitutionalTitleList();
+        this.AppinstitutionTitle = [];
+        console.log(this.AppinstitutionTitle);
+        for (let i of data) {
+          if(i !== null) {
+            this.AppinstitutionTitle.push(i);
+          }  
+        }
     },
 
     // 渲染房间名称下拉列表
     async roomnameListFun() {
         const { data } = await roomnameList();
-        data.shift(0);
+        // data.shift(0);
         this.roomName = data;
         console.log(this.roomName)
+        console.log(data.shift(0));
+        
     },
 
     // 模糊查询
@@ -524,7 +531,7 @@ export default {
       }
 
       console.log(params)
-      this.loading = true;
+      // this.loading = true;
       let { data } = await appOrderList(params);
       console.log(data);
       this.total = data.content.count;
