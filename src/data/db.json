@@ -9,15 +9,8 @@
             {
                 "path": "organizationalManagementModel",
                 "name": "organizationalManagementModel",
-                "title": "机构管理",
+                "title": "机构列表",
                 "component": "organizationalManagement/organizationalManagement",
-                "children": []
-            },
-            {
-                "path": "baseInformationModel",
-                "name": "baseInformationModel",
-                "title": "机构设置",
-                "component": "organizationalManagement/baseInformation",
                 "children": []
             }
         ]
@@ -27,7 +20,7 @@
         "path": "/systemManagement",
         "icon": "gear-b",
         "name": "systemManagement",
-        "title": "系统管理",
+        "title": "字典管理",
         "component": "Main",
         "children": [
             {
@@ -79,7 +72,7 @@
         "path": "/RoomtypeNums",
         "icon": "stats-bars",
         "name": "RoomtypeNums",
-        "title": "房型可预订数",
+        "title": "房型预定管理",
         "component": "Main",
         "children": [
             {
@@ -146,7 +139,7 @@
             {
                 "path": "informationManagementModel",
                 "name": "informationManagementModel",
-                "title": "信息管理",
+                "title": "消息推送",
                 "component": "informationManagement/informationManagement",
                 "children": []
             }
@@ -156,7 +149,7 @@
         "path": "/financialStatements",
         "icon": "social-yen-outline",
         "name": "financialStatements",
-        "title": "财务报表",
+        "title": "财务报表管理",
         "component": "Main",
         "children": [
             {
@@ -172,7 +165,7 @@
         "path": "/authorityManagement",
         "icon": "ios-people",
         "name": "authorityManagement",
-        "title": "权限管理",
+        "title": "系统管理",
         "component": "Main",
         "children": [
             {

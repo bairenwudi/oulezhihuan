@@ -1138,15 +1138,19 @@ export default {
 
     // 获取基地设置列表
     async selectOrgByObjFun() {
-        let local = JSON.parse(localStorage.user);
-        let params = {
-            org_id: local.org_id
-        };
-
         try {
-            const { data } = await selectOrgByObj(params);
-            console.log(data);
-            this.baseInfoList = data;
+
+            if (this.$route.query) {
+                this.baseInfoList = JSON.parse(this.$route.query.data)
+            } else {
+                let local = JSON.parse(localStorage.user);
+                let params = {
+                    org_id: local.org_id
+                };
+                const { data } = await selectOrgByObj(params);
+                this.baseInfoList = data;
+            }
+
             this.baseInfoList.adm_city_code = this.baseInfoList.adm_city_code - 0;
             this.baseInfoList.adm_province_code = this.baseInfoList.adm_province_code - 0;
 
@@ -2257,8 +2261,8 @@ export default {
             const { data } = await showRoomPriceList(params);
             console.log(data)
             this.pricePlanList = data.data;
-            
             this.pricePricePlan = data.page.total;
+            this.pricePlanColumns = [];
 
             for(let i = 0; i < data.returnName.length; i++) {
                 this.pricePlanColumns.push({
@@ -2267,6 +2271,8 @@ export default {
                     key: data.returnId[i]
                 });
             }
+
+            console.log(this.pricePlanColumns)
         } catch(error) {
             console.log(error)
             this.$Message.error(`${error.data.content.msg}`);
@@ -2321,7 +2327,7 @@ export default {
 
                 let params = {
                     start_time: this[formName].PlanDate[0],
-                    end_time: this[formName].PlanDate[0],
+                    end_time: this[formName].PlanDate[1],
                     room_prices: room_prices.join(','),
                     room_type_ids: room_type_ids.join(','),
                     org_id: JSON.parse(localStorage.user).org_id,

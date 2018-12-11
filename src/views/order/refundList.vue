@@ -453,7 +453,7 @@ export default {
     // 渲染机构标题下拉列表
     async RefundInstitutionalTitleListFun() {
         const { data } = await RefundInstitutionalTitleList();
-        data.shift(0);
+        // data.shift(0);
         this.RefundinstitutionTitle = data;
         console.log(this.RefundinstitutionTitle)
     },
@@ -461,7 +461,7 @@ export default {
     // 渲染房间名称下拉列表
     async roomnameListFun() {
         const { data } = await roomnameList();
-        data.shift(0);
+        // data.shift(0);
         this.roomName = data;
         console.log(this.roomName)
     },

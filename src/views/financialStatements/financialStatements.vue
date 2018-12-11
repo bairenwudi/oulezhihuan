@@ -22,7 +22,7 @@
 
             <FormItem>
                 <Button type="primary">
-                    <a href="http://192.168.1.11:8080/FinanceController/downloadAllExcelData" class="downloadfont">下载Excel</a>
+                    <a :href=" base + '/FinanceController/downloadAllExcelData' " class="downloadfont">下载Excel</a>
                 </Button>
             </FormItem>
 
@@ -51,6 +51,8 @@ import {
     financialInstitutionalTitleList, //财务报表-机构标题下拉框渲染
     financialInstitutionalDownload //财务报表下载
 } from '../../api/lp-financialStatements/api.js'
+
+import { getBase } from "../../api/lp-financialStatements/api.js";
 
 // 年月日 补充时间格式 不够10 补充 0
 import { formatTimeDay } from "@/common/date/formatTime.js";
@@ -212,6 +214,8 @@ export default {
             check_time: ''
         },
 
+        base:"",
+
         loading: false,  // 定义loading为true
 
         currentPage: 1   // 定义当前页
@@ -356,6 +360,7 @@ export default {
   mounted() {
     this.getUser();
     this.financialInstitutionalTitleListFun();
+    this.base = getBase().base2
   }
 };
 </script>

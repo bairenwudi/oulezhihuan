@@ -250,9 +250,8 @@ export default {
     selectUserRightFun() {
       this.listLoading = true;
       let params = {
-        adm_user_id: JSON.parse(localStorage.user).adm_user_id,
         adm_decription: 1
-      };
+      }
       selectUserRight(params).then(res => {
         this.data = res.data;
         this.listLoading = false;
