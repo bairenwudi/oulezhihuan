@@ -23,6 +23,7 @@
           format="yyyy年MM月dd日"
           type="daterange"
           placeholder="请选择时间"
+          :options="featureDay"
           style="width: 300px"
         ></DatePicker>
       </FormItem>
@@ -68,6 +69,7 @@
             type="daterange"
             placeholder="请选择时间"
             style="width: 300px"
+            :options="featureDay"
           ></DatePicker>
         </FormItem>
 
@@ -191,6 +193,11 @@ export default {
           }
         }
       ],
+      featureDay: { 
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 86400000;//如果没有后面的-8.64e7就是不可以选择今天的 
+        }
+      },
       //双击需要的数据对象
       dbClickMsg:{
         dbtime:"",
@@ -279,6 +286,7 @@ export default {
 
     handleInput(val) {
       this.tableIptNum = val;
+
       console.log(val);
     },
 
