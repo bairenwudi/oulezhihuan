@@ -69,9 +69,7 @@ export default {
   data() {
     
     return {
-       evaluationinstitutionTitle:[
-
-       ],
+       evaluationinstitutionTitle:[],
         
         visible: false,
 
@@ -229,8 +227,10 @@ export default {
 
     // 渲染机构标题下拉列表
     async evaluationinstitutionTitleListFun() {
-        const { data } = await evaluationManagementTitleList();
-        data.shift(0);
+        let { data } = await evaluationManagementTitleList({
+            adm_user_type : 3
+        });
+        // data.shift(0);
         this.evaluationinstitutionTitle = data;
         console.log(this.evaluationinstitutionTitle)
     },

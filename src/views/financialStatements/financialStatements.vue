@@ -74,11 +74,7 @@ export default {
     return {
         adm_id: "adm_user_id",
 
-        financialinstitutionTitle:[
-                    {
-                        adm_user_type : 3
-                    },
-                ],
+        financialinstitutionTitle:[],
 
         currentPageIndex: 1,    // 当前页
 
@@ -302,8 +298,10 @@ export default {
 
     // 渲染机构标题下拉列表
     async financialInstitutionalTitleListFun() {
-        const { data } = await financialInstitutionalTitleList();
-        data.shift(0);
+        let { data } = await financialInstitutionalTitleList({
+            adm_user_type : 3
+        });
+        // data.shift(0);
         this.financialinstitutionTitle = data;
         console.log(this.financialinstitutionTitle)
     },
@@ -346,15 +344,17 @@ export default {
         }
         };
 
-        // this.loading = true;
+        this.loading = true;
         let { data } = await financialStatementsList(params);
-        console.log(data)
-        this.total = data.content.count;
-        console.log(this.total)
-        // data.shift(0);
-        this.userData = data.content.list;
-        this.loading = false;
-        console.log(data);
+        if(data.code === '数据为空') {
+            this.total = 0;
+            this.userData = [];
+            this.loading = false;
+        } else {
+            this.total = data.content.count;
+            this.userData = data.content.list;
+            this.loading = false;
+        }
     }
   },
   mounted() {
