@@ -149,11 +149,8 @@ export default {
                     //     label: '订单完成'
                     // }                            
                 ],
-        RefundinstitutionTitle:[
-                    {
-                        adm_user_type : 3
-                    },
-                ],
+        RefundinstitutionTitle:[],
+        
         roomName: [],
 
         currentPageIndex: 1,    // 当前页
@@ -452,7 +449,9 @@ export default {
 
     // 渲染机构标题下拉列表
     async RefundInstitutionalTitleListFun() {
-        const { data } = await RefundInstitutionalTitleList();
+        const { data } = await RefundInstitutionalTitleList({
+           adm_user_type : 3
+        });
         // data.shift(0);
         this.RefundinstitutionTitle = data;
         console.log(this.RefundinstitutionTitle)

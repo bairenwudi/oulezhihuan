@@ -167,9 +167,7 @@ export default {
       ],
       
       AppinstitutionTitle: [
-        {
-          adm_user_type : 3
-        },
+       
       ],
 
       roomName: [],
@@ -404,8 +402,7 @@ export default {
     SetStatusFilter(status) {
       console.log(status);
         switch(status) {
-          
-          
+                   
             case 0:
                 return '待付款';
                 break;
@@ -480,7 +477,9 @@ export default {
 
     // 渲染机构标题下拉列表
     async AppInstitutionalTitleListFun() {
-        let { data } = await AppInstitutionalTitleList();
+        let { data } = await AppInstitutionalTitleList({
+           adm_user_type : 3
+        });
         this.AppinstitutionTitle = [];
         console.log(this.AppinstitutionTitle);
         for (let i of data) {

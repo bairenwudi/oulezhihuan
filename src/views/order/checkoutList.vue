@@ -160,11 +160,8 @@ export default {
                     // }
                                                   
                 ],
-        checkoutinstitutionTitle:[
-                    {
-                        adm_user_type : 3
-                    },
-                ],
+        checkoutinstitutionTitle:[],
+        
         roomName: [],
 
         currentPageIndex: 1,    // 当前页
@@ -594,7 +591,9 @@ export default {
 
      // 渲染机构标题下拉列表
     async checkoutInstitutionalTitleListFun() {
-        const { data } = await checkoutInstitutionalTitleList();
+        const { data } = await checkoutInstitutionalTitleList({
+             adm_user_type : 3
+        });
         console.log(data);
         
         // data.shift(0);
