@@ -1139,7 +1139,6 @@ export default {
     // 获取基地设置列表
     async selectOrgByObjFun() {
         try {
-
             let local = JSON.parse(localStorage.user);
             let params = {
                 org_id: this.$route.query.data ? JSON.parse(this.$route.query.data).org_id : local.org_id

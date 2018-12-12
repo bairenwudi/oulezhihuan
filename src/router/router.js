@@ -90,33 +90,41 @@ export const otherRouter = {
             name: 'baseInformationModel',
             title: '机构设置',
             component: resolve => { require(['@/views/organizationalManagement/baseInformation.vue'], resolve); }
-        }
+        },
     ]
 };
 
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 export const appRouter = [
     {
-        path: '/organizationalManagement',
-        icon: 'social-buffer',
-        name: 'organizationalManagement',
-        title: '机构管理',
+        path: "/organizationalManagement",
+        icon: "social-buffer",
+        name: "organizationalManagement",
+        title: "机构管理",
         component: Main,
+        iconCls: "iconfont icon-organizationalManagement",
         children: [
             {
-                path: 'organizationalManagementModel',
-                name: 'organizationalManagementModel',
-                title: '机构管理',
+                path: "organizationalManagementModel",
+                name: "organizationalManagementModel",
+                title: "机构列表",
+                children: [],
                 component: resolve => { require(['@/views/organizationalManagement/organizationalManagement.vue'], resolve); }
-            }
+            },
+            {
+                path: "baseInformation",
+                name: "baseInformation",
+                title: "机构管理",
+                children: [],
+                component: resolve => { require(['@/views/organizationalManagement/baseInformation.vue'], resolve); }
+            },
         ]
     },
-
     {
         path: '/systemManagement',
         icon: 'gear-b',
         name: 'systemManagement',
-        title: '系统管理',
+        title: '字典管理',
         component: Main,
         children: [
             {
@@ -162,7 +170,7 @@ export const appRouter = [
         path: '/RoomtypeNums',
         icon: 'stats-bars',
         name: 'RoomtypeNums',
-        title: '房型可预订数',
+        title: '房型预定管理',
         component: Main,
         children: [
             {
@@ -223,7 +231,7 @@ export const appRouter = [
             {
                 path: 'informationManagementModel',
                 name: 'informationManagementModel',
-                title: '信息管理',
+                title: '消息推送',
                 component: resolve => { require(['@/views/informationManagement/informationManagement.vue'], resolve); }
             }
         ]
@@ -232,7 +240,7 @@ export const appRouter = [
         path: '/financialStatements',
         icon: 'social-yen-outline',
         name: 'financialStatements',
-        title: '财务报表',
+        title: '财务报表管理',
         component: Main,
         children: [
             {
@@ -247,7 +255,7 @@ export const appRouter = [
         path: '/authorityManagement',
         icon: 'ios-people',
         name: 'authorityManagement',
-        title: '权限管理',
+        title: '系统管理',
         component: Main,
         children: [
             {

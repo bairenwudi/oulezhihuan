@@ -166,11 +166,7 @@ export default {
         }
       ],
       
-      AppinstitutionTitle: [
-        {
-          adm_user_type : 3
-        },
-      ],
+      AppinstitutionTitle: [],
 
       roomName: [],
 
@@ -480,24 +476,18 @@ export default {
 
     // 渲染机构标题下拉列表
     async AppInstitutionalTitleListFun() {
-        let { data } = await AppInstitutionalTitleList();
-        this.AppinstitutionTitle = [];
-        console.log(this.AppinstitutionTitle);
-        for (let i of data) {
-          if(i !== null) {
-            this.AppinstitutionTitle.push(i);
-          }  
+        let params = {
+          adm_user_type : 3
         }
+        let { data } = await AppInstitutionalTitleList(params);
+        this.AppinstitutionTitle = data;
     },
 
     // 渲染房间名称下拉列表
     async roomnameListFun() {
         const { data } = await roomnameList();
-        // data.shift(0);
+        data.shift(0);
         this.roomName = data;
-        console.log(this.roomName)
-        console.log(data.shift(0));
-        
     },
 
     // 模糊查询
@@ -531,15 +521,12 @@ export default {
       }
 
       console.log(params)
-      // this.loading = true;
       let { data } = await appOrderList(params);
       console.log(data);
       this.total = data.content.count;
       console.log(this.total);
-      // data.shift(0);
       this.userData = data.content.list;
       this.loading = false;
-      console.log(data);
     }
   },
   mounted() {

@@ -61,11 +61,9 @@ const destinationTitleList = params => {
 };
 
 
-
-
 //退款单列表
 const refundList = params => {
-    return axios.post(`${baseUrl.base2}/Refund/select_refund?startPos=${params.startPos}&pageSize=10`, params);
+    return axios.post(`${baseUrl.base2}/Refund/select_refund?pageSize=10`, params);
 };
 
 //退款单模糊查询
