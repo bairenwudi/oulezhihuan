@@ -5,6 +5,7 @@
         "name": "organizationalManagement",
         "title": "机构管理",
         "component": "Main",
+        "iconCls": "iconfont icon-organizationalManagement",
         "children": [
             {
                 "path": "organizationalManagementModel",
@@ -22,6 +23,7 @@
         "name": "systemManagement",
         "title": "字典管理",
         "component": "Main",
+        "iconCls": "iconfont icon-systemManagement",
         "children": [
             {
                 "path": "userManagementModel",
@@ -74,6 +76,7 @@
         "name": "RoomtypeNums",
         "title": "房型预定管理",
         "component": "Main",
+        "iconCls": "iconfont icon-RoomtypeNums",
         "children": [
             {
                 "path": "RoomtypeNumstModel",
@@ -91,6 +94,7 @@
         "name": "order",
         "title": "订单管理",
         "component": "Main",
+        "iconCls": "iconfont icon-order",
         "children": [
             {
                 "path": "appOrderModel",
@@ -135,6 +139,7 @@
         "name": "informationManagement",
         "title": "信息管理",
         "component": "Main",
+        "iconCls": "iconfont icon-informationManagement",
         "children": [
             {
                 "path": "informationManagementModel",
@@ -151,6 +156,7 @@
         "name": "financialStatements",
         "title": "财务报表管理",
         "component": "Main",
+        "iconCls": "iconfont icon-financialStatements",
         "children": [
             {
                 "path": "financialStatementsModel",
@@ -167,6 +173,7 @@
         "name": "authorityManagement",
         "title": "系统管理",
         "component": "Main",
+        "iconCls": "iconfont icon-authorityManagement",
         "children": [
             {
                 "path": "userManagement",
@@ -208,13 +215,6 @@
                 "name": "appUser",
                 "title": "app权限",
                 "component": "authorityManagement/appUser",
-                "children": []
-            },
-            {
-                "path": "appVersionRecord",
-                "name": "appVersionRecord",
-                "title": "app版本更新记录",
-                "component": "authorityManagement/appVersionRecord",
                 "children": []
             }
         ]

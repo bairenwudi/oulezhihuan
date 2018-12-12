@@ -19,3 +19,7 @@
   width: 100px;
   margin-right: 3px;
 }
+.formView /deep/ .inputWidth {
+  width: 100px;
+  margin-right: 3px;
+}

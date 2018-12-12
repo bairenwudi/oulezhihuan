@@ -359,20 +359,19 @@ export default {
     async getUser(filter) {
         var ord_id = localStorage.getItem('Checkout_ord_id')
         console.log(ord_id);
-   
         let params = {
             // pageSize: 10,
             // startPos: filter ? pageIndex : this.currentPage,
             ord_id
         };
 
-         if (filter) {
-        params = Object.assign(params, filter);
-        if(filter.check_time[0] !== '') {
-            params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
-            params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
+        if (filter) {
+            params = Object.assign(params, filter);
+            if(filter.check_time[0] !== '') {
+                params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
+                params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
+            }
         }
-      }
 
         // this.loading = true;
         let { data } = await checkoutListinfo(params);
@@ -395,9 +394,7 @@ export default {
         this.loading = false;
 
         checkoutListCustomerinfo(params).then(res => {
-        console.log(res)
-        this.userData1 = res.data.content.list;
-        console.log(this.userData1)
+            this.userData1 = res.data.content.list;
         });
         // // this.total = data[0].count;
         // // console.log(this.total)

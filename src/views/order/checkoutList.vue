@@ -603,10 +603,9 @@ export default {
 
     // 渲染房间名称下拉列表
     async roomnameListFun() {
-        const { data } = await roomnameList();
-        // data.shift(0);
+        let { data } = await roomnameList();
+        data.shift(0);
         this.roomName = data;
-        console.log(this.roomName)
     },
 
     

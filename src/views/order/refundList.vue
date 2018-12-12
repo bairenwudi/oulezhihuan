@@ -88,67 +88,68 @@ export default {
   data() {
     return {
         orderStatus: [
-                    // {
-                    //     value: 0,
-                    //     label: '待付款'
-                    // },
-                    // {
-                    //     value: 1,
-                    //     label: '待审核'
-                    // },
-                    // {
-                    //     value: 2,
-                    //     label: '已付款'
-                    // },
-                    // {
-                    //     value: 3,
-                    //     label: '已审核'
-                    // },
-                    // {
-                    //     value: 4,
-                    //     label: '申请退款'
-                    // },
-                    // {
-                    //     value: 5,
-                    //     label: '退款中'
-                    // },
-                    {
-                        value: 6,
-                        label: '退款成功'
-                    }, 
-                    {
-                        value: 7,
-                        label: '退款失败'
-                    },
-                    // {
-                    //     value: 8,
-                    //     label: '已入住'
-                    // },
-                    // {
-                    //     value: 9,
-                    //     label: '申请退房'
-                    // },
-                    // {
-                    //     value: 10,
-                    //     label: '退房中'
-                    // },  
-                    // {
-                    //     value: 11,
-                    //     label: '退房成功'
-                    // },
-                    // {
-                    //     value: 12,
-                    //     label: '退房失败'
-                    // },
-                    // {
-                    //     value: 13,
-                    //     label: '订单取消'
-                    // },
-                    // {
-                    //     value: 14,
-                    //     label: '订单完成'
-                    // }                            
-                ],
+            // {
+            //     value: 0,
+            //     label: '待付款'
+            // },
+            // {
+            //     value: 1,
+            //     label: '待审核'
+            // },
+            // {
+            //     value: 2,
+            //     label: '已付款'
+            // },
+            // {
+            //     value: 3,
+            //     label: '已审核'
+            // },
+            // {
+            //     value: 4,
+            //     label: '申请退款'
+            // },
+            // {
+            //     value: 5,
+            //     label: '退款中'
+            // },
+            {
+                value: 6,
+                label: '退款成功'
+            }, 
+            {
+                value: 7,
+                label: '退款失败'
+            },
+            // {
+            //     value: 8,
+            //     label: '已入住'
+            // },
+            // {
+            //     value: 9,
+            //     label: '申请退房'
+            // },
+            // {
+            //     value: 10,
+            //     label: '退房中'
+            // },  
+            // {
+            //     value: 11,
+            //     label: '退房成功'
+            // },
+            // {
+            //     value: 12,
+            //     label: '退房失败'
+            // },
+            // {
+            //     value: 13,
+            //     label: '订单取消'
+            // },
+            // {
+            //     value: 14,
+            //     label: '订单完成'
+            // }                            
+        ],
+
         RefundinstitutionTitle:[],
         
         roomName: [],
@@ -333,7 +334,7 @@ export default {
 
         userData: [],   // 内容数据
 
-        total: 0,   // 总页数
+        total: 1,   // 总页数
 
         formInline: {   // 定义表单对象
             ord_id: '', 
@@ -449,20 +450,19 @@ export default {
 
     // 渲染机构标题下拉列表
     async RefundInstitutionalTitleListFun() {
-        const { data } = await RefundInstitutionalTitleList({
-           adm_user_type : 3
-        });
+        let params = {
+            adm_user_type : 3
+        }
+        const { data } = await RefundInstitutionalTitleList(params);
         // data.shift(0);
         this.RefundinstitutionTitle = data;
-        console.log(this.RefundinstitutionTitle)
     },
 
     // 渲染房间名称下拉列表
     async roomnameListFun() {
-        const { data } = await roomnameList();
-        // data.shift(0);
+        let { data } = await roomnameList();
+        data.shift(0);
         this.roomName = data;
-        console.log(this.roomName)
     },
 
     searchClick(filter) {
@@ -486,22 +486,21 @@ export default {
             adm_user_id
         };
 
-         if (filter) {
-        params = Object.assign(params, filter);
-        if(filter.check_time[0] !== '') {
-            params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
-            params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
+        if (filter) {
+            if(filter.check_time[0] !== '') {
+                params.check_in_time = this.dataFormatDay(filter.check_time[0].getTime());
+                params.check_out_time = this.dataFormatDay(filter.check_time[1].getTime());
+            }
+            params = Object.assign(params, filter);
         }
-      }
 
         this.loading = true;
+
         let { data } = await refundList(params);
-        console.log(data)
         this.total = data.content.count;
-        console.log(this.total)
-        this.userData = data.content.list;
+        data.content.list ? this.userData = data.content.list : [];
+        console.log(data.content.list)
         this.loading = false;
-        console.log(data);
     }
   },
   mounted() {

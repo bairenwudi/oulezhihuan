@@ -166,9 +166,7 @@ export default {
         }
       ],
       
-      AppinstitutionTitle: [
-       
-      ],
+      AppinstitutionTitle: [],
 
       roomName: [],
 
@@ -491,12 +489,9 @@ export default {
 
     // 渲染房间名称下拉列表
     async roomnameListFun() {
-        const { data } = await roomnameList();
-        // data.shift(0);
+        let { data } = await roomnameList();
+        data.shift(0);
         this.roomName = data;
-        console.log(this.roomName)
-        console.log(data.shift(0));
-        
     },
 
     // 模糊查询
@@ -530,15 +525,12 @@ export default {
       }
 
       console.log(params)
-      // this.loading = true;
       let { data } = await appOrderList(params);
       console.log(data);
       this.total = data.content.count;
       console.log(this.total);
-      // data.shift(0);
       this.userData = data.content.list;
       this.loading = false;
-      console.log(data);
     }
   },
   mounted() {

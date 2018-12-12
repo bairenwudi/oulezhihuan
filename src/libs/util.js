@@ -169,11 +169,13 @@ util.setCurrentPath = function (vm, name) {
                 ];
             }
         } else {
-            currentPathArr = [{
-                title: '首页',
-                path: '',
-                name: 'home_index'
-            }];
+            currentPathArr = [
+                {
+                    title: '首页',
+                    path: '',
+                    name: 'home_index'
+                },
+            ];
         }
     }
     vm.$store.commit('setCurrentPath', currentPathArr);
@@ -326,7 +328,6 @@ util.initRouter = function (vm) {
 
     selectUserRightForVue(params).then(res => {
         var menuData;
-
         if (JSON.parse(localStorage.user).adm_account === 'admins') {
             menuData = dbForAdminData;
         } else {
